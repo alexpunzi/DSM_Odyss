@@ -1,0 +1,27 @@
+@startuml DSM_Odyss
+skinparam packageStyle rectangle
+title DSM_Odyss Domain
+
+package "DSM_Odyss" {
+  enum MediaType {
+    VIDEO
+    FOTO
+  }
+
+  class Adress {
+    -id: long <<oid>>
+    -pais: string
+    -ciudad: string
+    -ubicacionExacta: string
+    -latitud: float
+    -longitud: float
+    --
+    +new(p_pais: string, p_ciudad: string, p_ubicacionExacta: string, p_latitud: float, p_longitud: float): Adress <<New>>
+    +destroy(p_oid: long <<oid>>): void <<Destroy>>
+    +modify(p_oid: long <<oid>>, p_pais: string, p_ciudad: string, p_ubicacionExacta: string, p_latitud: float, p_longitud: float): void <<Modifier>>
+    +readOID(p_oid: long <<oid>>): Adress <<ReadOID>>
+    +readAll(): Adress[*] <<ReadAll>>
+  }
+
+}
+@enduml
