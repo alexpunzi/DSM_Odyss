@@ -1,0 +1,14 @@
+{
+  "generation": {
+    "orm": "nhibernate",
+    "outputDirectory": "generated",
+    "projectName": "DSM_Odyss",
+    "targetFramework": "net9.0",
+    "database": "sqlite"
+  },
+  "database": {
+    "provider": "sqlite",
+    "name": "DSM_Odyss",
+    "file": "DSM_Odyss.db"
+  }
+}
