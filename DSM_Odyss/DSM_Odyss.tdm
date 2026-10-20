@@ -1,6 +1,6 @@
 ConceptualModel DSM_Odyss {
 
-    //ENUMERACIONES 
+    // ----- ENUMERACIONES -----
     Enumeration TipoMultimedia
     {
         (VIDEO, 1), (FOTO, 2)
@@ -21,6 +21,7 @@ ConceptualModel DSM_Odyss {
         (notificacion, 1), (alarma, 2)
     };
 
+    // ----- CLASES -----
     Class Usuario
     {
         attributes
