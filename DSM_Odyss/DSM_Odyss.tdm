@@ -1,2 +1,24 @@
 ConceptualModel DSM_Odyss {
+    
+    Class Adress
+    {
+        attributes
+        {
+            private pais : String (1, 1);
+            private ciudad : String (1, 1);
+            private ubicacionExacta : String (1, 1);
+            private latitud : Float (1, 1);
+            private longitud : Float (1, 1);
+        }
+        
+        operations
+        {
+       
+        }
+    };
+
+    Enumeration MediaType
+    {
+        (VIDEO, 1), (FOTO, 2)
+    };
 }
