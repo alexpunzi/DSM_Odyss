@@ -1,4 +1,25 @@
 ConceptualModel DSM_Odyss {
+
+    //ENUMERACIONES 
+    Enumeration TipoMultimedia
+    {
+        (VIDEO, 1), (FOTO, 2)
+    };
+
+    Enumeration EstadoViaje
+    {
+        (planificado, 1), (enCurso, 2), (finalizado, 3)
+    };
+
+    Enumeration CanalNotificacion
+    {
+        (email, 1), (sms, 2)
+    };
+
+    Enumeration TipoAviso
+    {
+        (notificacion, 1), (alarma, 2)
+    };
     
     Class Adress
     {
@@ -22,8 +43,5 @@ ConceptualModel DSM_Odyss {
         }
     };
 
-    Enumeration MediaType
-    {
-        (VIDEO, 1), (FOTO, 2)
-    };
+    
 }
