@@ -1,27 +1,99 @@
-@startuml DSM_Odyss
+@startuml ModeloDeDominio_Odyss
 skinparam packageStyle rectangle
-title DSM_Odyss Domain
+title ModeloDeDominio_Odyss Domain
 
-package "DSM_Odyss" {
-  enum MediaType {
-    VIDEO
-    FOTO
+package "ModeloDeDominio_Odyss" {
+  enum EstadoViaje {
+    planificado
+    enCurso
+    finalizado
   }
 
-  class Adress {
+  enum TipoMultimedia {
+    foto
+    video
+  }
+
+  enum TipoViaje {
+    ocio
+    trabajo
+    familiar
+    otro
+  }
+
+  enum CanalNotificacion {
+    email
+    sms
+  }
+
+  enum TipoAviso {
+    notificacion
+    alarma
+  }
+
+  class Cliente {
     -id: long <<oid>>
-    -pais: string
-    -ciudad: string
-    -ubicacionExacta: string
-    -latitud: float
-    -longitud: float
-    --
-    +new(p_pais: string, p_ciudad: string, p_ubicacionExacta: string, p_latitud: float, p_longitud: float): Adress <<New>>
-    +destroy(p_oid: long <<oid>>): void <<Destroy>>
-    +modify(p_oid: long <<oid>>, p_pais: string, p_ciudad: string, p_ubicacionExacta: string, p_latitud: float, p_longitud: float): void <<Modifier>>
-    +readOID(p_oid: long <<oid>>): Adress <<ReadOID>>
-    +readAll(): Adress[*] <<ReadAll>>
+    -nombre: string
+    -apellidos: string
+    -email: string
+    -pass: string <<password>>
+    -fechaNacimiento: Date
+    -canalNotificacion: CanalNotificacion
+    -recibirRecordatorios: bool
   }
 
+  class Viaje {
+    -id: long <<oid>>
+    -titulo: string
+    -fechaInicio: Date
+    -fechaFin: Date
+    -esPublico: bool
+    -presupuesto: float
+    -tipoViaje: TipoViaje
+    -estado: EstadoViaje
+  }
+
+  class Parada {
+    -id: long <<oid>>
+    -nombre: string
+    -dia: int
+    -horario: Time
+    -detalles: string
+    -completada: bool
+  }
+
+  class Carpeta {
+    -id: long <<oid>>
+    -nombre: string
+    -anyo: int
+  }
+
+  class Multimedia {
+    -id: long <<oid>>
+    -nombre: string
+    -fechaSubida: Date
+    -descripcion: string
+  }
+
+  class Ubicacion {
+    -id: long <<oid>>
+    -nombre: string
+    -ciudad: string
+    -latitud: double
+    -longitud: double
+  }
+
+  class Recordatorio {
+    -id: long <<oid>>
+    -titulo: string
+    -detalles: string
+    -fecha: Date
+    -hora: Time
+    -tipoAviso: TipoAviso
+    -envidado: bool
+  }
+
+  ' Relationships
+  Parada "parada\n0..*" --> "ubicacion\n0..1" Ubicacion
 }
 @enduml
