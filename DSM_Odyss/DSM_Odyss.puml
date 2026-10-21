@@ -31,15 +31,24 @@ package "ModeloDeDominio_Odyss" {
     alarma
   }
 
-  class Cliente {
-    -id: long <<oid>>
+  class Cliente <<User>> {
+    -id: long <<oid>> <<isToken>>
+    -name: string
+    -password: string <<password>>
     -nombre: string
     -apellidos: string
     -email: string
-    -pass: string <<password>>
     -fechaNacimiento: Date
     -canalNotificacion: CanalNotificacion
     -recibirRecordatorios: bool
+  }
+
+  class ResumenAnual {
+    -id: long <<oid>>
+    -anyo: int
+    -paisesVisitados: int
+    -fotosSubidas: int
+    -destinoMasVisitado: string
   }
 
   class Viaje {
@@ -75,6 +84,12 @@ package "ModeloDeDominio_Odyss" {
     -descripcion: string
   }
 
+  class Collage {
+    -id: long <<oid>>
+    -urlImagen: string
+    -fechaCreacion: Date
+  }
+
   class Ubicacion {
     -id: long <<oid>>
     -nombre: string
@@ -93,7 +108,22 @@ package "ModeloDeDominio_Odyss" {
     -envidado: bool
   }
 
+  class Checklist <<AggregateRoot>> {
+    -id: long <<oid>>
+    -nombre: string
+  }
+
+  class Tarea {
+    -id: long <<oid>>
+    -descripcion: string
+    -completada: bool
+  }
+
   ' Relationships
   Parada "parada\n0..*" --> "ubicacion\n0..1" Ubicacion
+  Cliente "navigablecontactos\n0..*" --> "contactos\n0..*" Cliente
+  Cliente "clienets\n1" --> "resumenes\n0..*" ResumenAnual
+  Cliente "autor\n1" -- "viajes\n0..*" Viaje
+  Viaje "c\n0..*" --> "compartidoCon\n0..*" Cliente
 }
 @enduml
