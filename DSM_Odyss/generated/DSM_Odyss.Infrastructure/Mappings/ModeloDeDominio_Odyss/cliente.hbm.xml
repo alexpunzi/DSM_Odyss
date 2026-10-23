@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="Cliente" table="Cliente">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="User" type="String">
+      <column name="user" not-null="true"/>
+    </property>
+    <property name="Password" type="String">
+      <column name="password" not-null="true"/>
+    </property>
+    <property name="Nombre" type="String">
+      <column name="nombre" not-null="true"/>
+    </property>
+    <property name="Apellidos" type="String">
+      <column name="apellidos" not-null="true"/>
+    </property>
+    <property name="Email" type="String">
+      <column name="email" not-null="true"/>
+    </property>
+    <property name="FechaNacimiento" type="Date">
+      <column name="fechaNacimiento" sql-type="date" not-null="true"/>
+    </property>
+    <property name="CanalNotificacion" type="DSM_Odyss.Domain.Enums.CanalNotificacion, DSM_Odyss.Domain">
+      <column name="canalNotificacion" not-null="true"/>
+    </property>
+    <property name="RecibirRecordatorios" type="Boolean">
+      <column name="recibirRecordatorios" not-null="true"/>
+    </property>
+    <bag name="Contactos">
+      <key>
+        <column name="FK_Cliente_contactos"/>
+      </key>
+      <one-to-many class="Cliente"/>
+    </bag>
+    <bag name="ContactosInversos">
+      <key>
+        <column name="FK_Cliente_contactosInversos"/>
+      </key>
+      <one-to-many class="Cliente"/>
+    </bag>
+    <bag name="Estadisticas">
+      <key>
+        <column name="FK_Cliente_estadisticas"/>
+      </key>
+      <one-to-many class="Estadisticas"/>
+    </bag>
+    <bag name="Viajes">
+      <key>
+        <column name="FK_Cliente_viajes"/>
+      </key>
+      <one-to-many class="Viaje"/>
+    </bag>
+    <bag name="Resenas">
+      <key>
+        <column name="FK_Cliente_resenas"/>
+      </key>
+      <one-to-many class="Resena"/>
+    </bag>
+  </class>
+  <query name="ClienteReadAllHQL">from Cliente</query>
+</hibernate-mapping>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="Carpeta" table="Carpeta">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="Nombre" type="String">
+      <column name="nombre" not-null="true"/>
+    </property>
+    <bag name="Multimedia">
+      <key>
+        <column name="FK_Carpeta_multimedia"/>
+      </key>
+      <one-to-many class="Multimedia"/>
+    </bag>
+  </class>
+  <query name="CarpetaReadAllHQL">from Carpeta</query>
+</hibernate-mapping>

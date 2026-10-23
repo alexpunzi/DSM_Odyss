@@ -33,7 +33,7 @@ package "ModeloDeDominio_Odyss" {
 
   class Cliente <<User>> {
     -id: long <<oid>> <<isToken>>
-    -name: string
+    -user: string
     -password: string <<password>>
     -nombre: string
     -apellidos: string
@@ -41,14 +41,27 @@ package "ModeloDeDominio_Odyss" {
     -fechaNacimiento: Date
     -canalNotificacion: CanalNotificacion
     -recibirRecordatorios: bool
+    --
+    +crearCliente(p_user: string, p_password: string <<password>>, p_nombre: string, p_apellidos: string, p_email: string, p_fechaNacimiento: Date, p_canalNotificacion: CanalNotificacion, p_recibirRecordatorios: bool, p_checklist_oid: long <<oid>>, p_recordatorio_oid: long <<oid>>): Cliente <<New>>
+    +borrarCliente(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarCliente(p_oid: long <<oid>>, p_user: string, p_password: string <<password>>, p_nombre: string, p_apellidos: string, p_email: string, p_fechaNacimiento: Date, p_canalNotificacion: CanalNotificacion, p_recibirRecordatorios: bool, p_checklist_oid: long <<oid>>, p_recordatorio_oid: long <<oid>>): void <<Modifier>>
+    +leerClienteOID(p_oid: long <<oid>>): Cliente <<ReadOID>>
+    +leerTodosClientes(): Cliente[*] <<ReadAll>>
+    +login(p_user: string, p_password: string <<password>>): string <<Login>>
   }
 
-  class ResumenAnual {
+  class Estadisticas {
     -id: long <<oid>>
-    -anyo: int
-    -paisesVisitados: int
-    -fotosSubidas: int
-    -destinoMasVisitado: string
+    -anyo: int?
+    -paisesVisitados: int?
+    -fotosSubidas: int?
+    -destinoMasVisitado: string?
+    --
+    +crearEstadisticas(p_cliente_oid: long <<oid>>): Estadisticas <<New>>
+    +borrarEstadisticas(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarEstadisticas(p_oid: long <<oid>>, p_cliente_oid: long <<oid>>): void <<Modifier>>
+    +leerEstadisticasOID(p_oid: long <<oid>>): Estadisticas <<ReadOID>>
+    +leerTodasEstadisticas(): Estadisticas[*] <<ReadAll>>
   }
 
   class Viaje {
@@ -60,42 +73,89 @@ package "ModeloDeDominio_Odyss" {
     -presupuesto: float
     -tipoViaje: TipoViaje
     -estado: EstadoViaje
+    --
+    +crearViaje(p_titulo: string, p_fechaInicio: Date, p_fechaFin: Date, p_esPublico: bool, p_presupuesto: float, p_tipoViaje: TipoViaje, p_estado: EstadoViaje, p_destino_oid: long <<oid>>, p_autor_oid: long <<oid>>, p_carpetas_oid: long <<oid>>): Viaje <<New>>
+    +borrarViaje(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarViaje(p_oid: long <<oid>>, p_titulo: string, p_fechaInicio: Date, p_fechaFin: Date, p_esPublico: bool, p_presupuesto: float, p_tipoViaje: TipoViaje, p_estado: EstadoViaje, p_destino_oid: long <<oid>>, p_autor_oid: long <<oid>>, p_carpetas_oid: long <<oid>>): void <<Modifier>>
+    +leerViajeOID(p_oid: long <<oid>>): Viaje <<ReadOID>>
+    +leerTodosViajes(): Viaje[*] <<ReadAll>>
   }
 
-  class Parada {
+  class ParadaActividad {
     -id: long <<oid>>
     -nombre: string
     -dia: int
     -horario: Time
-    -detalles: string
+    -detalles: string?
     -completada: bool
+    --
+    +crearParadaActividad(p_nombre: string, p_dia: int, p_horario: Time, p_completada: bool, p_viaje_oid: long <<oid>>): ParadaActividad <<New>>
+    +borrarParadaActividad(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarParadaActividad(p_oid: long <<oid>>, p_nombre: string, p_dia: int, p_horario: Time, p_completada: bool, p_viaje_oid: long <<oid>>): void <<Modifier>>
+    +leerParadaActividadOID(p_oid: long <<oid>>): ParadaActividad <<ReadOID>>
+    +leerTodasParadasActividades(): ParadaActividad[*] <<ReadAll>>
+  }
+
+  class Ubicacion {
+    -id: long <<oid>>
+    -nombre: string
+    -latitud: double
+    -longitud: double
+    --
+    +crearUbicacion(p_nombre: string, p_latitud: double, p_longitud: double): Ubicacion <<New>>
+    +borrarUbicacion(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarUbicacion(p_oid: long <<oid>>, p_nombre: string, p_latitud: double, p_longitud: double): void <<Modifier>>
+    +leerUbicacionOID(p_oid: long <<oid>>): Ubicacion <<ReadOID>>
+    +leerTodasUbicaciones(): Ubicacion[*] <<ReadAll>>
+  }
+
+  class Destino {
+    -id: long <<oid>>
+    -pais: string
+    -ciudad: string?
+    --
+    +crearDestino(p_pais: string): Destino <<New>>
+    +borrarDestino(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarDestino(p_oid: long <<oid>>, p_pais: string): void <<Modifier>>
+    +leerDestinoOID(p_oid: long <<oid>>): Destino <<ReadOID>>
+    +leerTodasDestinos(): Destino[*] <<ReadAll>>
   }
 
   class Carpeta {
     -id: long <<oid>>
     -nombre: string
-    -anyo: int
+    --
+    +crearCarpeta(p_nombre: string, p_viaje_oid: long <<oid>>): Carpeta <<New>>
+    +borrarCarpeta(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarCarpeta(p_oid: long <<oid>>, p_nombre: string, p_viaje_oid: long <<oid>>): void <<Modifier>>
+    +leerCarpetaOID(p_oid: long <<oid>>): Carpeta <<ReadOID>>
+    +leerTodasCarpetas(): Carpeta[*] <<ReadAll>>
   }
 
   class Multimedia {
     -id: long <<oid>>
+    -tipo: TipoMultimedia
     -nombre: string
     -fechaSubida: Date
     -descripcion: string
+    --
+    +crearMultimedia(p_tipo: TipoMultimedia, p_nombre: string, p_fechaSubida: Date, p_descripcion: string, p_carpeta_oid: long <<oid>>): Multimedia <<New>>
+    +borrarMultimedia(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarMultimedia(p_oid: long <<oid>>, p_tipo: TipoMultimedia, p_nombre: string, p_fechaSubida: Date, p_descripcion: string, p_carpeta_oid: long <<oid>>): void <<Modifier>>
+    +leerMultimediaOID(p_oid: long <<oid>>): Multimedia <<ReadOID>>
+    +leerTodasMultimdia(): Multimedia[*] <<ReadAll>>
   }
 
   class Collage {
     -id: long <<oid>>
     -urlImagen: string
     -fechaCreacion: Date
-  }
-
-  class Ubicacion {
-    -id: long <<oid>>
-    -nombre: string
-    -ciudad: string
-    -latitud: double
-    -longitud: double
+    --
+    +crearCollage(p_urlImagen: string, p_fechaCreacion: Date, p_viaje_oid: long <<oid>>): Collage <<New>>
+    +borrarCollage(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarCollage(p_oid: long <<oid>>, p_urlImagen: string, p_fechaCreacion: Date, p_viaje_oid: long <<oid>>): void <<Modifier>>
+    +leerCollageOID(p_oid: long <<oid>>): Collage <<ReadOID>>
+    +leerTodasCollages(): Collage[*] <<ReadAll>>
   }
 
   class Recordatorio {
@@ -105,25 +165,67 @@ package "ModeloDeDominio_Odyss" {
     -fecha: Date
     -hora: Time
     -tipoAviso: TipoAviso
-    -envidado: bool
+    -enviado: bool
+    --
+    +crearRecordatorio(p_titulo: string, p_detalles: string, p_fecha: Date, p_hora: Time, p_tipoAviso: TipoAviso, p_enviado: bool): Recordatorio <<New>>
+    +borrarRecordatorio(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarRecordatorio(p_oid: long <<oid>>, p_titulo: string, p_detalles: string, p_fecha: Date, p_hora: Time, p_tipoAviso: TipoAviso, p_enviado: bool): void <<Modifier>>
+    +leerRecordatorioOID(p_oid: long <<oid>>): Recordatorio <<ReadOID>>
+    +leerTodosRecordatorios(): Recordatorio[*] <<ReadAll>>
   }
 
   class Checklist <<AggregateRoot>> {
     -id: long <<oid>>
     -nombre: string
+    --
+    +crearChecklist(p_nombre: string): Checklist <<New>>
+    +borrarChecklist(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarChecklist(p_oid: long <<oid>>, p_nombre: string): void <<Modifier>>
+    +leerChecklistOID(p_oid: long <<oid>>): Checklist <<ReadOID>>
+    +leerTodosChecklists(): Checklist[*] <<ReadAll>>
   }
 
   class Tarea {
     -id: long <<oid>>
     -descripcion: string
     -completada: bool
+    --
+    +crearTarea(p_descripcion: string, p_completada: bool, p_checklist_oid: long <<oid>>): Tarea <<New>>
+    +borrarTarea(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarTarea(p_oid: long <<oid>>, p_descripcion: string, p_completada: bool, p_checklist_oid: long <<oid>>): void <<Modifier>>
+    +leerTareaOID(p_oid: long <<oid>>): Tarea <<ReadOID>>
+    +leerTodasTareas(): Tarea[*] <<ReadAll>>
+  }
+
+  class Resena {
+    -id: long <<oid>>
+    -comentario: string
+    -fecha: Date
+    -puntuacion: int
+    --
+    +crearResena(p_comentario: string, p_fecha: Date, p_puntuacion: int, p_viaje_oid: long <<oid>>, p_cliente_oid: long <<oid>>): Resena <<New>>
+    +borrarResena(p_oid: long <<oid>>): void <<Destroy>>
+    +modificarResena(p_oid: long <<oid>>, p_comentario: string, p_fecha: Date, p_puntuacion: int, p_viaje_oid: long <<oid>>, p_cliente_oid: long <<oid>>): void <<Modifier>>
+    +leerResenaOID(p_oid: long <<oid>>): Resena <<ReadOID>>
+    +leerTodasResenas(): Resena[*] <<ReadAll>>
   }
 
   ' Relationships
-  Parada "parada\n0..*" --> "ubicacion\n0..1" Ubicacion
-  Cliente "navigablecontactos\n0..*" --> "contactos\n0..*" Cliente
-  Cliente "clienets\n1" --> "resumenes\n0..*" ResumenAnual
-  Cliente "autor\n1" -- "viajes\n0..*" Viaje
-  Viaje "c\n0..*" --> "compartidoCon\n0..*" Cliente
+  Viaje "viaje\n1" --> "paradas\n0..*" ParadaActividad
+  ParadaActividad "parada\n0..*" --> "ubicacion\n0..1" Ubicacion
+  Viaje "viaje\n0..*" --> "destino\n1" Destino
+  Cliente "contactosInversos\n0..*" -- "contactos\n0..*" Cliente
+  Cliente "clienteEstadisticas\n1" --> "estadisticas\n0..*" Estadisticas
+  Cliente "autor\n1" --> "viajes\n0..*" Viaje
+  Viaje "participante\n0..*" --> "compartidoCon\n0..*" Cliente
+  Viaje "viaje\n1" --> "resenas\n0..*" Resena
+  Cliente "autorResena\n1" --> "resenas\n0..*" Resena
+  Viaje "viaje\n1" --> "carpetas\n0..1" Carpeta
+  Viaje "viaje\n1" --> "collages\n0..1" Collage
+  Carpeta "carpeta\n1" --> "multimedia\n0..*" Multimedia
+  Checklist "propietarioChecklist\n1" --> "checklist\n0..*" Cliente
+  Checklist "checklist\n1" --> "tareas\n0..*" Tarea
+  Recordatorio "destinatarioRecordatorio\n1" --> "recordatorios\n0..*" Cliente
+  Recordatorio "recordatorio\n0..1" --> "tarea\n0..1" Tarea
 }
 @enduml

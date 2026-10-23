@@ -1,6 +1,6 @@
 ConceptualModel ModeloDeDominio_Odyss {
 
-    // ---- Enumeraciones ----
+    //ENUMERACIONES 
     Enumeration EstadoViaje
     {
         (planificado, 1), (enCurso, 2), (finalizado, 3)
@@ -26,7 +26,7 @@ ConceptualModel ModeloDeDominio_Odyss {
         (notificacion, 1), (alarma, 2)
     };
 
-    // ---- Clases ----
+    //CLASES
     Class Cliente <User>
     {
         attributes
@@ -44,12 +44,12 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public crearCliente::New (p_name : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_cliente_oid : OID -> Checklist, p_cliente_oid : OID -> Recordatorio) : Object->Cliente;
+            public crearCliente::New (p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_checklist_oid : OID -> Checklist, p_recordatorio_oid : OID -> Recordatorio) : Object->Cliente;
             public borrarCliente::Destroy (p_oid : OID -> Cliente) : Void;
-            public modificarCliente::Modifier (p_oid : OID -> Cliente, p_name : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_cliente_oid : OID -> Checklist, p_cliente_oid : OID -> Recordatorio) : Void;
+            public modificarCliente::Modifier (p_oid : OID -> Cliente, p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_checklist_oid : OID -> Checklist, p_recordatorio_oid : OID -> Recordatorio) : Void;
             public leerClienteOID::ReadOID (p_oid : OID -> Cliente) : Object->Cliente;
             public leerTodosClientes::ReadAll () : List<Object->Cliente>;
-            public login::Login (p_user : user -> Cliente, p_password : Password) : String;
+            public login::Login (p_user : String, p_password : Password) : String;
         }
     };
 
@@ -262,7 +262,6 @@ ConceptualModel ModeloDeDominio_Odyss {
         }
     };
 
-    
     Class Tarea
     {
         attributes
@@ -303,7 +302,7 @@ ConceptualModel ModeloDeDominio_Odyss {
     };
 
 
-    // ---- Relaciones ----
+    //RELACIONES
     Association ViajeParada (Viaje - ParadaActividad)
     {
         => navigable paradas (0, *);
@@ -327,24 +326,23 @@ ConceptualModel ModeloDeDominio_Odyss {
         => navigable contactos (0, *);
         <= navigable contactosInversos (0, *);
     };
-    
 
     Association ClienteEstadisticas (Cliente - Estadisticas)
     {
         => navigable estadisticas (0, *);
-        <= cliente (1, 1);
+        <= clienteEstadisticas (1, 1);
     };
 
     Association ClienteViaje (Cliente - Viaje)
     {
         => navigable viajes (0, *);
-        <= navigable autor (1, 1);
+        <= autor (1, 1);
     };
 
     Association ViajeCliente (Viaje - Cliente)
     {
         => navigable compartidoCon (0, *);
-        <= cliente (0, *);
+        <= participante (0, *);
     };
 
     Association ViajeResena (Viaje - Resena)
@@ -356,7 +354,7 @@ ConceptualModel ModeloDeDominio_Odyss {
     Association ClienteResena (Cliente - Resena)
     {
         => navigable resenas (0, *);
-        <= cliente (1, 1);
+        <= autorResena (1, 1);
     };
 
     Association ViajeCarpeta (Viaje - Carpeta)
@@ -380,7 +378,7 @@ ConceptualModel ModeloDeDominio_Odyss {
     Association ChecklistCliente (Checklist - Cliente)
     {
         => navigable checklist (0, *);
-        <= cliente (1, 1);
+        <= propietarioChecklist (1, 1);
     };
 
     Association ChecklistTarea (Checklist - Tarea)
@@ -392,7 +390,7 @@ ConceptualModel ModeloDeDominio_Odyss {
     Association RecordatorioCliente (Recordatorio - Cliente)
     {
         => navigable recordatorios (0, *);
-        <= cliente (1, 1);
+        <= destinatarioRecordatorio (1, 1);
     };
 
     Association RecordatorioTarea (Recordatorio - Tarea)

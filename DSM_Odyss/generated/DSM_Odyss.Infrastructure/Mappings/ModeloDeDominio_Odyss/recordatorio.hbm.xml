@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="Recordatorio" table="Recordatorio">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="Titulo" type="String">
+      <column name="titulo" not-null="true"/>
+    </property>
+    <property name="Detalles" type="String">
+      <column name="detalles" not-null="true"/>
+    </property>
+    <property name="Fecha" type="Date">
+      <column name="fecha" sql-type="date" not-null="true"/>
+    </property>
+    <property name="Hora" type="Time">
+      <column name="hora" sql-type="datetime2" not-null="true"/>
+    </property>
+    <property name="TipoAviso" type="DSM_Odyss.Domain.Enums.TipoAviso, DSM_Odyss.Domain">
+      <column name="tipoAviso" not-null="true"/>
+    </property>
+    <property name="Enviado" type="Boolean">
+      <column name="enviado" not-null="true"/>
+    </property>
+    <bag name="Recordatorios">
+      <key>
+        <column name="FK_Recordatorio_recordatorios"/>
+      </key>
+      <one-to-many class="Cliente"/>
+    </bag>
+    <many-to-one name="Tarea" class="Tarea">
+      <column name="FK_Tarea_tarea"/>
+    </many-to-one>
+  </class>
+  <query name="RecordatorioReadAllHQL">from Recordatorio</query>
+</hibernate-mapping>

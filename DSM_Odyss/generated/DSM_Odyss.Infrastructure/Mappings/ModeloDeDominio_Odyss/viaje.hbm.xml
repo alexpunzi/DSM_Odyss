@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="Viaje" table="Viaje">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="Titulo" type="String">
+      <column name="titulo" not-null="true"/>
+    </property>
+    <property name="FechaInicio" type="Date">
+      <column name="fechaInicio" sql-type="date" not-null="true"/>
+    </property>
+    <property name="FechaFin" type="Date">
+      <column name="fechaFin" sql-type="date" not-null="true"/>
+    </property>
+    <property name="EsPublico" type="Boolean">
+      <column name="esPublico" not-null="true"/>
+    </property>
+    <property name="Presupuesto" type="Single">
+      <column name="presupuesto" not-null="true"/>
+    </property>
+    <property name="TipoViaje" type="DSM_Odyss.Domain.Enums.TipoViaje, DSM_Odyss.Domain">
+      <column name="tipoViaje" not-null="true"/>
+    </property>
+    <property name="Estado" type="DSM_Odyss.Domain.Enums.EstadoViaje, DSM_Odyss.Domain">
+      <column name="estado" not-null="true"/>
+    </property>
+    <bag name="Paradas">
+      <key>
+        <column name="FK_Viaje_paradas"/>
+      </key>
+      <one-to-many class="ParadaActividad"/>
+    </bag>
+    <many-to-one name="Destino" class="Destino">
+      <column name="FK_Destino_destino" not-null="true"/>
+    </many-to-one>
+    <bag name="CompartidoCon">
+      <key>
+        <column name="FK_Viaje_compartidoCon"/>
+      </key>
+      <one-to-many class="Cliente"/>
+    </bag>
+    <bag name="Resenas">
+      <key>
+        <column name="FK_Viaje_resenas"/>
+      </key>
+      <one-to-many class="Resena"/>
+    </bag>
+    <many-to-one name="Carpetas" class="Carpeta">
+      <column name="FK_Carpeta_carpetas"/>
+    </many-to-one>
+    <many-to-one name="Collages" class="Collage">
+      <column name="FK_Collage_collages"/>
+    </many-to-one>
+  </class>
+  <query name="ViajeReadAllHQL">from Viaje</query>
+</hibernate-mapping>

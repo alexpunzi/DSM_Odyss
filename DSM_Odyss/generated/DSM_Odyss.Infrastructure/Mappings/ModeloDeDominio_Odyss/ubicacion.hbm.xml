@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="Ubicacion" table="Ubicacion">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="Nombre" type="String">
+      <column name="nombre" not-null="true"/>
+    </property>
+    <property name="Latitud" type="Double">
+      <column name="latitud" not-null="true"/>
+    </property>
+    <property name="Longitud" type="Double">
+      <column name="longitud" not-null="true"/>
+    </property>
+  </class>
+  <query name="UbicacionReadAllHQL">from Ubicacion</query>
+</hibernate-mapping>

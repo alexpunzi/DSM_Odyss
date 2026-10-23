@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="Collage" table="Collage">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="UrlImagen" type="String">
+      <column name="urlImagen" not-null="true"/>
+    </property>
+    <property name="FechaCreacion" type="Date">
+      <column name="fechaCreacion" sql-type="date" not-null="true"/>
+    </property>
+  </class>
+  <query name="CollageReadAllHQL">from Collage</query>
+</hibernate-mapping>

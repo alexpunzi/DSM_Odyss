@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+    <PackageReference Include="NHibernate" Version="5.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DSM_Odyss.Application\DSM_Odyss.Application.csproj" />
+    <ProjectReference Include="..\DSM_Odyss.Domain\DSM_Odyss.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\cliente.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\estadisticas.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\viaje.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\paradaactividad.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\ubicacion.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\destino.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\carpeta.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\multimedia.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\collage.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\recordatorio.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\checklist.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\tarea.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\resena.hbm.xml" />
+  </ItemGroup>
+
+</Project>

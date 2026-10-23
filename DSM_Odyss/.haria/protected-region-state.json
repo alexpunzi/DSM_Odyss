@@ -1,0 +1,24 @@
+{
+  "regionHashes": {
+    "5899abaa9c688f2b0bf9fb80567bc7988a02e78fda33aabd6711bfe1802b5e06": {
+      "contentHash": "5ec9e0232d59a70afa16029487a810da0b1e49e5525c9818ea32206d3d08427d",
+      "used": true,
+      "lineCount": 11
+    },
+    "6a02db30f496d206e3e2e8add66225e57647a26bbdd414bc9477f61be9c80423": {
+      "contentHash": "48b859484b2adb8c47e72d5ba331ead0536717e1440ff4415f40a7b655ffdc02",
+      "used": true,
+      "lineCount": 2
+    },
+    "a8927d3adce5305a82d738687fdb0ce29920f0e0a79a63b77e820ec281241d0b": {
+      "contentHash": "8caa5977085cdd1f9f54471054580b2d9e8b641d290c14c1d81a34fc2baa924c",
+      "used": true,
+      "lineCount": 1
+    },
+    "6c7ed6d24b3a3d15b10da05c9eb5fa8a384495d96cd14031f79eba407e53c584": {
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "used": false,
+      "lineCount": 0
+    }
+  }
+}
