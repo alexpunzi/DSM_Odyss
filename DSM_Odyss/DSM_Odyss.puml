@@ -48,6 +48,9 @@ package "ModeloDeDominio_Odyss" {
     +leerClienteOID(p_oid: long <<oid>>): Cliente <<ReadOID>>
     +leerTodosClientes(): Cliente[*] <<ReadAll>>
     +login(p_user: string, p_password: string <<password>>): string <<Login>>
+    +agregarContacto(p_oid: long <<oid>>, p_contacto_oid: long <<oid>>, p_alias: string): void <<Custom>>
+    +cambiarPassword(p_oid: long <<oid>>, p_oldPass: string <<password>>, p_newPass: string <<password>>): bool <<Custom>>
+    +configurarNotificaciones(p_oid: long <<oid>>, p_canal: CanalNotificacion, p_recibirRecordatorios: bool): void <<Custom>>
   }
 
   class Estadisticas {
@@ -62,6 +65,9 @@ package "ModeloDeDominio_Odyss" {
     +modificarEstadisticas(p_oid: long <<oid>>, p_cliente_oid: long <<oid>>): void <<Modifier>>
     +leerEstadisticasOID(p_oid: long <<oid>>): Estadisticas <<ReadOID>>
     +leerTodasEstadisticas(): Estadisticas[*] <<ReadAll>>
+    +recalcularEstadisticas(p_oid: long <<oid>>): void <<Custom>>
+    +generarPassportRecap(p_oid: long <<oid>>, p_anyo: int): string <<Custom>>
+    +obtenerPaisesColoreados(p_oid: long <<oid>>): string[*] <<Custom>>
   }
 
   class Viaje {
@@ -79,6 +85,10 @@ package "ModeloDeDominio_Odyss" {
     +modificarViaje(p_oid: long <<oid>>, p_titulo: string, p_fechaInicio: Date, p_fechaFin: Date, p_esPublico: bool, p_presupuesto: float, p_tipoViaje: TipoViaje, p_estado: EstadoViaje, p_destino_oid: long <<oid>>, p_autor_oid: long <<oid>>, p_carpetas_oid: long <<oid>>): void <<Modifier>>
     +leerViajeOID(p_oid: long <<oid>>): Viaje <<ReadOID>>
     +leerTodosViajes(): Viaje[*] <<ReadAll>>
+    +compartirItinerario(p_oid: long <<oid>>, p_destinatario_oid: long <<oid>>): void <<Custom>>
+    +publicarItinerario(p_oid: long <<oid>>, p_esPublico: bool): void <<Custom>>
+    +duplicarItinerario(p_oid: long <<oid>>, p_nuevoTitulo: string): Viaje <<Custom>>
+    +cambiarEstadoViaje(p_oid: long <<oid>>, p_nuevoEstado: EstadoViaje): void <<Custom>>
   }
 
   class ParadaActividad {
@@ -94,6 +104,8 @@ package "ModeloDeDominio_Odyss" {
     +modificarParadaActividad(p_oid: long <<oid>>, p_nombre: string, p_dia: int, p_horario: Time, p_completada: bool, p_viaje_oid: long <<oid>>): void <<Modifier>>
     +leerParadaActividadOID(p_oid: long <<oid>>): ParadaActividad <<ReadOID>>
     +leerTodasParadasActividades(): ParadaActividad[*] <<ReadAll>>
+    +marcarActividadCompletada(p_oid: long <<oid>>, p_completada: bool): void <<Custom>>
+    +reordenarHorario(p_oid: long <<oid>>, p_nuevoDia: int, p_nuevoHorario: Time): void <<Custom>>
   }
 
   class Ubicacion {
@@ -107,6 +119,7 @@ package "ModeloDeDominio_Odyss" {
     +modificarUbicacion(p_oid: long <<oid>>, p_nombre: string, p_latitud: double, p_longitud: double): void <<Modifier>>
     +leerUbicacionOID(p_oid: long <<oid>>): Ubicacion <<ReadOID>>
     +leerTodasUbicaciones(): Ubicacion[*] <<ReadAll>>
+    +consultarUbicacionEnMapa(p_oid: long <<oid>>): string <<Custom>>
   }
 
   class Destino {
@@ -130,6 +143,7 @@ package "ModeloDeDominio_Odyss" {
     +modificarCarpeta(p_oid: long <<oid>>, p_nombre: string, p_viaje_oid: long <<oid>>): void <<Modifier>>
     +leerCarpetaOID(p_oid: long <<oid>>): Carpeta <<ReadOID>>
     +leerTodasCarpetas(): Carpeta[*] <<ReadAll>>
+    +compartirCarpeta(p_oid: long <<oid>>, p_cliente_oid: long <<oid>>): void <<Custom>>
   }
 
   class Multimedia {
@@ -144,6 +158,8 @@ package "ModeloDeDominio_Odyss" {
     +modificarMultimedia(p_oid: long <<oid>>, p_tipo: TipoMultimedia, p_nombre: string, p_fechaSubida: Date, p_descripcion: string, p_carpeta_oid: long <<oid>>): void <<Modifier>>
     +leerMultimediaOID(p_oid: long <<oid>>): Multimedia <<ReadOID>>
     +leerTodasMultimdia(): Multimedia[*] <<ReadAll>>
+    +subirContenidoMultimedia(p_carpeta_oid: long <<oid>>, p_tipo: TipoMultimedia, p_nombre: string): Multimedia <<Custom>>
+    +moverDeCarpeta(p_oid: long <<oid>>, p_nuevaCarpeta_oid: long <<oid>>): void <<Custom>>
   }
 
   class Collage {
@@ -156,6 +172,7 @@ package "ModeloDeDominio_Odyss" {
     +modificarCollage(p_oid: long <<oid>>, p_urlImagen: string, p_fechaCreacion: Date, p_viaje_oid: long <<oid>>): void <<Modifier>>
     +leerCollageOID(p_oid: long <<oid>>): Collage <<ReadOID>>
     +leerTodasCollages(): Collage[*] <<ReadAll>>
+    +generarCollageAutomatico(p_viaje_oid: long <<oid>>): Collage <<Custom>>
   }
 
   class Recordatorio {
@@ -172,6 +189,8 @@ package "ModeloDeDominio_Odyss" {
     +modificarRecordatorio(p_oid: long <<oid>>, p_titulo: string, p_detalles: string, p_fecha: Date, p_hora: Time, p_tipoAviso: TipoAviso, p_enviado: bool): void <<Modifier>>
     +leerRecordatorioOID(p_oid: long <<oid>>): Recordatorio <<ReadOID>>
     +leerTodosRecordatorios(): Recordatorio[*] <<ReadAll>>
+    +programarAviso(p_oid: long <<oid>>, p_fecha: Date, p_hora: Time, p_tipo: TipoAviso): void <<Custom>>
+    +enviarNotificacion(p_oid: long <<oid>>): void <<Custom>>
   }
 
   class Checklist <<AggregateRoot>> {
@@ -183,6 +202,7 @@ package "ModeloDeDominio_Odyss" {
     +modificarChecklist(p_oid: long <<oid>>, p_nombre: string): void <<Modifier>>
     +leerChecklistOID(p_oid: long <<oid>>): Checklist <<ReadOID>>
     +leerTodosChecklists(): Checklist[*] <<ReadAll>>
+    +vaciarChecklist(p_oid: long <<oid>>): void <<Custom>>
   }
 
   class Tarea {
@@ -195,6 +215,7 @@ package "ModeloDeDominio_Odyss" {
     +modificarTarea(p_oid: long <<oid>>, p_descripcion: string, p_completada: bool, p_checklist_oid: long <<oid>>): void <<Modifier>>
     +leerTareaOID(p_oid: long <<oid>>): Tarea <<ReadOID>>
     +leerTodasTareas(): Tarea[*] <<ReadAll>>
+    +cambiarEstadoTarea(p_oid: long <<oid>>, p_completada: bool): void <<Custom>>
   }
 
   class Resena {

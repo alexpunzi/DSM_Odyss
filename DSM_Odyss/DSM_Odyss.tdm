@@ -1,6 +1,6 @@
 ConceptualModel ModeloDeDominio_Odyss {
 
-    //ENUMERACIONES 
+    //ENUMERACIONES
     Enumeration EstadoViaje
     {
         (planificado, 1), (enCurso, 2), (finalizado, 3)
@@ -26,7 +26,7 @@ ConceptualModel ModeloDeDominio_Odyss {
         (notificacion, 1), (alarma, 2)
     };
 
-    //CLASES
+    //CLASES 
     Class Cliente <User>
     {
         attributes
@@ -44,16 +44,22 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearCliente::New (p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_checklist_oid : OID -> Checklist, p_recordatorio_oid : OID -> Recordatorio) : Object->Cliente;
             public borrarCliente::Destroy (p_oid : OID -> Cliente) : Void;
             public modificarCliente::Modifier (p_oid : OID -> Cliente, p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_checklist_oid : OID -> Checklist, p_recordatorio_oid : OID -> Recordatorio) : Void;
             public leerClienteOID::ReadOID (p_oid : OID -> Cliente) : Object->Cliente;
             public leerTodosClientes::ReadAll () : List<Object->Cliente>;
             public login::Login (p_user : String, p_password : Password) : String;
+
+
+            public agregarContacto (p_oid : OID -> Cliente, p_contacto_oid : OID -> Cliente, p_alias : String) : Void; 
+            public cambiarPassword (p_oid : OID -> Cliente, p_oldPass : Password, p_newPass : Password) : Boolean;
+            public configurarNotificaciones (p_oid : OID -> Cliente, p_canal : CanalNotificacion, p_recibirRecordatorios : Boolean) : Void; // CU-14
         }
     };
 
-    // Clase para Estadisticas de usuario + Pasport Recap
+    // Clase para Estadisticas de usuario + Passport Recap
     Class Estadisticas
     {
         attributes
@@ -67,11 +73,17 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearEstadisticas::New (p_cliente_oid : OID -> Cliente) : Object->Estadisticas;
             public borrarEstadisticas::Destroy (p_oid : OID -> Estadisticas) : Void;
             public modificarEstadisticas::Modifier (p_oid : OID -> Estadisticas, p_cliente_oid : OID -> Cliente) : Void;
             public leerEstadisticasOID::ReadOID (p_oid : OID -> Estadisticas) : Object->Estadisticas;
             public leerTodasEstadisticas::ReadAll () : List<Object->Estadisticas>;
+
+
+            public recalcularEstadisticas (p_oid : OID -> Estadisticas) : Void; 
+            public generarPassportRecap (p_oid : OID -> Estadisticas, p_anyo : Integer) : String;
+            public obtenerPaisesColoreados (p_oid : OID -> Estadisticas) : List<String>; 
         }
     };
 
@@ -91,11 +103,18 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearViaje::New (p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Object->Viaje;
             public borrarViaje::Destroy (p_oid : OID -> Viaje) : Void;
             public modificarViaje::Modifier (p_oid : OID -> Viaje, p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Void;
             public leerViajeOID::ReadOID (p_oid : OID -> Viaje) : Object->Viaje;
             public leerTodosViajes::ReadAll () : List<Object->Viaje>;
+
+
+            public compartirItinerario (p_oid : OID -> Viaje, p_destinatario_oid : OID -> Cliente) : Void; 
+            public publicarItinerario (p_oid : OID -> Viaje, p_esPublico : Boolean) : Void; 
+            public duplicarItinerario (p_oid : OID -> Viaje, p_nuevoTitulo : String) : Object->Viaje;
+            public cambiarEstadoViaje (p_oid : OID -> Viaje, p_nuevoEstado : EstadoViaje) : Void;
         }
     };
 
@@ -113,15 +132,19 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearParadaActividad::New (p_nombre : String, p_dia : Integer, p_horario : Time, p_completada : Boolean, p_viaje_oid : OID -> Viaje) : Object->ParadaActividad;
             public borrarParadaActividad::Destroy (p_oid : OID -> ParadaActividad) : Void;
             public modificarParadaActividad::Modifier (p_oid : OID -> ParadaActividad, p_nombre : String, p_dia : Integer, p_horario : Time, p_completada : Boolean, p_viaje_oid : OID -> Viaje) : Void;
             public leerParadaActividadOID::ReadOID (p_oid : OID -> ParadaActividad) : Object->ParadaActividad;
             public leerTodasParadasActividades::ReadAll () : List<Object->ParadaActividad>;
+
+
+            public marcarActividadCompletada (p_oid : OID -> ParadaActividad, p_completada : Boolean) : Void;
+            public reordenarHorario (p_oid : OID -> ParadaActividad, p_nuevoDia : Integer, p_nuevoHorario : Time) : Void;
         }
     };
 
-    // Lugar geográfico al que pertenece una parada o actividad.
     Class Ubicacion 
     {
         attributes
@@ -134,15 +157,17 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearUbicacion::New (p_nombre : String, p_latitud : Double, p_longitud : Double) : Object->Ubicacion;
             public borrarUbicacion::Destroy (p_oid : OID -> Ubicacion) : Void;
             public modificarUbicacion::Modifier (p_oid : OID -> Ubicacion, p_nombre : String, p_latitud : Double, p_longitud : Double) : Void;
             public leerUbicacionOID::ReadOID (p_oid : OID -> Ubicacion) : Object->Ubicacion;
             public leerTodasUbicaciones::ReadAll () : List<Object->Ubicacion>;
+
+            public consultarUbicacionEnMapa (p_oid : OID -> Ubicacion) : String; 
         }
     };
 
-    // Destino principal de un viaje (Pais, ciudad)
     Class Destino
     {
         attributes
@@ -154,6 +179,7 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearDestino::New (p_pais : String) : Object->Destino;
             public borrarDestino::Destroy (p_oid : OID -> Destino) : Void;
             public modificarDestino::Modifier (p_oid : OID -> Destino, p_pais : String) : Void;
@@ -172,11 +198,15 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearCarpeta::New (p_nombre : String, p_viaje_oid : OID -> Viaje) : Object->Carpeta;
             public borrarCarpeta::Destroy (p_oid : OID -> Carpeta) : Void;
             public modificarCarpeta::Modifier (p_oid : OID -> Carpeta, p_nombre : String, p_viaje_oid : OID -> Viaje) : Void;
             public leerCarpetaOID::ReadOID (p_oid : OID -> Carpeta) : Object->Carpeta;
             public leerTodasCarpetas::ReadAll () : List<Object->Carpeta>;
+
+
+            public compartirCarpeta (p_oid : OID -> Carpeta, p_cliente_oid : OID -> Cliente) : Void; 
         }
     };
 
@@ -193,11 +223,16 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearMultimedia::New (p_tipo : TipoMultimedia, p_nombre : String, p_fechaSubida : Date, p_descripcion : String, p_carpeta_oid : OID -> Carpeta) : Object->Multimedia;
             public borrarMultimedia::Destroy (p_oid : OID -> Multimedia) : Void;
             public modificarMultimedia::Modifier (p_oid : OID -> Multimedia, p_tipo : TipoMultimedia, p_nombre : String, p_fechaSubida : Date, p_descripcion : String, p_carpeta_oid : OID -> Carpeta) : Void;
             public leerMultimediaOID::ReadOID (p_oid : OID -> Multimedia) : Object->Multimedia;
             public leerTodasMultimdia::ReadAll () : List<Object->Multimedia>;
+
+
+            public subirContenidoMultimedia (p_carpeta_oid : OID -> Carpeta, p_tipo : TipoMultimedia, p_nombre : String) : Object->Multimedia; // CU-07
+            public moverDeCarpeta (p_oid : OID -> Multimedia, p_nuevaCarpeta_oid : OID -> Carpeta) : Void; 
         }
     };
 
@@ -212,11 +247,14 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearCollage::New (p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Object->Collage;
             public borrarCollage::Destroy (p_oid : OID -> Collage) : Void;
             public modificarCollage::Modifier (p_oid : OID -> Collage, p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Void;
             public leerCollageOID::ReadOID (p_oid : OID -> Collage) : Object->Collage;
             public leerTodasCollages::ReadAll () : List<Object->Collage>;
+
+            public generarCollageAutomatico (p_viaje_oid : OID -> Viaje) : Object->Collage; 
         }
     };
 
@@ -240,6 +278,9 @@ ConceptualModel ModeloDeDominio_Odyss {
             public modificarRecordatorio::Modifier (p_oid : OID -> Recordatorio, p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Void;
             public leerRecordatorioOID::ReadOID (p_oid : OID -> Recordatorio) : Object->Recordatorio;
             public leerTodosRecordatorios::ReadAll () : List<Object->Recordatorio>;
+
+            public programarAviso (p_oid : OID -> Recordatorio, p_fecha : Date, p_hora : Time, p_tipo : TipoAviso) : Void; 
+            public enviarNotificacion (p_oid : OID -> Recordatorio) : Void; 
         }
     };
 
@@ -249,16 +290,19 @@ ConceptualModel ModeloDeDominio_Odyss {
         {
             private oid id : Autogenerated (1, 1);
             private nombre: String; 
-             
         }
         
         operations
         {
+
             public crearChecklist::New (p_nombre : String) : Object->Checklist;
             public borrarChecklist::Destroy (p_oid : OID -> Checklist) : Void;
             public modificarChecklist::Modifier (p_oid : OID -> Checklist, p_nombre : String) : Void;
             public leerChecklistOID::ReadOID (p_oid : OID -> Checklist) : Object->Checklist;
             public leerTodosChecklists::ReadAll () : List<Object->Checklist>;
+
+
+            public vaciarChecklist (p_oid : OID -> Checklist) : Void; 
         }
     };
 
@@ -273,11 +317,15 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+   
             public crearTarea::New (p_descripcion : String, p_completada : Boolean, p_checklist_oid : OID -> Checklist) : Object->Tarea;
             public borrarTarea::Destroy (p_oid : OID -> Tarea) : Void;
             public modificarTarea::Modifier (p_oid : OID -> Tarea, p_descripcion : String, p_completada : Boolean, p_checklist_oid : OID -> Checklist) : Void;
             public leerTareaOID::ReadOID (p_oid : OID -> Tarea) : Object->Tarea;
             public leerTodasTareas::ReadAll () : List<Object->Tarea>;
+
+
+            public cambiarEstadoTarea (p_oid : OID -> Tarea, p_completada : Boolean) : Void; 
         }
     };
 
@@ -293,6 +341,7 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
+
             public crearResena::New (p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Object->Resena;
             public borrarResena::Destroy (p_oid : OID -> Resena) : Void;
             public modificarResena::Modifier (p_oid : OID -> Resena, p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Void;
