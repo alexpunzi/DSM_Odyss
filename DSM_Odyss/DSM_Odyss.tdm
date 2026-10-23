@@ -44,11 +44,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_name : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_cliente_oid : OID -> Checklist, p_cliente_oid : OID -> Recordatorio) : Object->Cliente;
-            public destroy::Destroy (p_oid : OID -> Cliente) : Void;
-            public modify::Modifier (p_oid : OID -> Cliente, p_name : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_cliente_oid : OID -> Checklist, p_cliente_oid : OID -> Recordatorio) : Void;
-            public readOID::ReadOID (p_oid : OID -> Cliente) : Object->Cliente;
-            public readAll::ReadAll () : List<Object->Cliente>;
+            public crearCliente::New (p_name : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_cliente_oid : OID -> Checklist, p_cliente_oid : OID -> Recordatorio) : Object->Cliente;
+            public borrarCliente::Destroy (p_oid : OID -> Cliente) : Void;
+            public modificarCliente::Modifier (p_oid : OID -> Cliente, p_name : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_cliente_oid : OID -> Checklist, p_cliente_oid : OID -> Recordatorio) : Void;
+            public leerClienteOID::ReadOID (p_oid : OID -> Cliente) : Object->Cliente;
+            public leerTodosClientes::ReadAll () : List<Object->Cliente>;
         }
     };
 
@@ -66,11 +66,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_cliente_oid : OID -> Cliente) : Object->Estadisticas;
-            public destroy::Destroy (p_oid : OID -> Estadisticas) : Void;
-            public modify::Modifier (p_oid : OID -> Estadisticas, p_cliente_oid : OID -> Cliente) : Void;
-            public readOID::ReadOID (p_oid : OID -> Estadisticas) : Object->Estadisticas;
-            public readAll::ReadAll () : List<Object->Estadisticas>;
+            public crearEstadisticas::New (p_cliente_oid : OID -> Cliente) : Object->Estadisticas;
+            public borrarEstadisticas::Destroy (p_oid : OID -> Estadisticas) : Void;
+            public modificarEstadisticas::Modifier (p_oid : OID -> Estadisticas, p_cliente_oid : OID -> Cliente) : Void;
+            public leerEstadisticasOID::ReadOID (p_oid : OID -> Estadisticas) : Object->Estadisticas;
+            public leerTodasEstadisticas::ReadAll () : List<Object->Estadisticas>;
         }
     };
 
@@ -90,11 +90,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Object->Viaje;
-            public destroy::Destroy (p_oid : OID -> Viaje) : Void;
-            public modify::Modifier (p_oid : OID -> Viaje, p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Void;
-            public readOID::ReadOID (p_oid : OID -> Viaje) : Object->Viaje;
-            public readAll::ReadAll () : List<Object->Viaje>;
+            public crearViaje::New (p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Object->Viaje;
+            public borrarViaje::Destroy (p_oid : OID -> Viaje) : Void;
+            public modificarViaje::Modifier (p_oid : OID -> Viaje, p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Void;
+            public leerViajeOID::ReadOID (p_oid : OID -> Viaje) : Object->Viaje;
+            public leerTodosViajes::ReadAll () : List<Object->Viaje>;
         }
     };
 
@@ -112,11 +112,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_nombre : String, p_dia : Integer, p_horario : Time, p_completada : Boolean, p_viaje_oid : OID -> Viaje) : Object->ParadaActividad;
-            public destroy::Destroy (p_oid : OID -> ParadaActividad) : Void;
-            public modify::Modifier (p_oid : OID -> ParadaActividad, p_nombre : String, p_dia : Integer, p_horario : Time, p_completada : Boolean, p_viaje_oid : OID -> Viaje) : Void;
-            public readOID::ReadOID (p_oid : OID -> ParadaActividad) : Object->ParadaActividad;
-            public readAll::ReadAll () : List<Object->ParadaActividad>;
+            public crearParadaActividad::New (p_nombre : String, p_dia : Integer, p_horario : Time, p_completada : Boolean, p_viaje_oid : OID -> Viaje) : Object->ParadaActividad;
+            public borrarParadaActividad::Destroy (p_oid : OID -> ParadaActividad) : Void;
+            public modificarParadaActividad::Modifier (p_oid : OID -> ParadaActividad, p_nombre : String, p_dia : Integer, p_horario : Time, p_completada : Boolean, p_viaje_oid : OID -> Viaje) : Void;
+            public leerParadaActividadOID::ReadOID (p_oid : OID -> ParadaActividad) : Object->ParadaActividad;
+            public leerTodasParadasActividades::ReadAll () : List<Object->ParadaActividad>;
         }
     };
 
@@ -133,11 +133,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_nombre : String, p_latitud : Double, p_longitud : Double) : Object->Ubicacion;
-            public destroy::Destroy (p_oid : OID -> Ubicacion) : Void;
-            public modify::Modifier (p_oid : OID -> Ubicacion, p_nombre : String, p_latitud : Double, p_longitud : Double) : Void;
-            public readOID::ReadOID (p_oid : OID -> Ubicacion) : Object->Ubicacion;
-            public readAll::ReadAll () : List<Object->Ubicacion>;
+            public crearUbicacion::New (p_nombre : String, p_latitud : Double, p_longitud : Double) : Object->Ubicacion;
+            public borrarUbicacion::Destroy (p_oid : OID -> Ubicacion) : Void;
+            public modificarUbicacion::Modifier (p_oid : OID -> Ubicacion, p_nombre : String, p_latitud : Double, p_longitud : Double) : Void;
+            public leerUbicacionOID::ReadOID (p_oid : OID -> Ubicacion) : Object->Ubicacion;
+            public leerTodasUbicaciones::ReadAll () : List<Object->Ubicacion>;
         }
     };
 
@@ -153,11 +153,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_pais : String) : Object->Destino;
-            public destroy::Destroy (p_oid : OID -> Destino) : Void;
-            public modify::Modifier (p_oid : OID -> Destino, p_pais : String) : Void;
-            public readOID::ReadOID (p_oid : OID -> Destino) : Object->Destino;
-            public readAll::ReadAll () : List<Object->Destino>;
+            public crearDestino::New (p_pais : String) : Object->Destino;
+            public borrarDestino::Destroy (p_oid : OID -> Destino) : Void;
+            public modificarDestino::Modifier (p_oid : OID -> Destino, p_pais : String) : Void;
+            public leerDestinoOID::ReadOID (p_oid : OID -> Destino) : Object->Destino;
+            public leerTodasDestinos::ReadAll () : List<Object->Destino>;
         }
     };
 
@@ -171,11 +171,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_nombre : String, p_viaje_oid : OID -> Viaje) : Object->Carpeta;
-            public destroy::Destroy (p_oid : OID -> Carpeta) : Void;
-            public modify::Modifier (p_oid : OID -> Carpeta, p_nombre : String, p_viaje_oid : OID -> Viaje) : Void;
-            public readOID::ReadOID (p_oid : OID -> Carpeta) : Object->Carpeta;
-            public readAll::ReadAll () : List<Object->Carpeta>;
+            public crearCarpeta::New (p_nombre : String, p_viaje_oid : OID -> Viaje) : Object->Carpeta;
+            public borrarCarpeta::Destroy (p_oid : OID -> Carpeta) : Void;
+            public modificarCarpeta::Modifier (p_oid : OID -> Carpeta, p_nombre : String, p_viaje_oid : OID -> Viaje) : Void;
+            public leerCarpetaOID::ReadOID (p_oid : OID -> Carpeta) : Object->Carpeta;
+            public leerTodasCarpetas::ReadAll () : List<Object->Carpeta>;
         }
     };
 
@@ -192,11 +192,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_tipo : TipoMultimedia, p_nombre : String, p_fechaSubida : Date, p_descripcion : String, p_carpeta_oid : OID -> Carpeta) : Object->Multimedia;
-            public destroy::Destroy (p_oid : OID -> Multimedia) : Void;
-            public modify::Modifier (p_oid : OID -> Multimedia, p_tipo : TipoMultimedia, p_nombre : String, p_fechaSubida : Date, p_descripcion : String, p_carpeta_oid : OID -> Carpeta) : Void;
-            public readOID::ReadOID (p_oid : OID -> Multimedia) : Object->Multimedia;
-            public readAll::ReadAll () : List<Object->Multimedia>;
+            public crearMultimedia::New (p_tipo : TipoMultimedia, p_nombre : String, p_fechaSubida : Date, p_descripcion : String, p_carpeta_oid : OID -> Carpeta) : Object->Multimedia;
+            public borrarMultimedia::Destroy (p_oid : OID -> Multimedia) : Void;
+            public modificarMultimedia::Modifier (p_oid : OID -> Multimedia, p_tipo : TipoMultimedia, p_nombre : String, p_fechaSubida : Date, p_descripcion : String, p_carpeta_oid : OID -> Carpeta) : Void;
+            public leerMultimediaOID::ReadOID (p_oid : OID -> Multimedia) : Object->Multimedia;
+            public leerTodasMultimdia::ReadAll () : List<Object->Multimedia>;
         }
     };
 
@@ -211,11 +211,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Object->Collage;
-            public destroy::Destroy (p_oid : OID -> Collage) : Void;
-            public modify::Modifier (p_oid : OID -> Collage, p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Void;
-            public readOID::ReadOID (p_oid : OID -> Collage) : Object->Collage;
-            public readAll::ReadAll () : List<Object->Collage>;
+            public crearCollage::New (p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Object->Collage;
+            public borrarCollage::Destroy (p_oid : OID -> Collage) : Void;
+            public modificarCollage::Modifier (p_oid : OID -> Collage, p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Void;
+            public leerCollageOID::ReadOID (p_oid : OID -> Collage) : Object->Collage;
+            public leerTodasCollages::ReadAll () : List<Object->Collage>;
         }
     };
 
@@ -234,11 +234,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Object->Recordatorio;
-            public destroy::Destroy (p_oid : OID -> Recordatorio) : Void;
-            public modify::Modifier (p_oid : OID -> Recordatorio, p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Void;
-            public readOID::ReadOID (p_oid : OID -> Recordatorio) : Object->Recordatorio;
-            public readAll::ReadAll () : List<Object->Recordatorio>;
+            public crearRecordatorio::New (p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Object->Recordatorio;
+            public borrarRecordatorio::Destroy (p_oid : OID -> Recordatorio) : Void;
+            public modificarRecordatorio::Modifier (p_oid : OID -> Recordatorio, p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Void;
+            public leerRecordatorioOID::ReadOID (p_oid : OID -> Recordatorio) : Object->Recordatorio;
+            public leerTodosRecordatorios::ReadAll () : List<Object->Recordatorio>;
         }
     };
 
@@ -253,11 +253,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_nombre : String) : Object->Checklist;
-            public destroy::Destroy (p_oid : OID -> Checklist) : Void;
-            public modify::Modifier (p_oid : OID -> Checklist, p_nombre : String) : Void;
-            public readOID::ReadOID (p_oid : OID -> Checklist) : Object->Checklist;
-            public readAll::ReadAll () : List<Object->Checklist>;
+            public crearChecklist::New (p_nombre : String) : Object->Checklist;
+            public borrarChecklist::Destroy (p_oid : OID -> Checklist) : Void;
+            public modificarChecklist::Modifier (p_oid : OID -> Checklist, p_nombre : String) : Void;
+            public leerChecklistOID::ReadOID (p_oid : OID -> Checklist) : Object->Checklist;
+            public leerTodosChecklists::ReadAll () : List<Object->Checklist>;
         }
     };
 
@@ -273,11 +273,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_descripcion : String, p_completada : Boolean, p_checklist_oid : OID -> Checklist) : Object->Tarea;
-            public destroy::Destroy (p_oid : OID -> Tarea) : Void;
-            public modify::Modifier (p_oid : OID -> Tarea, p_descripcion : String, p_completada : Boolean, p_checklist_oid : OID -> Checklist) : Void;
-            public readOID::ReadOID (p_oid : OID -> Tarea) : Object->Tarea;
-            public readAll::ReadAll () : List<Object->Tarea>;
+            public crearTarea::New (p_descripcion : String, p_completada : Boolean, p_checklist_oid : OID -> Checklist) : Object->Tarea;
+            public borrarTarea::Destroy (p_oid : OID -> Tarea) : Void;
+            public modificarTarea::Modifier (p_oid : OID -> Tarea, p_descripcion : String, p_completada : Boolean, p_checklist_oid : OID -> Checklist) : Void;
+            public leerTareaOID::ReadOID (p_oid : OID -> Tarea) : Object->Tarea;
+            public leerTodasTareas::ReadAll () : List<Object->Tarea>;
         }
     };
 
@@ -293,11 +293,11 @@ ConceptualModel ModeloDeDominio_Odyss {
         
         operations
         {
-            public new::New (p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Object->Resena;
-            public destroy::Destroy (p_oid : OID -> Resena) : Void;
-            public modify::Modifier (p_oid : OID -> Resena, p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Void;
-            public readOID::ReadOID (p_oid : OID -> Resena) : Object->Resena;
-            public readAll::ReadAll () : List<Object->Resena>;
+            public crearResena::New (p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Object->Resena;
+            public borrarResena::Destroy (p_oid : OID -> Resena) : Void;
+            public modificarResena::Modifier (p_oid : OID -> Resena, p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Void;
+            public leerResenaOID::ReadOID (p_oid : OID -> Resena) : Object->Resena;
+            public leerTodasResenas::ReadAll () : List<Object->Resena>;
         }
     };
 
