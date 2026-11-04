@@ -53,9 +53,9 @@ ConceptualModel ModeloDeDominio_Odyss {
             public login::Login (p_user : String, p_password : Password) : String;
 
 
-            public agregarContacto (p_oid : OID -> Cliente, p_contacto_oid : OID -> Cliente, p_alias : String) : Void; 
-            public cambiarPassword (p_oid : OID -> Cliente, p_oldPass : Password, p_newPass : Password) : Boolean;
-            public configurarNotificaciones (p_oid : OID -> Cliente, p_canal : CanalNotificacion, p_recibirRecordatorios : Boolean) : Void; // CU-14
+            public agregarContacto::Custom (p_oid : OID -> Cliente, p_contacto_oid : OID -> Cliente, p_alias : String) : Void; 
+            public cambiarPassword::Custom (p_oid : OID -> Cliente, p_oldPass : Password, p_newPass : Password) : Boolean;
+            public configurarNotificaciones::Custom (p_oid : OID -> Cliente, p_canal : CanalNotificacion, p_recibirRecordatorios : Boolean) : Void; // CU-14
         }
     };
 
@@ -81,9 +81,9 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodasEstadisticas::ReadAll () : List<Object->Estadisticas>;
 
 
-            public recalcularEstadisticas (p_oid : OID -> Estadisticas) : Void; 
-            public generarPassportRecap (p_oid : OID -> Estadisticas, p_anyo : Integer) : String;
-            public obtenerPaisesColoreados (p_oid : OID -> Estadisticas) : List<String>; 
+            public recalcularEstadisticas::Custom (p_oid : OID -> Estadisticas) : Void; 
+            public generarPassportRecap::Custom (p_oid : OID -> Estadisticas, p_anyo : Integer) : String;
+            public obtenerPaisesColoreados::Custom (p_oid : OID -> Estadisticas) : List<String>; 
         }
     };
 
@@ -111,10 +111,10 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodosViajes::ReadAll () : List<Object->Viaje>;
 
 
-            public compartirItinerario (p_oid : OID -> Viaje, p_destinatario_oid : OID -> Cliente) : Void; 
-            public publicarItinerario (p_oid : OID -> Viaje, p_esPublico : Boolean) : Void; 
-            public duplicarItinerario (p_oid : OID -> Viaje, p_nuevoTitulo : String) : Object->Viaje;
-            public cambiarEstadoViaje (p_oid : OID -> Viaje, p_nuevoEstado : EstadoViaje) : Void;
+            public compartirItinerario::Custom (p_oid : OID -> Viaje, p_destinatario_oid : OID -> Cliente) : Void; 
+            public publicarItinerario::Custom (p_oid : OID -> Viaje, p_esPublico : Boolean) : Void; 
+            public duplicarItinerario::Custom (p_oid : OID -> Viaje, p_nuevoTitulo : String) : Object->Viaje;
+            public cambiarEstadoViaje::Custom (p_oid : OID -> Viaje, p_nuevoEstado : EstadoViaje) : Void;
         }
     };
 
@@ -140,8 +140,8 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodasParadasActividades::ReadAll () : List<Object->ParadaActividad>;
 
 
-            public marcarActividadCompletada (p_oid : OID -> ParadaActividad, p_completada : Boolean) : Void;
-            public reordenarHorario (p_oid : OID -> ParadaActividad, p_nuevoDia : Integer, p_nuevoHorario : Time) : Void;
+            public marcarActividadCompletada::Custom (p_oid : OID -> ParadaActividad, p_completada : Boolean) : Void;
+            public reordenarHorario::Custom (p_oid : OID -> ParadaActividad, p_nuevoDia : Integer, p_nuevoHorario : Time) : Void;
         }
     };
 
@@ -164,7 +164,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerUbicacionOID::ReadOID (p_oid : OID -> Ubicacion) : Object->Ubicacion;
             public leerTodasUbicaciones::ReadAll () : List<Object->Ubicacion>;
 
-            public consultarUbicacionEnMapa (p_oid : OID -> Ubicacion) : String; 
+            public consultarUbicacionEnMapa::Custom (p_oid : OID -> Ubicacion) : String; 
         }
     };
 
@@ -206,7 +206,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodasCarpetas::ReadAll () : List<Object->Carpeta>;
 
 
-            public compartirCarpeta (p_oid : OID -> Carpeta, p_cliente_oid : OID -> Cliente) : Void; 
+            public compartirCarpeta::Custom (p_oid : OID -> Carpeta, p_cliente_oid : OID -> Cliente) : Void; 
         }
     };
 
@@ -231,8 +231,8 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodasMultimdia::ReadAll () : List<Object->Multimedia>;
 
 
-            public subirContenidoMultimedia (p_carpeta_oid : OID -> Carpeta, p_tipo : TipoMultimedia, p_nombre : String) : Object->Multimedia; // CU-07
-            public moverDeCarpeta (p_oid : OID -> Multimedia, p_nuevaCarpeta_oid : OID -> Carpeta) : Void; 
+            public subirContenidoMultimedia::Custom (p_carpeta_oid : OID -> Carpeta, p_tipo : TipoMultimedia, p_nombre : String) : Object->Multimedia; // CU-07
+            public moverDeCarpeta::Custom (p_oid : OID -> Multimedia, p_nuevaCarpeta_oid : OID -> Carpeta) : Void; 
         }
     };
 
@@ -254,7 +254,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerCollageOID::ReadOID (p_oid : OID -> Collage) : Object->Collage;
             public leerTodasCollages::ReadAll () : List<Object->Collage>;
 
-            public generarCollageAutomatico (p_viaje_oid : OID -> Viaje) : Object->Collage; 
+            public generarCollageAutomatico::Custom (p_viaje_oid : OID -> Viaje) : Object->Collage; 
         }
     };
 
@@ -279,8 +279,8 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerRecordatorioOID::ReadOID (p_oid : OID -> Recordatorio) : Object->Recordatorio;
             public leerTodosRecordatorios::ReadAll () : List<Object->Recordatorio>;
 
-            public programarAviso (p_oid : OID -> Recordatorio, p_fecha : Date, p_hora : Time, p_tipo : TipoAviso) : Void; 
-            public enviarNotificacion (p_oid : OID -> Recordatorio) : Void; 
+            public programarAviso::Custom (p_oid : OID -> Recordatorio, p_fecha : Date, p_hora : Time, p_tipo : TipoAviso) : Void; 
+            public enviarNotificacion::Custom (p_oid : OID -> Recordatorio) : Void; 
         }
     };
 
@@ -302,7 +302,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodosChecklists::ReadAll () : List<Object->Checklist>;
 
 
-            public vaciarChecklist (p_oid : OID -> Checklist) : Void; 
+            public vaciarChecklist::Custom (p_oid : OID -> Checklist) : Void; 
         }
     };
 
@@ -325,7 +325,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodasTareas::ReadAll () : List<Object->Tarea>;
 
 
-            public cambiarEstadoTarea (p_oid : OID -> Tarea, p_completada : Boolean) : Void; 
+            public cambiarEstadoTarea::Custom (p_oid : OID -> Tarea, p_completada : Boolean) : Void; 
         }
     };
 
