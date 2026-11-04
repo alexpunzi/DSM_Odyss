@@ -21,8 +21,14 @@
     <property name="Completada" type="Boolean">
       <column name="completada" not-null="true"/>
     </property>
+    <many-to-one name="Viaje" class="Viaje">
+      <column name="FK_Viaje_viaje" not-null="true"/>
+    </many-to-one>
     <many-to-one name="Ubicacion" class="Ubicacion">
       <column name="FK_Ubicacion_ubicacion"/>
+    </many-to-one>
+    <many-to-one name="ParadaDestino" class="ParadaDestino">
+      <column name="FK_ParadaDestino_paradaDestino"/>
     </many-to-one>
   </class>
   <query name="ParadaActividadReadAllHQL">from ParadaActividad</query>

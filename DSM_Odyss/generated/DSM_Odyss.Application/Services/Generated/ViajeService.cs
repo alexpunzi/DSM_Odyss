@@ -41,11 +41,8 @@ public sealed partial class ViajeService : ServiceEntity<Viaje>
     public Task<Viaje> ModifierViajeDefaultAsync(Viaje entity) =>
         ModifierDefaultAsync(entity);
 
-    public async Task<Viaje> CrearViajeAsync(string p_titulo, DateTime p_fechaInicio, DateTime p_fechaFin, bool p_esPublico, float p_presupuesto, TipoViaje p_tipoViaje, EstadoViaje p_estado, int p_destino_oid, int p_autor_oid, int p_carpetas_oid)
+    public async Task<Viaje> CrearViajeAsync(string p_titulo, DateTime p_fechaInicio, DateTime p_fechaFin, bool p_esPublico, float p_presupuesto, TipoViaje p_tipoViaje, EstadoViaje p_estado, int p_autor_oid, int p_carpetas_oid)
     {
-        Destino destinoEntity = await _unitOfWork.DestinoRepository.ReadAsync(p_destino_oid)
-            ?? throw new ModelException("Destino not found for Viaje.Destino.");
-
         Viaje entity = new Viaje
         {
             Titulo = p_titulo,
@@ -55,7 +52,6 @@ public sealed partial class ViajeService : ServiceEntity<Viaje>
             Presupuesto = p_presupuesto,
             TipoViaje = p_tipoViaje,
             Estado = p_estado,
-            Destino = destinoEntity,
         };
 
         await _repository.SaveAsync(entity);
@@ -69,7 +65,7 @@ public sealed partial class ViajeService : ServiceEntity<Viaje>
         await _repository.DeleteAsync(entity);
     }
 
-    public async Task ModificarViajeAsync(int p_oid, string p_titulo, DateTime p_fechaInicio, DateTime p_fechaFin, bool p_esPublico, float p_presupuesto, TipoViaje p_tipoViaje, EstadoViaje p_estado, int p_destino_oid, int p_autor_oid, int p_carpetas_oid)
+    public async Task ModificarViajeAsync(int p_oid, string p_titulo, DateTime p_fechaInicio, DateTime p_fechaFin, bool p_esPublico, float p_presupuesto, TipoViaje p_tipoViaje, EstadoViaje p_estado, int p_autor_oid, int p_carpetas_oid)
     {
         Viaje entity = await _repository.ReadAsync(p_oid)
             ?? throw new ModelException("Viaje not found.");
@@ -91,6 +87,125 @@ public sealed partial class ViajeService : ServiceEntity<Viaje>
     public async Task<IReadOnlyList<Viaje>> LeerTodosViajesAsync()
     {
         return await _repository.ReadAllAsync();
+    }
+
+    public async Task<IReadOnlyList<Viaje>> ViajesPublicosAsync()
+    {
+        return await _repository.ViajesPublicosAsync();
+    }
+
+    public async Task<IReadOnlyList<Viaje>> ViajesPorEstadoAsync(EstadoViaje p_estado)
+    {
+        return await _repository.ViajesPorEstadoAsync(p_estado);
+    }
+
+    public async Task AgregarParadaAsync(int p_oid, IReadOnlyList<int> p_paradas_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        entity.Paradas ??= new List<ParadaActividad>();
+        foreach (var relatedId in p_paradas_oid)
+        {
+            ParadaActividad relatedEntity = await _unitOfWork.ParadaActividadRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("ParadaActividad not found for Viaje.Paradas.");
+            if (!entity.Paradas.Contains(relatedEntity))
+            {
+                entity.Paradas.Add(relatedEntity);
+            }
+            relatedEntity.Viaje = entity;
+            await _unitOfWork.ParadaActividadRepository.SaveAsync(relatedEntity);
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AgregarParadaDestinoAsync(int p_oid, IReadOnlyList<int> p_paradasDestino_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        entity.ParadasDestino ??= new List<ParadaDestino>();
+        foreach (var relatedId in p_paradasDestino_oid)
+        {
+            ParadaDestino relatedEntity = await _unitOfWork.ParadaDestinoRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("ParadaDestino not found for Viaje.ParadasDestino.");
+            if (!entity.ParadasDestino.Contains(relatedEntity))
+            {
+                entity.ParadasDestino.Add(relatedEntity);
+            }
+            relatedEntity.Viaje = entity;
+            await _unitOfWork.ParadaDestinoRepository.SaveAsync(relatedEntity);
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task CompartirConClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        entity.CompartidoCon ??= new List<Cliente>();
+        foreach (var relatedId in p_clientes_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Viaje.CompartidoCon.");
+            if (!entity.CompartidoCon.Contains(relatedEntity))
+            {
+                entity.CompartidoCon.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task DejarDeCompartirConClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        entity.CompartidoCon ??= new List<Cliente>();
+        foreach (var relatedId in p_clientes_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Viaje.CompartidoCon.");
+            if (!entity.CompartidoCon.Remove(relatedEntity))
+            {
+                throw new ModelException("Cliente is not related to Viaje.CompartidoCon.");
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AgregarResenaAsync(int p_oid, IReadOnlyList<int> p_resenas_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        entity.Resenas ??= new List<Resena>();
+        foreach (var relatedId in p_resenas_oid)
+        {
+            Resena relatedEntity = await _unitOfWork.ResenaRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Resena not found for Viaje.Resenas.");
+            if (!entity.Resenas.Contains(relatedEntity))
+            {
+                entity.Resenas.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AsignarCarpetaAsync(int p_oid, int p_carpeta_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        Carpeta relatedEntity = await _unitOfWork.CarpetaRepository.ReadAsync(p_carpeta_oid)
+            ?? throw new ModelException("Carpeta not found for Viaje.Carpetas.");
+        entity.Carpetas = relatedEntity;
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AsignarCollageAsync(int p_oid, int p_collage_oid)
+    {
+        Viaje entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        Collage relatedEntity = await _unitOfWork.CollageRepository.ReadAsync(p_collage_oid)
+            ?? throw new ModelException("Collage not found for Viaje.Collages.");
+        entity.Collages = relatedEntity;
+        await _repository.SaveAsync(entity);
     }
 
 }

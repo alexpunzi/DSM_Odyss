@@ -81,4 +81,9 @@ public sealed partial class UbicacionService : ServiceEntity<Ubicacion>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Ubicacion>> ConNombreAsync(string p_nombre)
+    {
+        return await _repository.ConNombreAsync(p_nombre);
+    }
+
 }

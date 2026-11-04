@@ -21,6 +21,13 @@ public sealed partial class ViajeService
 
         Viaje original = await _repository.ReadAsync(p_oid)
             ?? throw new ModelException("Viaje not found.");
+        IReadOnlyList<ParadaDestino> paradasOriginales =
+            await _unitOfWork.ParadaDestinoRepository.PorViajeAsync(original.Id);
+        IReadOnlyList<ParadaActividad> actividadesOriginales =
+            await _unitOfWork.ParadaActividadRepository.ReadAllAsync();
+        ParadaActividad[] actividadesDelViaje = actividadesOriginales
+            .Where(actividad => actividad.Viaje.Id == original.Id)
+            .ToArray();
         Viaje duplicado = new Viaje
         {
             Titulo = p_nuevoTitulo.Trim(),
@@ -30,22 +37,55 @@ public sealed partial class ViajeService
             Presupuesto = original.Presupuesto,
             TipoViaje = original.TipoViaje,
             Estado = EstadoViaje.planificado,
-            Destino = original.Destino,
-            Paradas = original.Paradas
-                .Select(actividad => new ParadaActividad
-                {
-                    Nombre = actividad.Nombre,
-                    Dia = actividad.Dia,
-                    Horario = actividad.Horario,
-                    Detalles = actividad.Detalles,
-                    Completada = false,
-                    Ubicacion = actividad.Ubicacion,
-                })
-                .ToList(),
         };
 
         // A duplicate is a new private plan: it keeps itinerary data, not collaborators or memories.
         await _repository.SaveAsync(duplicado);
+        foreach (ParadaDestino paradaOriginal in paradasOriginales.OrderBy(parada => parada.Orden))
+        {
+            ParadaDestino paradaDuplicada = new()
+            {
+                Orden = paradaOriginal.Orden,
+                FechaLlegada = paradaOriginal.FechaLlegada,
+                FechaSalida = paradaOriginal.FechaSalida,
+                Viaje = duplicado,
+                Destino = paradaOriginal.Destino,
+            };
+            await _unitOfWork.ParadaDestinoRepository.SaveAsync(paradaDuplicada);
+
+            foreach (ParadaActividad actividadOriginal in actividadesDelViaje
+                         .Where(actividad => actividad.ParadaDestino?.Id == paradaOriginal.Id))
+            {
+                ParadaActividad actividadDuplicada = new()
+                {
+                    Nombre = actividadOriginal.Nombre,
+                    Dia = actividadOriginal.Dia,
+                    Horario = actividadOriginal.Horario,
+                    Detalles = actividadOriginal.Detalles,
+                    Completada = false,
+                    Viaje = duplicado,
+                    Ubicacion = actividadOriginal.Ubicacion,
+                    ParadaDestino = paradaDuplicada,
+                };
+                await _unitOfWork.ParadaActividadRepository.SaveAsync(actividadDuplicada);
+            }
+        }
+
+        foreach (ParadaActividad actividadOriginal in actividadesDelViaje
+                     .Where(actividad => actividad.ParadaDestino is null))
+        {
+            await _unitOfWork.ParadaActividadRepository.SaveAsync(new ParadaActividad
+            {
+                Nombre = actividadOriginal.Nombre,
+                Dia = actividadOriginal.Dia,
+                Horario = actividadOriginal.Horario,
+                Detalles = actividadOriginal.Detalles,
+                Completada = false,
+                Viaje = duplicado,
+                Ubicacion = actividadOriginal.Ubicacion,
+            });
+        }
+
         return duplicado;
         /*PROTECTED REGION END*/
     }

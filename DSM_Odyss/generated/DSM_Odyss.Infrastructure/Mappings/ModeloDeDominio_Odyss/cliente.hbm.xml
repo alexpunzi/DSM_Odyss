@@ -60,6 +60,12 @@
       </key>
       <one-to-many class="Resena"/>
     </bag>
+    <bag name="CarpetasCompartidas">
+      <key>
+        <column name="FK_Cliente_carpetasCompartidas"/>
+      </key>
+      <one-to-many class="Carpeta"/>
+    </bag>
   </class>
   <query name="ClienteReadAllHQL">from Cliente</query>
 </hibernate-mapping>

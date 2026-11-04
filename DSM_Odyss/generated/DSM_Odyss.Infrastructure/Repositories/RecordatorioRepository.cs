@@ -70,5 +70,19 @@ public sealed class RecordatorioRepository : RepositoryBase<Recordatorio>, IReco
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Recordatorio>> PendientesAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Recordatorio>()
+                .Where(entity => !entity.Enviado)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Recordatorio.pendientes.");
+            throw new DataException("Error executing ReadFilter Recordatorio.pendientes.", ex);
+        }
+    }
 }

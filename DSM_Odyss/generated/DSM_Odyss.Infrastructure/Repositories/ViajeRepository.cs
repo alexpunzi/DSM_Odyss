@@ -70,5 +70,35 @@ public sealed class ViajeRepository : RepositoryBase<Viaje>, IViajeRepository
             $"Error deleting {EntityName} entity.");
     }
 
+    public async Task<IReadOnlyList<Viaje>> ViajesPublicosAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Viaje>()
+                .Where(entity => entity.EsPublico)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Viaje.viajesPublicos.");
+            throw new DataException("Error executing ReadFilter Viaje.viajesPublicos.", ex);
+        }
+    }
 
+    public async Task<IReadOnlyList<Viaje>> ViajesPorEstadoAsync(EstadoViaje p_estado)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Viaje>()
+                .Where(entity => entity.Estado == p_estado)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Viaje.viajesPorEstado.");
+            throw new DataException("Error executing ReadFilter Viaje.viajesPorEstado.", ex);
+        }
+    }
 }

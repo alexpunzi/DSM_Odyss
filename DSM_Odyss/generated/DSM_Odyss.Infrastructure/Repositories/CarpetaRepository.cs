@@ -70,5 +70,19 @@ public sealed class CarpetaRepository : RepositoryBase<Carpeta>, ICarpetaReposit
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Carpeta>> ConMultimediaAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Carpeta>()
+                .Where(entity => entity.Multimedia.Any())
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Carpeta.conMultimedia.");
+            throw new DataException("Error executing ReadFilter Carpeta.conMultimedia.", ex);
+        }
+    }
 }

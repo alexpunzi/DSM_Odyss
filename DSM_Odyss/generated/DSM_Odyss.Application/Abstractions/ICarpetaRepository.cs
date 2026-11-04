@@ -4,4 +4,5 @@ namespace DSM_Odyss.Application.Abstractions;
 
 public interface ICarpetaRepository : IRepository<Carpeta>
 {
+    Task<IReadOnlyList<Carpeta>> ConMultimediaAsync();
 }

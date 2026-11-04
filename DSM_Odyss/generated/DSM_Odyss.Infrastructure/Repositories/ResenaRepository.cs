@@ -70,5 +70,19 @@ public sealed class ResenaRepository : RepositoryBase<Resena>, IResenaRepository
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Resena>> ConPuntuacionMinimaAsync(int p_puntuacion)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Resena>()
+                .Where(entity => entity.Puntuacion >= p_puntuacion)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Resena.conPuntuacionMinima.");
+            throw new DataException("Error executing ReadFilter Resena.conPuntuacionMinima.", ex);
+        }
+    }
 }

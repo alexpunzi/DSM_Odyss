@@ -28,15 +28,20 @@ public static class SeedData
 
             // TODO: No seed generated for Estadisticas; one or more New arguments reference classes that were not seeded yet.
 
+            // TODO: No seed generated for Viaje; one or more New arguments reference classes that were not seeded yet.
+
+            // TODO: Set required relationship ParadaActividad.Viaje manually; it could not be ordered automatically.
             // TODO: No seed generated for ParadaActividad; one or more New arguments reference classes that were not seeded yet.
 
             var ubicacionService = new UbicacionService(unitOfWorkFactory);
-            var sampleUbicacion = await ubicacionService.CrearUbicacionAsync("Sample Ubicacion Nombre", 5.5, 5.5);
+            var sampleUbicacion = await ubicacionService.CrearUbicacionAsync("Sample Ubicacion Nombre", 6.5, 6.5);
             var sampleUbicacionReadBack = await ubicacionService.LeerUbicacionOIDAsync(sampleUbicacion.Id);
             Ensure(sampleUbicacionReadBack is not null, "Ubicacion read by OID returns the generated entity.");
             var sampleUbicacionReadAll = await ubicacionService.LeerTodasUbicacionesAsync();
             Ensure(sampleUbicacionReadAll.Count > 0, "Ubicacion read all returns generated data.");
-            await ubicacionService.ModificarUbicacionAsync(sampleUbicacion.Id, "Sample Ubicacion Nombre", 5.5, 5.5);
+            var sampleUbicacionConNombreResult = await ubicacionService.ConNombreAsync("Sample Ubicacion Nombre");
+            Ensure(sampleUbicacionConNombreResult is not null, "Ubicacion.conNombre filter executes.");
+            await ubicacionService.ModificarUbicacionAsync(sampleUbicacion.Id, "Sample Ubicacion Nombre", 6.5, 6.5);
             Ensure(await ubicacionService.LeerUbicacionOIDAsync(sampleUbicacion.Id) is not null, "Ubicacion modify keeps the entity readable.");
 
             var destinoService = new DestinoService(unitOfWorkFactory);
@@ -45,6 +50,8 @@ public static class SeedData
             Ensure(sampleDestinoReadBack is not null, "Destino read by OID returns the generated entity.");
             var sampleDestinoReadAll = await destinoService.LeerTodasDestinosAsync();
             Ensure(sampleDestinoReadAll.Count > 0, "Destino read all returns generated data.");
+            var sampleDestinoPorPaisResult = await destinoService.PorPaisAsync("Sample Destino Pais");
+            Ensure(sampleDestinoPorPaisResult is not null, "Destino.porPais filter executes.");
             await destinoService.ModificarDestinoAsync(sampleDestino.Id, "Sample Destino Pais");
             Ensure(await destinoService.LeerDestinoOIDAsync(sampleDestino.Id) is not null, "Destino modify keeps the entity readable.");
 
@@ -55,12 +62,14 @@ public static class SeedData
             // TODO: No seed generated for Collage; one or more New arguments reference classes that were not seeded yet.
 
             var recordatorioService = new RecordatorioService(unitOfWorkFactory);
-            var sampleRecordatorio = await recordatorioService.CrearRecordatorioAsync("Sample Recordatorio Titulo", "Sample Recordatorio Detalles", new DateTime(2026, 1, 10), new DateTime(2026, 1, 10, 9, 0, 0), TipoAviso.notificacion, true);
+            var sampleRecordatorio = await recordatorioService.CrearRecordatorioAsync("Sample Recordatorio Titulo", "Sample Recordatorio Detalles", new DateTime(2026, 1, 11), new DateTime(2026, 1, 11, 9, 0, 0), TipoAviso.notificacion, true);
             var sampleRecordatorioReadBack = await recordatorioService.LeerRecordatorioOIDAsync(sampleRecordatorio.Id);
             Ensure(sampleRecordatorioReadBack is not null, "Recordatorio read by OID returns the generated entity.");
             var sampleRecordatorioReadAll = await recordatorioService.LeerTodosRecordatoriosAsync();
             Ensure(sampleRecordatorioReadAll.Count > 0, "Recordatorio read all returns generated data.");
-            await recordatorioService.ModificarRecordatorioAsync(sampleRecordatorio.Id, "Sample Recordatorio Titulo", "Sample Recordatorio Detalles", new DateTime(2026, 1, 10), new DateTime(2026, 1, 10, 9, 0, 0), TipoAviso.notificacion, true);
+            var sampleRecordatorioPendientesResult = await recordatorioService.PendientesAsync();
+            Ensure(sampleRecordatorioPendientesResult is not null, "Recordatorio.pendientes filter executes.");
+            await recordatorioService.ModificarRecordatorioAsync(sampleRecordatorio.Id, "Sample Recordatorio Titulo", "Sample Recordatorio Detalles", new DateTime(2026, 1, 11), new DateTime(2026, 1, 11, 9, 0, 0), TipoAviso.notificacion, true);
             Ensure(await recordatorioService.LeerRecordatorioOIDAsync(sampleRecordatorio.Id) is not null, "Recordatorio modify keeps the entity readable.");
 
             var checklistService = new ChecklistService(unitOfWorkFactory);
@@ -69,6 +78,8 @@ public static class SeedData
             Ensure(sampleChecklistReadBack is not null, "Checklist read by OID returns the generated entity.");
             var sampleChecklistReadAll = await checklistService.LeerTodosChecklistsAsync();
             Ensure(sampleChecklistReadAll.Count > 0, "Checklist read all returns generated data.");
+            var sampleChecklistConTareasResult = await checklistService.ConTareasAsync();
+            Ensure(sampleChecklistConTareasResult is not null, "Checklist.conTareas filter executes.");
             await checklistService.ModificarChecklistAsync(sampleChecklist.Id, "Sample Checklist Nombre");
             Ensure(await checklistService.LeerChecklistOIDAsync(sampleChecklist.Id) is not null, "Checklist modify keeps the entity readable.");
 
@@ -78,12 +89,23 @@ public static class SeedData
             Ensure(sampleTareaReadBack is not null, "Tarea read by OID returns the generated entity.");
             var sampleTareaReadAll = await tareaService.LeerTodasTareasAsync();
             Ensure(sampleTareaReadAll.Count > 0, "Tarea read all returns generated data.");
+            var sampleTareaPorEstadoResult = await tareaService.PorEstadoAsync(true);
+            Ensure(sampleTareaPorEstadoResult is not null, "Tarea.porEstado filter executes.");
             await tareaService.ModificarTareaAsync(sampleTarea.Id, "Sample Tarea Descripcion", true, sampleChecklist.Id);
             Ensure(await tareaService.LeerTareaOIDAsync(sampleTarea.Id) is not null, "Tarea modify keeps the entity readable.");
 
             // TODO: No seed generated for Resena; one or more New arguments reference classes that were not seeded yet.
 
-            // TODO: No seed generated for Viaje; one or more New arguments reference classes that were not seeded yet.
+            // TODO: Set required relationship ParadaDestino.Viaje manually; it could not be ordered automatically.
+            // TODO: No seed generated for ParadaDestino; one or more New arguments reference classes that were not seeded yet.
+
+            await recordatorioService.AsignarTareaAsync(sampleRecordatorio.Id, sampleTarea.Id);
+            Ensure(sampleRecordatorio.Tarea?.Equals(sampleTarea) == true, "Recordatorio.asignarTarea relates Recordatorio and Tarea.");
+            await checklistService.AgregarTareaAsync(sampleChecklist.Id, new[] { sampleTarea.Id });
+            Ensure(sampleChecklist.Tareas.Contains(sampleTarea), "Checklist.agregarTarea relates Checklist and Tarea.");
+
+            await recordatorioService.DesasignarTareaAsync(sampleRecordatorio.Id, sampleTarea.Id);
+            Ensure(sampleRecordatorio.Tarea is null, "Recordatorio.desasignarTarea removes the relation between Recordatorio and Tarea.");
 
             await ubicacionService.BorrarUbicacionAsync(sampleUbicacion.Id);
             await destinoService.BorrarDestinoAsync(sampleDestino.Id);

@@ -79,4 +79,9 @@ public sealed partial class CollageService : ServiceEntity<Collage>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Collage>> DelAnyoAsync(int p_anyo)
+    {
+        return await _repository.DelAnyoAsync(p_anyo);
+    }
+
 }

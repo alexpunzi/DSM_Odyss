@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="ParadaDestino" table="ParadaDestino">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <property name="Orden" type="Int32">
+      <column name="orden" not-null="true"/>
+    </property>
+    <property name="FechaLlegada" type="Date">
+      <column name="fechaLlegada" sql-type="date" not-null="true"/>
+    </property>
+    <property name="FechaSalida" type="Date">
+      <column name="fechaSalida" sql-type="date" not-null="true"/>
+    </property>
+    <many-to-one name="Viaje" class="Viaje">
+      <column name="FK_Viaje_viaje" not-null="true"/>
+    </many-to-one>
+    <many-to-one name="Destino" class="Destino">
+      <column name="FK_Destino_destino" not-null="true"/>
+    </many-to-one>
+    <bag name="Actividades" inverse="true">
+      <key>
+        <column name="FK_ParadaDestino_paradaDestino"/>
+      </key>
+      <one-to-many class="ParadaActividad"/>
+    </bag>
+  </class>
+  <query name="ParadaDestinoReadAllHQL">from ParadaDestino</query>
+</hibernate-mapping>

@@ -19,8 +19,9 @@ public sealed partial class EstadisticasService
         Cliente propietario = await ObtenerPropietarioAsync(estadisticas);
 
         return propietario.Viajes
-            .Where(viaje => viaje.Destino is not null && !string.IsNullOrWhiteSpace(viaje.Destino.Pais))
-            .Select(viaje => viaje.Destino.Pais.Trim())
+            .SelectMany(viaje => viaje.ParadasDestino)
+            .Select(parada => parada.Destino.Pais.Trim())
+            .Where(pais => !string.IsNullOrWhiteSpace(pais))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(pais => pais, StringComparer.OrdinalIgnoreCase)
             .ToArray();

@@ -70,5 +70,19 @@ public sealed class ParadaActividadRepository : RepositoryBase<ParadaActividad>,
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<ParadaActividad>> PendientesAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<ParadaActividad>()
+                .Where(entity => !entity.Completada)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter ParadaActividad.pendientes.");
+            throw new DataException("Error executing ReadFilter ParadaActividad.pendientes.", ex);
+        }
+    }
 }

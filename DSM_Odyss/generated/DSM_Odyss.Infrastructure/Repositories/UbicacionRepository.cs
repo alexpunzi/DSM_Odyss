@@ -70,5 +70,19 @@ public sealed class UbicacionRepository : RepositoryBase<Ubicacion>, IUbicacionR
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Ubicacion>> ConNombreAsync(string p_nombre)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Ubicacion>()
+                .Where(entity => entity.Nombre.Contains(p_nombre))
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Ubicacion.conNombre.");
+            throw new DataException("Error executing ReadFilter Ubicacion.conNombre.", ex);
+        }
+    }
 }

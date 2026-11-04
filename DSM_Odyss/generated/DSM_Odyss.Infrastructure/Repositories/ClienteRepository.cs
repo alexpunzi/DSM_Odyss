@@ -70,5 +70,35 @@ public sealed class ClienteRepository : RepositoryBase<Cliente>, IClienteReposit
             $"Error deleting {EntityName} entity.");
     }
 
+    public async Task<IReadOnlyList<Cliente>> ConRecordatoriosActivosAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Cliente>()
+                .Where(entity => entity.RecibirRecordatorios)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Cliente.conRecordatoriosActivos.");
+            throw new DataException("Error executing ReadFilter Cliente.conRecordatoriosActivos.", ex);
+        }
+    }
 
+    public async Task<IReadOnlyList<Cliente>> ConViajesPublicosAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Cliente>()
+                .Where(entity => entity.Viajes.Any(viaje => viaje.EsPublico))
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Cliente.conViajesPublicos.");
+            throw new DataException("Error executing ReadFilter Cliente.conViajesPublicos.", ex);
+        }
+    }
 }

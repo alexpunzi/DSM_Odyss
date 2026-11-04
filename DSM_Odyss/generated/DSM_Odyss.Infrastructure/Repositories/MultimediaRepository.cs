@@ -70,5 +70,19 @@ public sealed class MultimediaRepository : RepositoryBase<Multimedia>, IMultimed
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Multimedia>> DelTipoAsync(TipoMultimedia p_tipo)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Multimedia>()
+                .Where(entity => entity.Tipo == p_tipo)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Multimedia.delTipo.");
+            throw new DataException("Error executing ReadFilter Multimedia.delTipo.", ex);
+        }
+    }
 }

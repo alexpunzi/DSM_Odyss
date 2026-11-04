@@ -1,6 +1,6 @@
 ConceptualModel ModeloDeDominio_Odyss {
 
-    //ENUMERACIONES
+    // Aqui ponemos los valores que usamos en varias clases.
     Enumeration EstadoViaje
     {
         (planificado, 1), (enCurso, 2), (finalizado, 3)
@@ -26,7 +26,7 @@ ConceptualModel ModeloDeDominio_Odyss {
         (notificacion, 1), (alarma, 2)
     };
 
-    //CLASES 
+    // Cliente representa a cada persona que usa la aplicacion.
     Class Cliente <User>
     {
         attributes
@@ -52,14 +52,28 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodosClientes::ReadAll () : List<Object->Cliente>;
             public login::Login (p_user : String, p_password : Password) : String;
 
+            public conRecordatoriosActivos::ReadFilter () : List<Object->Cliente>
+            {
+                filterLinQ = "entity => entity.RecibirRecordatorios"
+            };
+
+            public conViajesPublicos::ReadFilter () : List<Object->Cliente>
+            {
+                filterLinQ = "entity => entity.Viajes.Any(viaje => viaje.EsPublico)"
+            };
 
             public agregarContacto::Custom (p_oid : OID -> Cliente, p_contacto_oid : OID -> Cliente, p_alias : String) : Void; 
             public cambiarPassword::Custom (p_oid : OID -> Cliente, p_oldPass : Password, p_newPass : Password) : Boolean;
             public configurarNotificaciones::Custom (p_oid : OID -> Cliente, p_canal : CanalNotificacion, p_recibirRecordatorios : Boolean) : Void; // CU-14
+            public agregarContactoRelacion::Relationer -> ClienteContactos.contactos (p_oid : OID -> Cliente, p_contactos_oid : List<OID -> Cliente>) : Void;
+            public quitarContactoRelacion::Unrelationer -> ClienteContactos.contactos (p_oid : OID -> Cliente, p_contactos_oid : List<OID -> Cliente>) : Void;
+            public agregarEstadisticasRelacion::Relationer -> ClienteEstadisticas.estadisticas (p_oid : OID -> Cliente, p_estadisticas_oid : List<OID -> Estadisticas>) : Void;
+            public agregarViajeRelacion::Relationer -> ClienteViaje.viajes (p_oid : OID -> Cliente, p_viajes_oid : List<OID -> Viaje>) : Void;
+            public agregarResenaRelacion::Relationer -> ClienteResena.resenas (p_oid : OID -> Cliente, p_resenas_oid : List<OID -> Resena>) : Void;
         }
     };
 
-    // Clase para Estadisticas de usuario + Passport Recap
+    // Guardamos un resumen de los viajes y fotos del cliente.
     Class Estadisticas
     {
         attributes
@@ -84,9 +98,15 @@ ConceptualModel ModeloDeDominio_Odyss {
             public recalcularEstadisticas::CustomTransaction (p_oid : OID -> Estadisticas) : Void;
             public generarPassportRecap::Custom (p_oid : OID -> Estadisticas, p_anyo : Integer) : String;
             public obtenerPaisesColoreados::Custom (p_oid : OID -> Estadisticas) : List<String>; 
+
+            public delAnyo::ReadFilter (p_anyo : Integer) : List<Object->Estadisticas>
+            {
+                filterLinQ = "entity => entity.Anyo == p_anyo"
+            };
         }
     };
 
+    // Un viaje puede recorrer varios destinos y tener actividades.
     Class Viaje
     {
         attributes
@@ -104,21 +124,66 @@ ConceptualModel ModeloDeDominio_Odyss {
         operations
         {
 
-            public crearViaje::New (p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Object->Viaje;
+            public crearViaje::New (p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Object->Viaje;
             public borrarViaje::Destroy (p_oid : OID -> Viaje) : Void;
-            public modificarViaje::Modifier (p_oid : OID -> Viaje, p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_destino_oid : OID -> Destino, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Void;
+            public modificarViaje::Modifier (p_oid : OID -> Viaje, p_titulo : String, p_fechaInicio : Date, p_fechaFin : Date, p_esPublico : Boolean, p_presupuesto : Float, p_tipoViaje : TipoViaje, p_estado : EstadoViaje, p_autor_oid : OID -> Cliente, p_carpetas_oid : OID -> Carpeta) : Void;
             public leerViajeOID::ReadOID (p_oid : OID -> Viaje) : Object->Viaje;
             public leerTodosViajes::ReadAll () : List<Object->Viaje>;
 
+            public viajesPublicos::ReadFilter () : List<Object->Viaje>
+            {
+                filterLinQ = "entity => entity.EsPublico"
+            };
+
+            public viajesPorEstado::ReadFilter (p_estado : EstadoViaje) : List<Object->Viaje>
+            {
+                filterLinQ = "entity => entity.Estado == p_estado"
+            };
 
             public compartirItinerario::Custom (p_oid : OID -> Viaje, p_destinatario_oid : OID -> Cliente) : Void; 
             public publicarItinerario::Custom (p_oid : OID -> Viaje, p_esPublico : Boolean) : Void; 
             public duplicarItinerario::CustomTransaction (p_oid : OID -> Viaje, p_nuevoTitulo : String) : Object->Viaje;
             public cambiarEstadoViaje::Custom (p_oid : OID -> Viaje, p_nuevoEstado : EstadoViaje) : Void;
+            public agregarParada::Relationer -> ViajeParada.paradas (p_oid : OID -> Viaje, p_paradas_oid : List<OID -> ParadaActividad>) : Void;
+            public agregarParadaDestino::Relationer -> ViajeParadaDestino.paradasDestino (p_oid : OID -> Viaje, p_paradasDestino_oid : List<OID -> ParadaDestino>) : Void;
+            public compartirConCliente::Relationer -> ViajeCliente.compartidoCon (p_oid : OID -> Viaje, p_clientes_oid : List<OID -> Cliente>) : Void;
+            public dejarDeCompartirConCliente::Unrelationer -> ViajeCliente.compartidoCon (p_oid : OID -> Viaje, p_clientes_oid : List<OID -> Cliente>) : Void;
+            public agregarResena::Relationer -> ViajeResena.resenas (p_oid : OID -> Viaje, p_resenas_oid : List<OID -> Resena>) : Void;
+            public asignarCarpeta::Relationer -> ViajeCarpeta.carpetas (p_oid : OID -> Viaje, p_carpeta_oid : OID -> Carpeta) : Void;
+            public asignarCollage::Relationer -> ViajeCollage.collages (p_oid : OID -> Viaje, p_collage_oid : OID -> Collage) : Void;
         }
     };
 
-    Class ParadaActividad 
+    // Cada parada de destino guarda el lugar y las fechas de esa parte del viaje.
+    Class ParadaDestino
+    {
+        attributes
+        {
+            private oid id : Autogenerated (1, 1);
+            private orden : Integer (1, 1);
+            private fechaLlegada : Date (1, 1);
+            private fechaSalida : Date (1, 1);
+        }
+
+        operations
+        {
+            public crearParadaDestino::New (p_orden : Integer, p_fechaLlegada : Date, p_fechaSalida : Date, p_viaje_oid : OID -> Viaje, p_destino_oid : OID -> Destino) : Object->ParadaDestino;
+            public borrarParadaDestino::Destroy (p_oid : OID -> ParadaDestino) : Void;
+            public modificarParadaDestino::Modifier (p_oid : OID -> ParadaDestino, p_orden : Integer, p_fechaLlegada : Date, p_fechaSalida : Date, p_viaje_oid : OID -> Viaje, p_destino_oid : OID -> Destino) : Void;
+            public leerParadaDestinoOID::ReadOID (p_oid : OID -> ParadaDestino) : Object->ParadaDestino;
+            public leerTodasParadasDestino::ReadAll () : List<Object->ParadaDestino>;
+
+            public porViaje::ReadFilter (p_viaje_oid : OID -> Viaje) : List<Object->ParadaDestino>
+            {
+                filterLinQ = "entity => entity.Viaje.Id == p_viaje_oid"
+            };
+
+            public asignarActividades::Relationer -> ParadaDestinoActividad.actividades (p_oid : OID -> ParadaDestino, p_actividades_oid : List<OID -> ParadaActividad>) : Void;
+        }
+    };
+
+    // Una actividad es una tarea concreta del itinerario.
+    Class ParadaActividad
     {
         attributes
         {
@@ -139,13 +204,22 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerParadaActividadOID::ReadOID (p_oid : OID -> ParadaActividad) : Object->ParadaActividad;
             public leerTodasParadasActividades::ReadAll () : List<Object->ParadaActividad>;
 
+            public pendientes::ReadFilter () : List<Object->ParadaActividad>
+            {
+                filterLinQ = "entity => !entity.Completada"
+            };
 
             public marcarActividadCompletada::Custom (p_oid : OID -> ParadaActividad, p_completada : Boolean) : Void;
             public reordenarHorario::Custom (p_oid : OID -> ParadaActividad, p_nuevoDia : Integer, p_nuevoHorario : Time) : Void;
+            public asignarUbicacion::Relationer -> ParadaUbicacion.ubicacion (p_oid : OID -> ParadaActividad, p_ubicacion_oid : OID -> Ubicacion) : Void;
+            public desasignarUbicacion::Unrelationer -> ParadaUbicacion.ubicacion (p_oid : OID -> ParadaActividad, p_ubicacion_oid : OID -> Ubicacion) : Void;
+            public asignarParadaDestino::Relationer -> ParadaDestinoActividad.paradaDestino (p_oid : OID -> ParadaActividad, p_paradaDestino_oid : OID -> ParadaDestino) : Void;
+            public desasignarParadaDestino::Unrelationer -> ParadaDestinoActividad.paradaDestino (p_oid : OID -> ParadaActividad, p_paradaDestino_oid : OID -> ParadaDestino) : Void;
         }
     };
 
-    Class Ubicacion 
+    // La ubicacion guarda las coordenadas del sitio.
+    Class Ubicacion
     {
         attributes
         {
@@ -163,6 +237,11 @@ ConceptualModel ModeloDeDominio_Odyss {
             public modificarUbicacion::Modifier (p_oid : OID -> Ubicacion, p_nombre : String, p_latitud : Double, p_longitud : Double) : Void;
             public leerUbicacionOID::ReadOID (p_oid : OID -> Ubicacion) : Object->Ubicacion;
             public leerTodasUbicaciones::ReadAll () : List<Object->Ubicacion>;
+
+            public conNombre::ReadFilter (p_nombre : String) : List<Object->Ubicacion>
+            {
+                filterLinQ = "entity => entity.Nombre.Contains(p_nombre)"
+            };
 
             public consultarUbicacionEnMapa::Custom (p_oid : OID -> Ubicacion) : String; 
         }
@@ -185,6 +264,11 @@ ConceptualModel ModeloDeDominio_Odyss {
             public modificarDestino::Modifier (p_oid : OID -> Destino, p_pais : String) : Void;
             public leerDestinoOID::ReadOID (p_oid : OID -> Destino) : Object->Destino;
             public leerTodasDestinos::ReadAll () : List<Object->Destino>;
+
+            public porPais::ReadFilter (p_pais : String) : List<Object->Destino>
+            {
+                filterLinQ = "entity => entity.Pais.Contains(p_pais)"
+            };
         }
     };
 
@@ -205,8 +289,15 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerCarpetaOID::ReadOID (p_oid : OID -> Carpeta) : Object->Carpeta;
             public leerTodasCarpetas::ReadAll () : List<Object->Carpeta>;
 
+            public conMultimedia::ReadFilter () : List<Object->Carpeta>
+            {
+                filterLinQ = "entity => entity.Multimedia.Any()"
+            };
 
             public compartirCarpeta::Custom (p_oid : OID -> Carpeta, p_cliente_oid : OID -> Cliente) : Void; 
+            public agregarMultimedia::Relationer -> CarpetaMultimedia.multimedia (p_oid : OID -> Carpeta, p_multimedia_oid : List<OID -> Multimedia>) : Void;
+            public compartirConCliente::Relationer -> CarpetaCliente.compartidoCon (p_oid : OID -> Carpeta, p_clientes_oid : List<OID -> Cliente>) : Void;
+            public dejarDeCompartirConCliente::Unrelationer -> CarpetaCliente.compartidoCon (p_oid : OID -> Carpeta, p_clientes_oid : List<OID -> Cliente>) : Void;
         }
     };
 
@@ -230,6 +321,10 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerMultimediaOID::ReadOID (p_oid : OID -> Multimedia) : Object->Multimedia;
             public leerTodasMultimdia::ReadAll () : List<Object->Multimedia>;
 
+            public delTipo::ReadFilter (p_tipo : TipoMultimedia) : List<Object->Multimedia>
+            {
+                filterLinQ = "entity => entity.Tipo == p_tipo"
+            };
 
             public subirContenidoMultimedia::Custom (p_carpeta_oid : OID -> Carpeta, p_tipo : TipoMultimedia, p_nombre : String) : Object->Multimedia; // CU-07
             public moverDeCarpeta::Custom (p_oid : OID -> Multimedia, p_nuevaCarpeta_oid : OID -> Carpeta) : Void; 
@@ -253,6 +348,11 @@ ConceptualModel ModeloDeDominio_Odyss {
             public modificarCollage::Modifier (p_oid : OID -> Collage, p_urlImagen : String, p_fechaCreacion : Date, p_viaje_oid : OID -> Viaje) : Void;
             public leerCollageOID::ReadOID (p_oid : OID -> Collage) : Object->Collage;
             public leerTodasCollages::ReadAll () : List<Object->Collage>;
+
+            public delAnyo::ReadFilter (p_anyo : Integer) : List<Object->Collage>
+            {
+                filterLinQ = "entity => entity.FechaCreacion.Year == p_anyo"
+            };
 
             public generarCollageAutomatico::Custom (p_viaje_oid : OID -> Viaje) : Object->Collage; 
         }
@@ -279,11 +379,20 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerRecordatorioOID::ReadOID (p_oid : OID -> Recordatorio) : Object->Recordatorio;
             public leerTodosRecordatorios::ReadAll () : List<Object->Recordatorio>;
 
+            public pendientes::ReadFilter () : List<Object->Recordatorio>
+            {
+                filterLinQ = "entity => !entity.Enviado"
+            };
+
             public programarAviso::Custom (p_oid : OID -> Recordatorio, p_fecha : Date, p_hora : Time, p_tipo : TipoAviso) : Void; 
             public enviarNotificacion::Custom (p_oid : OID -> Recordatorio) : Void; 
+            public asignarTarea::Relationer -> RecordatorioTarea.tarea (p_oid : OID -> Recordatorio, p_tarea_oid : OID -> Tarea) : Void;
+            public desasignarTarea::Unrelationer -> RecordatorioTarea.tarea (p_oid : OID -> Recordatorio, p_tarea_oid : OID -> Tarea) : Void;
+            public asignarCliente::Relationer -> RecordatorioCliente.recordatorios (p_oid : OID -> Recordatorio, p_clientes_oid : List<OID -> Cliente>) : Void;
         }
     };
 
+    // El checklist sirve para organizar las tareas del viaje.
     Class Checklist <AggregateRoot>
     {
         attributes
@@ -301,8 +410,14 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerChecklistOID::ReadOID (p_oid : OID -> Checklist) : Object->Checklist;
             public leerTodosChecklists::ReadAll () : List<Object->Checklist>;
 
+            public conTareas::ReadFilter () : List<Object->Checklist>
+            {
+                filterLinQ = "entity => entity.Tareas.Any()"
+            };
 
             public vaciarChecklist::CustomTransaction (p_oid : OID -> Checklist) : Void;
+            public agregarTarea::Relationer -> ChecklistTarea.tareas (p_oid : OID -> Checklist, p_tareas_oid : List<OID -> Tarea>) : Void;
+            public asignarCliente::Relationer -> ChecklistCliente.propietarios (p_oid : OID -> Checklist, p_clientes_oid : List<OID -> Cliente>) : Void;
         }
     };
 
@@ -324,6 +439,11 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTareaOID::ReadOID (p_oid : OID -> Tarea) : Object->Tarea;
             public leerTodasTareas::ReadAll () : List<Object->Tarea>;
 
+
+            public porEstado::ReadFilter (p_completada : Boolean) : List<Object->Tarea>
+            {
+                filterLinQ = "entity => entity.Completada == p_completada"
+            };
 
             public cambiarEstadoTarea::Custom (p_oid : OID -> Tarea, p_completada : Boolean) : Void; 
         }
@@ -347,6 +467,11 @@ ConceptualModel ModeloDeDominio_Odyss {
             public modificarResena::Modifier (p_oid : OID -> Resena, p_comentario : String, p_fecha : Date, p_puntuacion : Integer, p_viaje_oid : OID -> Viaje, p_cliente_oid : OID -> Cliente) : Void;
             public leerResenaOID::ReadOID (p_oid : OID -> Resena) : Object->Resena;
             public leerTodasResenas::ReadAll () : List<Object->Resena>;
+
+            public conPuntuacionMinima::ReadFilter (p_puntuacion : Integer) : List<Object->Resena>
+            {
+                filterLinQ = "entity => entity.Puntuacion >= p_puntuacion"
+            };
         }
     };
 
@@ -355,7 +480,7 @@ ConceptualModel ModeloDeDominio_Odyss {
     Association ViajeParada (Viaje - ParadaActividad)
     {
         => navigable paradas (0, *);
-        <= viaje (1, 1);
+        <= navigable viaje (1, 1);
     };
 
     Association ParadaUbicacion (ParadaActividad - Ubicacion)
@@ -364,10 +489,22 @@ ConceptualModel ModeloDeDominio_Odyss {
         <= parada (0, *);
     };
 
-    Association ViajeDestino (Viaje - Destino)
+    Association ViajeParadaDestino (Viaje - ParadaDestino)
+    {
+        => navigable paradasDestino (0, *);
+        <= navigable viaje (1, 1);
+    };
+
+    Association ParadaDestinoDestino (ParadaDestino - Destino)
     {
         => navigable destino (1, 1);
-        <= viaje (0, *);
+        <= paradas (0, *);
+    };
+
+    Association ParadaDestinoActividad (ParadaDestino - ParadaActividad)
+    {
+        => navigable actividades (0, *);
+        <= navigable paradaDestino (0, 1);
     };
 
     Association ClienteContactos (Cliente - Cliente)
@@ -418,6 +555,12 @@ ConceptualModel ModeloDeDominio_Odyss {
         <= viaje (1, 1);
     };
 
+    Association CarpetaCliente (Carpeta - Cliente)
+    {
+        => navigable compartidoCon (0, *);
+        <= navigable carpetasCompartidas (0, *);
+    };
+
     Association CarpetaMultimedia (Carpeta - Multimedia)
     {
         => navigable multimedia (0, *);
@@ -426,7 +569,7 @@ ConceptualModel ModeloDeDominio_Odyss {
 
     Association ChecklistCliente (Checklist - Cliente)
     {
-        => navigable checklist (0, *);
+        => navigable propietarios (0, *);
         <= propietarioChecklist (1, 1);
     };
 

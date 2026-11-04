@@ -77,4 +77,9 @@ public sealed partial class DestinoService : ServiceEntity<Destino>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Destino>> PorPaisAsync(string p_pais)
+    {
+        return await _repository.PorPaisAsync(p_pais);
+    }
+
 }

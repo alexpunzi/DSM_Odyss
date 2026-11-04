@@ -81,4 +81,9 @@ public sealed partial class ResenaService : ServiceEntity<Resena>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Resena>> ConPuntuacionMinimaAsync(int p_puntuacion)
+    {
+        return await _repository.ConPuntuacionMinimaAsync(p_puntuacion);
+    }
+
 }

@@ -87,4 +87,50 @@ public sealed partial class RecordatorioService : ServiceEntity<Recordatorio>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Recordatorio>> PendientesAsync()
+    {
+        return await _repository.PendientesAsync();
+    }
+
+    public async Task AsignarTareaAsync(int p_oid, int p_tarea_oid)
+    {
+        Recordatorio entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Recordatorio not found.");
+        Tarea relatedEntity = await _unitOfWork.TareaRepository.ReadAsync(p_tarea_oid)
+            ?? throw new ModelException("Tarea not found for Recordatorio.Tarea.");
+        entity.Tarea = relatedEntity;
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task DesasignarTareaAsync(int p_oid, int p_tarea_oid)
+    {
+        Recordatorio entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Recordatorio not found.");
+        Tarea relatedEntity = await _unitOfWork.TareaRepository.ReadAsync(p_tarea_oid)
+            ?? throw new ModelException("Tarea not found for Recordatorio.Tarea.");
+        if (entity.Tarea is null || !entity.Tarea.Equals(relatedEntity))
+        {
+            throw new ModelException("Tarea is not related to Recordatorio.Tarea.");
+        }
+        entity.Tarea = null!;
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AsignarClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
+    {
+        Recordatorio entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Recordatorio not found.");
+        entity.Recordatorios ??= new List<Cliente>();
+        foreach (var relatedId in p_clientes_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Recordatorio.Recordatorios.");
+            if (!entity.Recordatorios.Contains(relatedEntity))
+            {
+                entity.Recordatorios.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
 }

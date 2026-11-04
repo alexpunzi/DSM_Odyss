@@ -7,6 +7,7 @@ public partial class Carpeta
 {
     public virtual int Id { get; set; }
     public virtual string Nombre { get; set; } = string.Empty;
+    public virtual IList<Cliente> CompartidoCon { get; set; } = new List<Cliente>();
     public virtual IList<Multimedia> Multimedia { get; set; } = new List<Multimedia>();
 
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);

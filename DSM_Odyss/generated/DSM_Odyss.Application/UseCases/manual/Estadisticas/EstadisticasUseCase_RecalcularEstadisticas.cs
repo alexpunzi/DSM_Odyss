@@ -29,21 +29,24 @@ public sealed partial class EstadisticasUseCase
             global::DSM_Odyss.Domain.Entities.Viaje[] viajes = propietario.Viajes
                 .Where(viaje => viaje.FechaInicio.Year == anyo)
                 .ToArray();
+            global::DSM_Odyss.Domain.Entities.Destino[] destinos = viajes
+                .SelectMany(viaje => viaje.ParadasDestino)
+                .Select(parada => parada.Destino)
+                .ToArray();
 
             estadisticas.Anyo = anyo;
-            estadisticas.PaisesVisitados = viajes
-                .Where(viaje => viaje.Destino is not null && !string.IsNullOrWhiteSpace(viaje.Destino.Pais))
-                .Select(viaje => viaje.Destino.Pais)
+            estadisticas.PaisesVisitados = destinos
+                .Where(destino => !string.IsNullOrWhiteSpace(destino.Pais))
+                .Select(destino => destino.Pais)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Count();
             estadisticas.FotosSubidas = viajes
                 .SelectMany(viaje => viaje.Carpetas?.Multimedia ?? Array.Empty<Multimedia>())
                 .Count(multimedia => multimedia.Tipo == TipoMultimedia.foto);
-            estadisticas.DestinoMasVisitado = viajes
-                .Where(viaje => viaje.Destino is not null)
-                .GroupBy(viaje => string.IsNullOrWhiteSpace(viaje.Destino.Ciudad)
-                    ? viaje.Destino.Pais
-                    : viaje.Destino.Ciudad,
+            estadisticas.DestinoMasVisitado = destinos
+                .GroupBy(destino => string.IsNullOrWhiteSpace(destino.Ciudad)
+                    ? destino.Pais
+                    : destino.Ciudad,
                     StringComparer.OrdinalIgnoreCase)
                 .OrderByDescending(grupo => grupo.Count())
                 .ThenBy(grupo => grupo.Key, StringComparer.OrdinalIgnoreCase)

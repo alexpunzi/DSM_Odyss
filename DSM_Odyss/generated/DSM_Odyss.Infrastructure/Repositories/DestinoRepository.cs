@@ -70,5 +70,19 @@ public sealed class DestinoRepository : RepositoryBase<Destino>, IDestinoReposit
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Destino>> PorPaisAsync(string p_pais)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Destino>()
+                .Where(entity => entity.Pais.Contains(p_pais))
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Destino.porPais.");
+            throw new DataException("Error executing ReadFilter Destino.porPais.", ex);
+        }
+    }
 }

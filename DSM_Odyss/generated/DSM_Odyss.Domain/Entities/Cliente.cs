@@ -20,6 +20,7 @@ public partial class Cliente
     public virtual IList<Estadisticas> Estadisticas { get; set; } = new List<Estadisticas>();
     public virtual IList<Viaje> Viajes { get; set; } = new List<Viaje>();
     public virtual IList<Resena> Resenas { get; set; } = new List<Resena>();
+    public virtual IList<Carpeta> CarpetasCompartidas { get; set; } = new List<Carpeta>();
 
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);
 

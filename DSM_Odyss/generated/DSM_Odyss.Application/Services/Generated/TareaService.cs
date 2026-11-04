@@ -79,4 +79,9 @@ public sealed partial class TareaService : ServiceEntity<Tarea>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Tarea>> PorEstadoAsync(bool p_completada)
+    {
+        return await _repository.PorEstadoAsync(p_completada);
+    }
+
 }

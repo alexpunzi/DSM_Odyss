@@ -11,7 +11,9 @@ public partial class ParadaActividad
     public virtual DateTime Horario { get; set; }
     public virtual string? Detalles { get; set; }
     public virtual bool Completada { get; set; }
+    public virtual Viaje Viaje { get; set; } = null!;
     public virtual Ubicacion? Ubicacion { get; set; }
+    public virtual ParadaDestino? ParadaDestino { get; set; }
 
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);
 

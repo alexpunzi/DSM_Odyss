@@ -27,15 +27,18 @@
     <property name="Estado" type="DSM_Odyss.Domain.Enums.EstadoViaje, DSM_Odyss.Domain">
       <column name="estado" not-null="true"/>
     </property>
-    <bag name="Paradas">
+    <bag name="Paradas" inverse="true">
       <key>
-        <column name="FK_Viaje_paradas"/>
+        <column name="FK_Viaje_viaje"/>
       </key>
       <one-to-many class="ParadaActividad"/>
     </bag>
-    <many-to-one name="Destino" class="Destino">
-      <column name="FK_Destino_destino" not-null="true"/>
-    </many-to-one>
+    <bag name="ParadasDestino" inverse="true">
+      <key>
+        <column name="FK_Viaje_viaje"/>
+      </key>
+      <one-to-many class="ParadaDestino"/>
+    </bag>
     <bag name="CompartidoCon">
       <key>
         <column name="FK_Viaje_compartidoCon"/>

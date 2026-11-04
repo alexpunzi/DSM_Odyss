@@ -70,5 +70,19 @@ public sealed class EstadisticasRepository : RepositoryBase<Estadisticas>, IEsta
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Estadisticas>> DelAnyoAsync(int p_anyo)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Estadisticas>()
+                .Where(entity => entity.Anyo == p_anyo)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Estadisticas.delAnyo.");
+            throw new DataException("Error executing ReadFilter Estadisticas.delAnyo.", ex);
+        }
+    }
 }

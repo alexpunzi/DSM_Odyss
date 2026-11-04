@@ -7,7 +7,7 @@ public partial class Checklist
 {
     public virtual int Id { get; set; }
     public virtual string Nombre { get; set; } = string.Empty;
-    public virtual IList<Cliente> Checklist { get; set; } = new List<Cliente>();
+    public virtual IList<Cliente> Propietarios { get; set; } = new List<Cliente>();
     public virtual IList<Tarea> Tareas { get; set; } = new List<Tarea>();
 
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);

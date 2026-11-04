@@ -70,5 +70,19 @@ public sealed class CollageRepository : RepositoryBase<Collage>, ICollageReposit
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Collage>> DelAnyoAsync(int p_anyo)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Collage>()
+                .Where(entity => entity.FechaCreacion.Year == p_anyo)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Collage.delAnyo.");
+            throw new DataException("Error executing ReadFilter Collage.delAnyo.", ex);
+        }
+    }
 }

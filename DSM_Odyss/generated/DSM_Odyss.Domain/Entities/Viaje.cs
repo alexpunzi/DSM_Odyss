@@ -15,7 +15,7 @@ public partial class Viaje
     public virtual TipoViaje TipoViaje { get; set; }
     public virtual EstadoViaje Estado { get; set; }
     public virtual IList<ParadaActividad> Paradas { get; set; } = new List<ParadaActividad>();
-    public virtual Destino Destino { get; set; } = null!;
+    public virtual IList<ParadaDestino> ParadasDestino { get; set; } = new List<ParadaDestino>();
     public virtual IList<Cliente> CompartidoCon { get; set; } = new List<Cliente>();
     public virtual IList<Resena> Resenas { get; set; } = new List<Resena>();
     public virtual Carpeta? Carpetas { get; set; }

@@ -137,4 +137,108 @@ public sealed partial class ClienteService : ServiceEntity<Cliente>
         }
     }
 
+    public async Task<IReadOnlyList<Cliente>> ConRecordatoriosActivosAsync()
+    {
+        return await _repository.ConRecordatoriosActivosAsync();
+    }
+
+    public async Task<IReadOnlyList<Cliente>> ConViajesPublicosAsync()
+    {
+        return await _repository.ConViajesPublicosAsync();
+    }
+
+    public async Task AgregarContactoRelacionAsync(int p_oid, IReadOnlyList<int> p_contactos_oid)
+    {
+        Cliente entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Cliente not found.");
+        entity.Contactos ??= new List<Cliente>();
+        foreach (var relatedId in p_contactos_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Cliente.Contactos.");
+            if (!entity.Contactos.Contains(relatedEntity))
+            {
+                entity.Contactos.Add(relatedEntity);
+            }
+            relatedEntity.ContactosInversos ??= new List<Cliente>();
+            if (!relatedEntity.ContactosInversos.Contains(entity))
+            {
+                relatedEntity.ContactosInversos.Add(entity);
+            }
+            await _unitOfWork.ClienteRepository.SaveAsync(relatedEntity);
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task QuitarContactoRelacionAsync(int p_oid, IReadOnlyList<int> p_contactos_oid)
+    {
+        Cliente entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Cliente not found.");
+        entity.Contactos ??= new List<Cliente>();
+        foreach (var relatedId in p_contactos_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Cliente.Contactos.");
+            if (!entity.Contactos.Remove(relatedEntity))
+            {
+                throw new ModelException("Cliente is not related to Cliente.Contactos.");
+            }
+            relatedEntity.ContactosInversos ??= new List<Cliente>();
+            relatedEntity.ContactosInversos.Remove(entity);
+            await _unitOfWork.ClienteRepository.SaveAsync(relatedEntity);
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AgregarEstadisticasRelacionAsync(int p_oid, IReadOnlyList<int> p_estadisticas_oid)
+    {
+        Cliente entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Cliente not found.");
+        entity.Estadisticas ??= new List<Estadisticas>();
+        foreach (var relatedId in p_estadisticas_oid)
+        {
+            Estadisticas relatedEntity = await _unitOfWork.EstadisticasRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Estadisticas not found for Cliente.Estadisticas.");
+            if (!entity.Estadisticas.Contains(relatedEntity))
+            {
+                entity.Estadisticas.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AgregarViajeRelacionAsync(int p_oid, IReadOnlyList<int> p_viajes_oid)
+    {
+        Cliente entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Cliente not found.");
+        entity.Viajes ??= new List<Viaje>();
+        foreach (var relatedId in p_viajes_oid)
+        {
+            Viaje relatedEntity = await _unitOfWork.ViajeRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Viaje not found for Cliente.Viajes.");
+            if (!entity.Viajes.Contains(relatedEntity))
+            {
+                entity.Viajes.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AgregarResenaRelacionAsync(int p_oid, IReadOnlyList<int> p_resenas_oid)
+    {
+        Cliente entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Cliente not found.");
+        entity.Resenas ??= new List<Resena>();
+        foreach (var relatedId in p_resenas_oid)
+        {
+            Resena relatedEntity = await _unitOfWork.ResenaRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Resena not found for Cliente.Resenas.");
+            if (!entity.Resenas.Contains(relatedEntity))
+            {
+                entity.Resenas.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
 }

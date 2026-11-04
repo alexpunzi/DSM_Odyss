@@ -9,9 +9,9 @@
     <property name="Nombre" type="String">
       <column name="nombre" not-null="true"/>
     </property>
-    <bag name="Checklist">
+    <bag name="Propietarios">
       <key>
-        <column name="FK_Checklist_checklist"/>
+        <column name="FK_Checklist_propietarios"/>
       </key>
       <one-to-many class="Cliente"/>
     </bag>

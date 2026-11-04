@@ -77,4 +77,69 @@ public sealed partial class CarpetaService : ServiceEntity<Carpeta>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Carpeta>> ConMultimediaAsync()
+    {
+        return await _repository.ConMultimediaAsync();
+    }
+
+    public async Task AgregarMultimediaAsync(int p_oid, IReadOnlyList<int> p_multimedia_oid)
+    {
+        Carpeta entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Carpeta not found.");
+        entity.Multimedia ??= new List<Multimedia>();
+        foreach (var relatedId in p_multimedia_oid)
+        {
+            Multimedia relatedEntity = await _unitOfWork.MultimediaRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Multimedia not found for Carpeta.Multimedia.");
+            if (!entity.Multimedia.Contains(relatedEntity))
+            {
+                entity.Multimedia.Add(relatedEntity);
+            }
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task CompartirConClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
+    {
+        Carpeta entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Carpeta not found.");
+        entity.CompartidoCon ??= new List<Cliente>();
+        foreach (var relatedId in p_clientes_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Carpeta.CompartidoCon.");
+            if (!entity.CompartidoCon.Contains(relatedEntity))
+            {
+                entity.CompartidoCon.Add(relatedEntity);
+            }
+            relatedEntity.CarpetasCompartidas ??= new List<Carpeta>();
+            if (!relatedEntity.CarpetasCompartidas.Contains(entity))
+            {
+                relatedEntity.CarpetasCompartidas.Add(entity);
+            }
+            await _unitOfWork.ClienteRepository.SaveAsync(relatedEntity);
+        }
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task DejarDeCompartirConClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
+    {
+        Carpeta entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Carpeta not found.");
+        entity.CompartidoCon ??= new List<Cliente>();
+        foreach (var relatedId in p_clientes_oid)
+        {
+            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
+                ?? throw new ModelException("Cliente not found for Carpeta.CompartidoCon.");
+            if (!entity.CompartidoCon.Remove(relatedEntity))
+            {
+                throw new ModelException("Cliente is not related to Carpeta.CompartidoCon.");
+            }
+            relatedEntity.CarpetasCompartidas ??= new List<Carpeta>();
+            relatedEntity.CarpetasCompartidas.Remove(entity);
+            await _unitOfWork.ClienteRepository.SaveAsync(relatedEntity);
+        }
+        await _repository.SaveAsync(entity);
+    }
+
 }

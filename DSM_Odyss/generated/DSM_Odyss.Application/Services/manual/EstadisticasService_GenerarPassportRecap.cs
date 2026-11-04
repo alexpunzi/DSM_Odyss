@@ -26,20 +26,24 @@ public sealed partial class EstadisticasService
             .Where(viaje => viaje.FechaInicio.Year == p_anyo)
             .ToArray();
 
-        string[] paises = viajes
-            .Where(viaje => viaje.Destino is not null && !string.IsNullOrWhiteSpace(viaje.Destino.Pais))
-            .Select(viaje => viaje.Destino.Pais.Trim())
+        Destino[] destinos = viajes
+            .SelectMany(viaje => viaje.ParadasDestino)
+            .Select(parada => parada.Destino)
+            .Where(destino => destino is not null)
+            .ToArray();
+        string[] paises = destinos
+            .Where(destino => !string.IsNullOrWhiteSpace(destino.Pais))
+            .Select(destino => destino.Pais.Trim())
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(pais => pais, StringComparer.OrdinalIgnoreCase)
             .ToArray();
         int fotos = viajes
             .SelectMany(viaje => viaje.Carpetas?.Multimedia ?? Array.Empty<Multimedia>())
             .Count(multimedia => multimedia.Tipo == TipoMultimedia.foto);
-        string? destinoMasVisitado = viajes
-            .Where(viaje => viaje.Destino is not null)
-            .GroupBy(viaje => string.IsNullOrWhiteSpace(viaje.Destino.Ciudad)
-                ? viaje.Destino.Pais
-                : viaje.Destino.Ciudad,
+        string? destinoMasVisitado = destinos
+            .GroupBy(destino => string.IsNullOrWhiteSpace(destino.Ciudad)
+                ? destino.Pais
+                : destino.Ciudad,
                 StringComparer.OrdinalIgnoreCase)
             .OrderByDescending(grupo => grupo.Count())
             .ThenBy(grupo => grupo.Key, StringComparer.OrdinalIgnoreCase)

@@ -70,5 +70,19 @@ public sealed class ChecklistRepository : RepositoryBase<Checklist>, IChecklistR
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Checklist>> ConTareasAsync()
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Checklist>()
+                .Where(entity => entity.Tareas.Any())
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Checklist.conTareas.");
+            throw new DataException("Error executing ReadFilter Checklist.conTareas.", ex);
+        }
+    }
 }

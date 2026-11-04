@@ -43,12 +43,16 @@ public sealed partial class ParadaActividadService : ServiceEntity<ParadaActivid
 
     public async Task<ParadaActividad> CrearParadaActividadAsync(string p_nombre, int p_dia, DateTime p_horario, bool p_completada, int p_viaje_oid)
     {
+        Viaje viajeEntity = await _unitOfWork.ViajeRepository.ReadAsync(p_viaje_oid)
+            ?? throw new ModelException("Viaje not found for ParadaActividad.Viaje.");
+
         ParadaActividad entity = new ParadaActividad
         {
             Nombre = p_nombre,
             Dia = p_dia,
             Horario = p_horario,
             Completada = p_completada,
+            Viaje = viajeEntity,
         };
 
         await _repository.SaveAsync(entity);
@@ -81,6 +85,73 @@ public sealed partial class ParadaActividadService : ServiceEntity<ParadaActivid
     public async Task<IReadOnlyList<ParadaActividad>> LeerTodasParadasActividadesAsync()
     {
         return await _repository.ReadAllAsync();
+    }
+
+    public async Task<IReadOnlyList<ParadaActividad>> PendientesAsync()
+    {
+        return await _repository.PendientesAsync();
+    }
+
+    public async Task AsignarUbicacionAsync(int p_oid, int p_ubicacion_oid)
+    {
+        ParadaActividad entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("ParadaActividad not found.");
+        Ubicacion relatedEntity = await _unitOfWork.UbicacionRepository.ReadAsync(p_ubicacion_oid)
+            ?? throw new ModelException("Ubicacion not found for ParadaActividad.Ubicacion.");
+        entity.Ubicacion = relatedEntity;
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task DesasignarUbicacionAsync(int p_oid, int p_ubicacion_oid)
+    {
+        ParadaActividad entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("ParadaActividad not found.");
+        Ubicacion relatedEntity = await _unitOfWork.UbicacionRepository.ReadAsync(p_ubicacion_oid)
+            ?? throw new ModelException("Ubicacion not found for ParadaActividad.Ubicacion.");
+        if (entity.Ubicacion is null || !entity.Ubicacion.Equals(relatedEntity))
+        {
+            throw new ModelException("Ubicacion is not related to ParadaActividad.Ubicacion.");
+        }
+        entity.Ubicacion = null!;
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task AsignarParadaDestinoAsync(int p_oid, int p_paradaDestino_oid)
+    {
+        ParadaActividad entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("ParadaActividad not found.");
+        ParadaDestino relatedEntity = await _unitOfWork.ParadaDestinoRepository.ReadAsync(p_paradaDestino_oid)
+            ?? throw new ModelException("ParadaDestino not found for ParadaActividad.ParadaDestino.");
+        if (entity.Viaje.Id != relatedEntity.Viaje.Id)
+        {
+            throw new ModelException("Activity and destination stop must belong to the same trip.");
+        }
+
+        entity.ParadaDestino = relatedEntity;
+        relatedEntity.Actividades ??= new List<ParadaActividad>();
+        if (!relatedEntity.Actividades.Contains(entity))
+        {
+            relatedEntity.Actividades.Add(entity);
+        }
+        await _unitOfWork.ParadaDestinoRepository.SaveAsync(relatedEntity);
+        await _repository.SaveAsync(entity);
+    }
+
+    public async Task DesasignarParadaDestinoAsync(int p_oid, int p_paradaDestino_oid)
+    {
+        ParadaActividad entity = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("ParadaActividad not found.");
+        ParadaDestino relatedEntity = await _unitOfWork.ParadaDestinoRepository.ReadAsync(p_paradaDestino_oid)
+            ?? throw new ModelException("ParadaDestino not found for ParadaActividad.ParadaDestino.");
+        if (entity.ParadaDestino is null || !entity.ParadaDestino.Equals(relatedEntity))
+        {
+            throw new ModelException("ParadaDestino is not related to ParadaActividad.ParadaDestino.");
+        }
+        relatedEntity.Actividades ??= new List<ParadaActividad>();
+        relatedEntity.Actividades.Remove(entity);
+        entity.ParadaDestino = null!;
+        await _unitOfWork.ParadaDestinoRepository.SaveAsync(relatedEntity);
+        await _repository.SaveAsync(entity);
     }
 
 }

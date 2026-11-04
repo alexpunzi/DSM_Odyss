@@ -83,4 +83,9 @@ public sealed partial class MultimediaService : ServiceEntity<Multimedia>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Multimedia>> DelTipoAsync(TipoMultimedia p_tipo)
+    {
+        return await _repository.DelTipoAsync(p_tipo);
+    }
+
 }

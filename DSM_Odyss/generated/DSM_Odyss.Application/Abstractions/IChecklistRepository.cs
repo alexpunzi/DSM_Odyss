@@ -4,4 +4,5 @@ namespace DSM_Odyss.Application.Abstractions;
 
 public interface IChecklistRepository : IRepository<Checklist>
 {
+    Task<IReadOnlyList<Checklist>> ConTareasAsync();
 }

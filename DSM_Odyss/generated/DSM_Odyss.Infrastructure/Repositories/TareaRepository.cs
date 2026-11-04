@@ -70,5 +70,19 @@ public sealed class TareaRepository : RepositoryBase<Tarea>, ITareaRepository
             $"Error deleting {EntityName} entity.");
     }
 
-
+    public async Task<IReadOnlyList<Tarea>> PorEstadoAsync(bool p_completada)
+    {
+        try
+        {
+            using var context = OpenSession();
+            return await context.Session.Query<Tarea>()
+                .Where(entity => entity.Completada == p_completada)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "Error executing ReadFilter Tarea.porEstado.");
+            throw new DataException("Error executing ReadFilter Tarea.porEstado.", ex);
+        }
+    }
 }

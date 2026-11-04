@@ -75,4 +75,9 @@ public sealed partial class EstadisticasService : ServiceEntity<Estadisticas>
         return await _repository.ReadAllAsync();
     }
 
+    public async Task<IReadOnlyList<Estadisticas>> DelAnyoAsync(int p_anyo)
+    {
+        return await _repository.DelAnyoAsync(p_anyo);
+    }
+
 }
