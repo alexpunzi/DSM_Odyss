@@ -56,12 +56,4 @@ public sealed partial class EstadisticasService
         return $"Passport Recap {p_anyo}: {paises.Length} países visitados, {fotos} fotos subidas, destino más visitado: {destinoMasVisitado ?? "ninguno"}.";
         /*PROTECTED REGION END*/
     }
-
-    private async Task<Cliente> ObtenerPropietarioAsync(Estadisticas estadisticas)
-    {
-        IReadOnlyList<Cliente> clientes = await _unitOfWork.ClienteRepository.ReadAllAsync();
-        return clientes.FirstOrDefault(cliente =>
-                   cliente.Estadisticas.Any(item => item.Id == estadisticas.Id))
-               ?? throw new ModelException("No client is associated with these statistics.");
-    }
 }

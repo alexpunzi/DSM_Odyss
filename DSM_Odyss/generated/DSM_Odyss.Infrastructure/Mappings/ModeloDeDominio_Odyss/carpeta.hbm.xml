@@ -15,10 +15,6 @@
       </key>
       <one-to-many class="Multimedia"/>
     </bag>
-    <bag name="CompartidoCon" table="Carpeta_CompartidoCon">
-      <key column="carpeta_id"/>
-      <many-to-many class="Cliente" column="cliente_id"/>
-    </bag>
   </class>
   <query name="CarpetaReadAllHQL">from Carpeta</query>
 </hibernate-mapping>

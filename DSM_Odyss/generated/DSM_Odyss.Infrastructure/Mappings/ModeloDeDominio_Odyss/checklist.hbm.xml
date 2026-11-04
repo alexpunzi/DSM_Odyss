@@ -9,7 +9,7 @@
     <property name="Nombre" type="String">
       <column name="nombre" not-null="true"/>
     </property>
-    <bag name="Propietarios">
+    <bag name="Checklist">
       <key>
         <column name="FK_Checklist_checklist"/>
       </key>

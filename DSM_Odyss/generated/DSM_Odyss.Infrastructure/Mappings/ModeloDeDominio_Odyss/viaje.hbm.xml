@@ -27,7 +27,7 @@
     <property name="Estado" type="DSM_Odyss.Domain.Enums.EstadoViaje, DSM_Odyss.Domain">
       <column name="estado" not-null="true"/>
     </property>
-    <bag name="Paradas" cascade="all-delete-orphan">
+    <bag name="Paradas">
       <key>
         <column name="FK_Viaje_paradas"/>
       </key>
@@ -36,9 +36,11 @@
     <many-to-one name="Destino" class="Destino">
       <column name="FK_Destino_destino" not-null="true"/>
     </many-to-one>
-    <bag name="CompartidoCon" table="Viaje_CompartidoCon">
-      <key column="viaje_id"/>
-      <many-to-many class="Cliente" column="cliente_id"/>
+    <bag name="CompartidoCon">
+      <key>
+        <column name="FK_Viaje_compartidoCon"/>
+      </key>
+      <one-to-many class="Cliente"/>
     </bag>
     <bag name="Resenas">
       <key>
