@@ -36,6 +36,10 @@ DSM_Odyss.Application\Services\Generated\ServiceEntity.cs
 DSM_Odyss.Application\Services\Generated\TareaService.cs
 DSM_Odyss.Application\Services\Generated\UbicacionService.cs
 DSM_Odyss.Application\Services\Generated\ViajeService.cs
+DSM_Odyss.Application\UseCases\Generated\Checklist\ChecklistUseCase.cs
+DSM_Odyss.Application\UseCases\Generated\Estadisticas\EstadisticasUseCase.cs
+DSM_Odyss.Application\UseCases\Generated\UseCaseDeclarations.cs
+DSM_Odyss.Application\UseCases\Generated\Viaje\ViajeUseCase.cs
 DSM_Odyss.Domain\DSM_Odyss.Domain.csproj
 DSM_Odyss.Domain\Entities\Carpeta.cs
 DSM_Odyss.Domain\Entities\Checklist.cs

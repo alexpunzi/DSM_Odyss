@@ -14,9 +14,16 @@ public sealed partial class ParadaActividadService
     public async Task CambiarHorarioAsync(int p_oid, int p_nuevoDia, DateTime p_nuevoHorario)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_ParadaActividad_cambiarHorario) ENABLED START*/
-        // Write here your custom code...
+        if (p_nuevoDia < 0)
+        {
+            throw new ModelException("The itinerary day cannot be negative.");
+        }
 
-        throw new ModelException("Application service generation for ParadaActividad.cambiarHorario is pending.", new NotImplementedException("Method CambiarHorarioAsync() not yet implemented."));
+        ParadaActividad actividad = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Activity not found.");
+        actividad.Dia = p_nuevoDia;
+        actividad.Horario = p_nuevoHorario;
+        await _repository.SaveAsync(actividad);
         /*PROTECTED REGION END*/
     }
 }

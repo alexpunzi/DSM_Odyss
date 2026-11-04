@@ -14,9 +14,10 @@ public sealed partial class ViajeService
     public async Task PublicarItinerarioAsync(int p_oid, bool p_esPublico)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_publicarItinerario) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Viaje.publicarItinerario is pending.", new NotImplementedException("Method PublicarItinerarioAsync() not yet implemented."));
+        Viaje viaje = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        viaje.EsPublico = p_esPublico;
+        await _repository.SaveAsync(viaje);
         /*PROTECTED REGION END*/
     }
 }

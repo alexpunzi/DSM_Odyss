@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="DSM_Odyss.Domain"
+                   namespace="DSM_Odyss.Domain.Entities">
+  <class name="ClienteContacto" table="ClienteContacto">
+    <id name="Id" column="id" type="Int32">
+      <generator class="hilo"/>
+    </id>
+    <many-to-one name="Propietario" class="Cliente">
+      <column name="propietario_id" not-null="true" unique-key="UK_ClienteContacto_Pareja"/>
+    </many-to-one>
+    <many-to-one name="Contacto" class="Cliente">
+      <column name="contacto_id" not-null="true" unique-key="UK_ClienteContacto_Pareja"/>
+    </many-to-one>
+    <property name="Alias" type="String">
+      <column name="alias" not-null="true"/>
+    </property>
+  </class>
+  <query name="ClienteContactoReadAllHQL">from ClienteContacto</query>
+</hibernate-mapping>

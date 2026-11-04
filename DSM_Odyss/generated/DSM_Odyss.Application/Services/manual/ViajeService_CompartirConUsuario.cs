@@ -14,9 +14,7 @@ public sealed partial class ViajeService
     public async Task CompartirConUsuarioAsync(int p_oid, int p_cliente_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_compartirConUsuario) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Viaje.compartirConUsuario is pending.", new NotImplementedException("Method CompartirConUsuarioAsync() not yet implemented."));
+        await CompartirItinerarioAsync(p_oid, p_cliente_oid);
         /*PROTECTED REGION END*/
     }
 }

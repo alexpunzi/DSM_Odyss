@@ -14,9 +14,15 @@ public sealed partial class ViajeService
     public async Task CambiarEstadoViajeAsync(int p_oid, EstadoViaje p_nuevoEstado)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_cambiarEstadoViaje) ENABLED START*/
-        // Write here your custom code...
+        if (!Enum.IsDefined(p_nuevoEstado))
+        {
+            throw new ModelException("The trip state is not supported.");
+        }
 
-        throw new ModelException("Application service generation for Viaje.cambiarEstadoViaje is pending.", new NotImplementedException("Method CambiarEstadoViajeAsync() not yet implemented."));
+        Viaje viaje = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        viaje.Estado = p_nuevoEstado;
+        await _repository.SaveAsync(viaje);
         /*PROTECTED REGION END*/
     }
 }

@@ -14,9 +14,17 @@ public sealed partial class CarpetaService
     public async Task CompartirCarpetaAsync(int p_oid, int p_cliente_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Carpeta_compartirCarpeta) ENABLED START*/
-        // Write here your custom code...
+        Carpeta carpeta = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Carpeta not found.");
+        Cliente cliente = await _unitOfWork.ClienteRepository.ReadAsync(p_cliente_oid)
+            ?? throw new ModelException("Cliente not found.");
 
-        throw new ModelException("Application service generation for Carpeta.compartirCarpeta is pending.", new NotImplementedException("Method CompartirCarpetaAsync() not yet implemented."));
+        // The join table keeps album permissions separate from the client's profile.
+        if (!carpeta.CompartidoCon.Any(item => item.Id == cliente.Id))
+        {
+            carpeta.CompartidoCon.Add(cliente);
+            await _repository.SaveAsync(carpeta);
+        }
         /*PROTECTED REGION END*/
     }
 }

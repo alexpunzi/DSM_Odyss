@@ -14,9 +14,7 @@ public sealed partial class RecordatorioService
     public async Task MarcarComoEnviadoAsync(int p_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Recordatorio_marcarComoEnviado) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Recordatorio.marcarComoEnviado is pending.", new NotImplementedException("Method MarcarComoEnviadoAsync() not yet implemented."));
+        await EnviarNotificacionAsync(p_oid);
         /*PROTECTED REGION END*/
     }
 }

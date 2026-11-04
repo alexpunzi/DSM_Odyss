@@ -14,9 +14,7 @@ public sealed partial class ViajeService
     public async Task HacerPublicoAsync(int p_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_hacerPublico) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Viaje.hacerPublico is pending.", new NotImplementedException("Method HacerPublicoAsync() not yet implemented."));
+        await PublicarItinerarioAsync(p_oid, true);
         /*PROTECTED REGION END*/
     }
 }

@@ -14,9 +14,16 @@ public sealed partial class ChecklistService
     public async Task VaciarChecklistAsync(int p_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Checklist_vaciarChecklist) ENABLED START*/
-        // Write here your custom code...
+        Checklist checklist = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Checklist not found.");
 
-        throw new ModelException("Application service generation for Checklist.vaciarChecklist is pending.", new NotImplementedException("Method VaciarChecklistAsync() not yet implemented."));
+        foreach (Tarea tarea in checklist.Tareas.ToArray())
+        {
+            await _unitOfWork.TareaRepository.DeleteAsync(tarea);
+        }
+
+        checklist.Tareas.Clear();
+        await _repository.SaveAsync(checklist);
         /*PROTECTED REGION END*/
     }
 }

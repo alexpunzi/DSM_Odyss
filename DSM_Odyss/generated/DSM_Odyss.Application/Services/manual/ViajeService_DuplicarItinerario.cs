@@ -14,9 +14,39 @@ public sealed partial class ViajeService
     public async Task<Viaje> DuplicarItinerarioAsync(int p_oid, string p_nuevoTitulo)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_duplicarItinerario) ENABLED START*/
-        // Write here your custom code...
+        if (string.IsNullOrWhiteSpace(p_nuevoTitulo))
+        {
+            throw new ModelException("A title is required for the duplicated itinerary.");
+        }
 
-        throw new ModelException("Application service generation for Viaje.duplicarItinerario is pending.", new NotImplementedException("Method DuplicarItinerarioAsync() not yet implemented."));
+        Viaje original = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        Viaje duplicado = new Viaje
+        {
+            Titulo = p_nuevoTitulo.Trim(),
+            FechaInicio = original.FechaInicio,
+            FechaFin = original.FechaFin,
+            EsPublico = false,
+            Presupuesto = original.Presupuesto,
+            TipoViaje = original.TipoViaje,
+            Estado = EstadoViaje.planificado,
+            Destino = original.Destino,
+            Paradas = original.Paradas
+                .Select(actividad => new ParadaActividad
+                {
+                    Nombre = actividad.Nombre,
+                    Dia = actividad.Dia,
+                    Horario = actividad.Horario,
+                    Detalles = actividad.Detalles,
+                    Completada = false,
+                    Ubicacion = actividad.Ubicacion,
+                })
+                .ToList(),
+        };
+
+        // A duplicate is a new private plan: it keeps itinerary data, not collaborators or memories.
+        await _repository.SaveAsync(duplicado);
+        return duplicado;
         /*PROTECTED REGION END*/
     }
 }

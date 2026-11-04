@@ -14,9 +14,16 @@ public sealed partial class ViajeService
     public async Task CompartirItinerarioAsync(int p_oid, int p_destinatario_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_compartirItinerario) ENABLED START*/
-        // Write here your custom code...
+        Viaje viaje = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Viaje not found.");
+        Cliente destinatario = await _unitOfWork.ClienteRepository.ReadAsync(p_destinatario_oid)
+            ?? throw new ModelException("Recipient client not found.");
 
-        throw new ModelException("Application service generation for Viaje.compartirItinerario is pending.", new NotImplementedException("Method CompartirItinerarioAsync() not yet implemented."));
+        if (!viaje.CompartidoCon.Any(cliente => cliente.Id == destinatario.Id))
+        {
+            viaje.CompartidoCon.Add(destinatario);
+            await _repository.SaveAsync(viaje);
+        }
         /*PROTECTED REGION END*/
     }
 }

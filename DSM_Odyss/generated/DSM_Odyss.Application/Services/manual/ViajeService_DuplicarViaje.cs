@@ -14,9 +14,7 @@ public sealed partial class ViajeService
     public async Task<Viaje> DuplicarViajeAsync(int p_oid, string p_nuevoTitulo)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Viaje_duplicarViaje) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Viaje.duplicarViaje is pending.", new NotImplementedException("Method DuplicarViajeAsync() not yet implemented."));
+        return await DuplicarItinerarioAsync(p_oid, p_nuevoTitulo);
         /*PROTECTED REGION END*/
     }
 }

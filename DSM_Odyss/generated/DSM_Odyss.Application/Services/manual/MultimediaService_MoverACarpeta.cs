@@ -14,9 +14,7 @@ public sealed partial class MultimediaService
     public async Task MoverACarpetaAsync(int p_oid, int p_nuevaCarpeta_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Multimedia_moverACarpeta) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Multimedia.moverACarpeta is pending.", new NotImplementedException("Method MoverACarpetaAsync() not yet implemented."));
+        await MoverDeCarpetaAsync(p_oid, p_nuevaCarpeta_oid);
         /*PROTECTED REGION END*/
     }
 }

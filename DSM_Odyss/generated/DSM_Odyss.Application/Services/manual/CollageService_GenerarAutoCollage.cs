@@ -14,9 +14,7 @@ public sealed partial class CollageService
     public async Task<Collage> GenerarAutoCollageAsync(int p_viaje_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Collage_generarAutoCollage) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Collage.generarAutoCollage is pending.", new NotImplementedException("Method GenerarAutoCollageAsync() not yet implemented."));
+        return await GenerarCollageAutomaticoAsync(p_viaje_oid);
         /*PROTECTED REGION END*/
     }
 }

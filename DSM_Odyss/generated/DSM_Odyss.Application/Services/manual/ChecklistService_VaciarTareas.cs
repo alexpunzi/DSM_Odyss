@@ -14,9 +14,7 @@ public sealed partial class ChecklistService
     public async Task VaciarTareasAsync(int p_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Checklist_vaciarTareas) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Checklist.vaciarTareas is pending.", new NotImplementedException("Method VaciarTareasAsync() not yet implemented."));
+        await VaciarChecklistAsync(p_oid);
         /*PROTECTED REGION END*/
     }
 }

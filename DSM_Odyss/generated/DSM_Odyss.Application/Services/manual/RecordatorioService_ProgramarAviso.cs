@@ -14,9 +14,18 @@ public sealed partial class RecordatorioService
     public async Task ProgramarAvisoAsync(int p_oid, DateTime p_fecha, DateTime p_hora, TipoAviso p_tipo)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Recordatorio_programarAviso) ENABLED START*/
-        // Write here your custom code...
+        if (!Enum.IsDefined(p_tipo))
+        {
+            throw new ModelException("The reminder type is not supported.");
+        }
 
-        throw new ModelException("Application service generation for Recordatorio.programarAviso is pending.", new NotImplementedException("Method ProgramarAvisoAsync() not yet implemented."));
+        Recordatorio recordatorio = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Recordatorio not found.");
+        recordatorio.Fecha = p_fecha.Date;
+        recordatorio.Hora = p_hora;
+        recordatorio.TipoAviso = p_tipo;
+        recordatorio.Enviado = false;
+        await _repository.SaveAsync(recordatorio);
         /*PROTECTED REGION END*/
     }
 }

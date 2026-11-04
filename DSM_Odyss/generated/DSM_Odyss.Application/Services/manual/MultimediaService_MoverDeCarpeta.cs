@@ -14,9 +14,28 @@ public sealed partial class MultimediaService
     public async Task MoverDeCarpetaAsync(int p_oid, int p_nuevaCarpeta_oid)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Multimedia_moverDeCarpeta) ENABLED START*/
-        // Write here your custom code...
+        Multimedia multimedia = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Multimedia not found.");
+        Carpeta nuevaCarpeta = await _unitOfWork.CarpetaRepository.ReadAsync(p_nuevaCarpeta_oid)
+            ?? throw new ModelException("Target folder not found.");
 
-        throw new ModelException("Application service generation for Multimedia.moverDeCarpeta is pending.", new NotImplementedException("Method MoverDeCarpetaAsync() not yet implemented."));
+        IReadOnlyList<Carpeta> carpetas = await _unitOfWork.CarpetaRepository.ReadAllAsync();
+        Carpeta? carpetaActual = carpetas.FirstOrDefault(item =>
+            item.Multimedia.Any(element => element.Id == multimedia.Id));
+        if (carpetaActual is null)
+        {
+            throw new ModelException("The multimedia item is not assigned to a folder.");
+        }
+
+        if (carpetaActual.Id == nuevaCarpeta.Id)
+        {
+            return;
+        }
+
+        carpetaActual.Multimedia.Remove(multimedia);
+        nuevaCarpeta.Multimedia.Add(multimedia);
+        await _unitOfWork.CarpetaRepository.SaveAsync(carpetaActual);
+        await _unitOfWork.CarpetaRepository.SaveAsync(nuevaCarpeta);
         /*PROTECTED REGION END*/
     }
 }

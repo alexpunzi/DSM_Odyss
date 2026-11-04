@@ -14,9 +14,10 @@ public sealed partial class TareaService
     public async Task CambiarEstadoTareaAsync(int p_oid, bool p_completada)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Tarea_cambiarEstadoTarea) ENABLED START*/
-        // Write here your custom code...
-
-        throw new ModelException("Application service generation for Tarea.cambiarEstadoTarea is pending.", new NotImplementedException("Method CambiarEstadoTareaAsync() not yet implemented."));
+        Tarea tarea = await _repository.ReadAsync(p_oid)
+            ?? throw new ModelException("Tarea not found.");
+        tarea.Completada = p_completada;
+        await _repository.SaveAsync(tarea);
         /*PROTECTED REGION END*/
     }
 }
