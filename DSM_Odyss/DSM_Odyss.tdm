@@ -81,7 +81,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodasEstadisticas::ReadAll () : List<Object->Estadisticas>;
 
 
-            public recalcularEstadisticas::Custom (p_oid : OID -> Estadisticas) : Void; 
+            public recalcularEstadisticas::CustomTransaction (p_oid : OID -> Estadisticas) : Void;
             public generarPassportRecap::Custom (p_oid : OID -> Estadisticas, p_anyo : Integer) : String;
             public obtenerPaisesColoreados::Custom (p_oid : OID -> Estadisticas) : List<String>; 
         }
@@ -113,7 +113,7 @@ ConceptualModel ModeloDeDominio_Odyss {
 
             public compartirItinerario::Custom (p_oid : OID -> Viaje, p_destinatario_oid : OID -> Cliente) : Void; 
             public publicarItinerario::Custom (p_oid : OID -> Viaje, p_esPublico : Boolean) : Void; 
-            public duplicarItinerario::Custom (p_oid : OID -> Viaje, p_nuevoTitulo : String) : Object->Viaje;
+            public duplicarItinerario::CustomTransaction (p_oid : OID -> Viaje, p_nuevoTitulo : String) : Object->Viaje;
             public cambiarEstadoViaje::Custom (p_oid : OID -> Viaje, p_nuevoEstado : EstadoViaje) : Void;
         }
     };
@@ -302,7 +302,7 @@ ConceptualModel ModeloDeDominio_Odyss {
             public leerTodosChecklists::ReadAll () : List<Object->Checklist>;
 
 
-            public vaciarChecklist::Custom (p_oid : OID -> Checklist) : Void; 
+            public vaciarChecklist::CustomTransaction (p_oid : OID -> Checklist) : Void;
         }
     };
 
