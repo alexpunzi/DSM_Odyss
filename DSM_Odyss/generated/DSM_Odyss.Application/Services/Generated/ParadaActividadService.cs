@@ -122,11 +122,6 @@ public sealed partial class ParadaActividadService : ServiceEntity<ParadaActivid
             ?? throw new ModelException("ParadaActividad not found.");
         ParadaDestino relatedEntity = await _unitOfWork.ParadaDestinoRepository.ReadAsync(p_paradaDestino_oid)
             ?? throw new ModelException("ParadaDestino not found for ParadaActividad.ParadaDestino.");
-        if (entity.Viaje.Id != relatedEntity.Viaje.Id)
-        {
-            throw new ModelException("Activity and destination stop must belong to the same trip.");
-        }
-
         entity.ParadaDestino = relatedEntity;
         relatedEntity.Actividades ??= new List<ParadaActividad>();
         if (!relatedEntity.Actividades.Contains(entity))

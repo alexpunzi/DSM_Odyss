@@ -3,7 +3,6 @@
 public interface IUnitOfWork : IAsyncDisposable
 {
     IClienteRepository ClienteRepository { get; }
-    IClienteContactoRepository ClienteContactoRepository { get; }
     IEstadisticasRepository EstadisticasRepository { get; }
     IViajeRepository ViajeRepository { get; }
     IParadaDestinoRepository ParadaDestinoRepository { get; }

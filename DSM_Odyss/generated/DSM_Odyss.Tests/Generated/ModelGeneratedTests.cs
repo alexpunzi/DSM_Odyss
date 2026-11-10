@@ -412,11 +412,11 @@ public sealed class ModelGeneratedTests
             await tareaService.BorrarTareaAsync(sampleTarea.Id);
             await checklistService.BorrarChecklistAsync(sampleChecklist.Id);
 
-            Ensure(await ubicacionService.LeerUbicacionOIDAsync(sampleUbicacion.Id) is null, "Ubicacion test entity cleanup completed.");
-            Ensure(await destinoService.LeerDestinoOIDAsync(sampleDestino.Id) is null, "Destino test entity cleanup completed.");
-            Ensure(await recordatorioService.LeerRecordatorioOIDAsync(sampleRecordatorio.Id) is null, "Recordatorio test entity cleanup completed.");
-            Ensure(await checklistService.LeerChecklistOIDAsync(sampleChecklist.Id) is null, "Checklist test entity cleanup completed.");
-            Ensure(await tareaService.LeerTareaOIDAsync(sampleTarea.Id) is null, "Tarea test entity cleanup completed.");
+            Ensure((await ubicacionService.LeerTodasUbicacionesAsync()).Count == 0, "Ubicacion seed cleanup completed.");
+            Ensure((await destinoService.LeerTodasDestinosAsync()).Count == 0, "Destino seed cleanup completed.");
+            Ensure((await recordatorioService.LeerTodosRecordatoriosAsync()).Count == 0, "Recordatorio seed cleanup completed.");
+            Ensure((await checklistService.LeerTodosChecklistsAsync()).Count == 0, "Checklist seed cleanup completed.");
+            Ensure((await tareaService.LeerTodasTareasAsync()).Count == 0, "Tarea seed cleanup completed.");
     }
 
     private static Configuration CreateNHibernateConfiguration()

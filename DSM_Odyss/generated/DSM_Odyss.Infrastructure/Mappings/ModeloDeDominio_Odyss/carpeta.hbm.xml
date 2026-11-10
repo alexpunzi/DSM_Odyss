@@ -9,11 +9,13 @@
     <property name="Nombre" type="String">
       <column name="nombre" not-null="true"/>
     </property>
-    <bag name="CompartidoCon">
+    <bag name="CompartidoCon" table="REL_CarpetaCliente">
       <key>
         <column name="FK_Carpeta_compartidoCon"/>
       </key>
-      <one-to-many class="Cliente"/>
+      <many-to-many class="Cliente">
+        <column name="FK_Cliente_carpetasCompartidas"/>
+      </many-to-many>
     </bag>
     <bag name="Multimedia">
       <key>

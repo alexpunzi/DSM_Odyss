@@ -48,7 +48,6 @@ public sealed partial class ParadaDestinoService : ServiceEntity<ParadaDestino>
 
         Destino destinoEntity = await _unitOfWork.DestinoRepository.ReadAsync(p_destino_oid)
             ?? throw new ModelException("Destino not found for ParadaDestino.Destino.");
-        await ValidarParadaAsync(viajeEntity, p_orden, p_fechaLlegada, p_fechaSalida);
 
         ParadaDestino entity = new ParadaDestino
         {
@@ -74,16 +73,9 @@ public sealed partial class ParadaDestinoService : ServiceEntity<ParadaDestino>
     {
         ParadaDestino entity = await _repository.ReadAsync(p_oid)
             ?? throw new ModelException("ParadaDestino not found.");
-        Viaje viajeEntity = await _unitOfWork.ViajeRepository.ReadAsync(p_viaje_oid)
-            ?? throw new ModelException("Viaje not found for ParadaDestino.Viaje.");
-        Destino destinoEntity = await _unitOfWork.DestinoRepository.ReadAsync(p_destino_oid)
-            ?? throw new ModelException("Destino not found for ParadaDestino.Destino.");
-        await ValidarParadaAsync(viajeEntity, p_orden, p_fechaLlegada, p_fechaSalida, entity.Id);
         entity.Orden = p_orden;
         entity.FechaLlegada = p_fechaLlegada;
         entity.FechaSalida = p_fechaSalida;
-        entity.Viaje = viajeEntity;
-        entity.Destino = destinoEntity;
         await _repository.SaveAsync(entity);
     }
 
@@ -111,11 +103,6 @@ public sealed partial class ParadaDestinoService : ServiceEntity<ParadaDestino>
         {
             ParadaActividad relatedEntity = await _unitOfWork.ParadaActividadRepository.ReadAsync(relatedId)
                 ?? throw new ModelException("ParadaActividad not found for ParadaDestino.Actividades.");
-            if (relatedEntity.Viaje.Id != entity.Viaje.Id)
-            {
-                throw new ModelException("Activity and destination stop must belong to the same trip.");
-            }
-
             if (!entity.Actividades.Contains(relatedEntity))
             {
                 entity.Actividades.Add(relatedEntity);

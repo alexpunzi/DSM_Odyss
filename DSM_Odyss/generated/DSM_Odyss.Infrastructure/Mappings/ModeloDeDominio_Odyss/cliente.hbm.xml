@@ -30,17 +30,21 @@
     <property name="RecibirRecordatorios" type="Boolean">
       <column name="recibirRecordatorios" not-null="true"/>
     </property>
-    <bag name="Contactos">
+    <bag name="Contactos" table="REL_ClienteContactos">
       <key>
         <column name="FK_Cliente_contactos"/>
       </key>
-      <one-to-many class="Cliente"/>
+      <many-to-many class="Cliente">
+        <column name="FK_Cliente_contactosInversos"/>
+      </many-to-many>
     </bag>
-    <bag name="ContactosInversos">
+    <bag name="ContactosInversos" table="REL_ClienteContactos" inverse="true">
       <key>
         <column name="FK_Cliente_contactosInversos"/>
       </key>
-      <one-to-many class="Cliente"/>
+      <many-to-many class="Cliente">
+        <column name="FK_Cliente_contactos"/>
+      </many-to-many>
     </bag>
     <bag name="Estadisticas">
       <key>
@@ -60,11 +64,13 @@
       </key>
       <one-to-many class="Resena"/>
     </bag>
-    <bag name="CarpetasCompartidas">
+    <bag name="CarpetasCompartidas" table="REL_CarpetaCliente" inverse="true">
       <key>
         <column name="FK_Cliente_carpetasCompartidas"/>
       </key>
-      <one-to-many class="Carpeta"/>
+      <many-to-many class="Carpeta">
+        <column name="FK_Carpeta_compartidoCon"/>
+      </many-to-many>
     </bag>
   </class>
   <query name="ClienteReadAllHQL">from Cliente</query>

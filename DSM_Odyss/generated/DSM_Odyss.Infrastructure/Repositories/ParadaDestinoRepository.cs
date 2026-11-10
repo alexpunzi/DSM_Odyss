@@ -77,7 +77,6 @@ public sealed class ParadaDestinoRepository : RepositoryBase<ParadaDestino>, IPa
             using var context = OpenSession();
             return await context.Session.Query<ParadaDestino>()
                 .Where(entity => entity.Viaje.Id == p_viaje_oid)
-                .OrderBy(entity => entity.Orden)
                 .ToListAsync();
         }
         catch (Exception ex)

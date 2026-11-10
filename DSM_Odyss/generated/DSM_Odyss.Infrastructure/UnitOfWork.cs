@@ -34,7 +34,6 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
         PasswordHasher = passwordHasher ?? new HariaPasswordHasher();
         TokenGenerator = tokenGenerator ?? new HariaTokenGenerator();
         ClienteRepository = new ClienteRepository(session, _loggerFactory?.CreateLogger<ClienteRepository>());
-        ClienteContactoRepository = new ClienteContactoRepository(session, _loggerFactory?.CreateLogger<ClienteContactoRepository>());
         EstadisticasRepository = new EstadisticasRepository(session, _loggerFactory?.CreateLogger<EstadisticasRepository>());
         ViajeRepository = new ViajeRepository(session, _loggerFactory?.CreateLogger<ViajeRepository>());
         ParadaDestinoRepository = new ParadaDestinoRepository(session, _loggerFactory?.CreateLogger<ParadaDestinoRepository>());
@@ -51,7 +50,6 @@ public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
     }
 
     public IClienteRepository ClienteRepository { get; }
-    public IClienteContactoRepository ClienteContactoRepository { get; }
     public IEstadisticasRepository EstadisticasRepository { get; }
     public IViajeRepository ViajeRepository { get; }
     public IParadaDestinoRepository ParadaDestinoRepository { get; }

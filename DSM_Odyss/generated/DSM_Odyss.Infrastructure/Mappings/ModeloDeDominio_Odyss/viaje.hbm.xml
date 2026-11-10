@@ -39,11 +39,13 @@
       </key>
       <one-to-many class="ParadaDestino"/>
     </bag>
-    <bag name="CompartidoCon">
+    <bag name="CompartidoCon" table="REL_ViajeCliente">
       <key>
         <column name="FK_Viaje_compartidoCon"/>
       </key>
-      <one-to-many class="Cliente"/>
+      <many-to-many class="Cliente">
+        <column name="FK_Cliente_participante"/>
+      </many-to-many>
     </bag>
     <bag name="Resenas">
       <key>
