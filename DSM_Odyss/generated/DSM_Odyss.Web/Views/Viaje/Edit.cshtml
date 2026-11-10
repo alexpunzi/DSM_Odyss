@@ -1,0 +1,80 @@
+@* HARIA-WEB GENERATED sha256:a2a2758b076c4a0423aa25830ffa1b48bfceb8b31805f41e45f0b6542575e73b *@
+@model DSM_Odyss.Web.ViewModels.ViajeViewModel
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-body p-4">
+                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Editar</span>
+                <h1 class="h3 mb-1">Viaje</h1>
+                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
+            </div>
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <div class="card-body p-4">
+                    <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
+                    <input type="hidden" asp-for="Id" />
+        <div class="mb-3">
+            <label asp-for="Titulo" class="form-label"></label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="FechaInicio" class="form-label"></label>
+            <input asp-for="FechaInicio" type="date" class="form-control" />
+            <span asp-validation-for="FechaInicio" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="FechaFin" class="form-label"></label>
+            <input asp-for="FechaFin" type="date" class="form-control" />
+            <span asp-validation-for="FechaFin" class="text-danger"></span>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="EsPublico" class="form-check-input" />
+            <label asp-for="EsPublico" class="form-check-label"></label>
+            <span asp-validation-for="EsPublico" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Presupuesto" class="form-label"></label>
+            <input asp-for="Presupuesto" type="text" inputmode="decimal" asp-format="{0:G}" data-haria-number="true" data-haria-decimal="@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator" class="form-control" />
+            <span asp-validation-for="Presupuesto" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="TipoViaje" class="form-label"></label>
+            <select asp-for="TipoViaje" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.TipoViaje>()" class="form-select"></select>
+            <span asp-validation-for="TipoViaje" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Estado" class="form-label"></label>
+            <select asp-for="Estado" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.EstadoViaje>()" class="form-select"></select>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="CarpetasId" class="form-label"></label>
+            <select asp-for="CarpetasId" asp-items="Model.CarpetasOptions" class="form-select"><option value="">Selecciona...</option></select>
+            <span asp-validation-for="CarpetasId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="CollagesId" class="form-label"></label>
+            <select asp-for="CollagesId" asp-items="Model.CollagesOptions" class="form-select"><option value="">Selecciona...</option></select>
+            <span asp-validation-for="CollagesId" class="text-danger"></span>
+        </div>
+                </div>
+                <div class="card-footer bg-body p-4 d-flex flex-column flex-sm-row gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/haria-numbers.js" asp-append-version="true"></script>
+
+}

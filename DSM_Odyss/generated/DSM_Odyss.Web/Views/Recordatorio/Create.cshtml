@@ -1,0 +1,69 @@
+@* HARIA-WEB GENERATED sha256:ab0c1722f731436252b429b67da716b10b500f40a192fdc4bd5acaa64d793daa *@
+@model DSM_Odyss.Web.ViewModels.RecordatorioViewModel
+
+@{
+    ViewData["Title"] = "Crear";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-body p-4">
+                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Crear</span>
+                <h1 class="h3 mb-1">Recordatorio</h1>
+                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
+            </div>
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="card-body p-4">
+                    <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
+        <div class="mb-3">
+            <label asp-for="Titulo" class="form-label"></label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Detalles" class="form-label"></label>
+            <input asp-for="Detalles" class="form-control" />
+            <span asp-validation-for="Detalles" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Fecha" class="form-label"></label>
+            <input asp-for="Fecha" type="date" class="form-control" />
+            <span asp-validation-for="Fecha" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Hora" class="form-label"></label>
+            <input asp-for="Hora" class="form-control" />
+            <span asp-validation-for="Hora" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="TipoAviso" class="form-label"></label>
+            <select asp-for="TipoAviso" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.TipoAviso>()" class="form-select"></select>
+            <span asp-validation-for="TipoAviso" class="text-danger"></span>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="Enviado" class="form-check-input" />
+            <label asp-for="Enviado" class="form-check-label"></label>
+            <span asp-validation-for="Enviado" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="TareaId" class="form-label"></label>
+            <select asp-for="TareaId" asp-items="Model.TareaOptions" class="form-select"><option value="">Selecciona...</option></select>
+            <span asp-validation-for="TareaId" class="text-danger"></span>
+        </div>
+                </div>
+                <div class="card-footer bg-body p-4 d-flex flex-column flex-sm-row gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+
+}

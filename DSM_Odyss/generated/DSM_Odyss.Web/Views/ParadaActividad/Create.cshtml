@@ -1,0 +1,69 @@
+@* HARIA-WEB GENERATED sha256:94171766ac6739d511ce2201c20d08eef5a31eadea73ed182c2e370978e9ee3d *@
+@model DSM_Odyss.Web.ViewModels.ParadaActividadViewModel
+
+@{
+    ViewData["Title"] = "Crear";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-body p-4">
+                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Crear</span>
+                <h1 class="h3 mb-1">ParadaActividad</h1>
+                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
+            </div>
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="card-body p-4">
+                    <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
+        <div class="mb-3">
+            <label asp-for="Nombre" class="form-label"></label>
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Dia" class="form-label"></label>
+            <input asp-for="Dia" class="form-control" />
+            <span asp-validation-for="Dia" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Horario" class="form-label"></label>
+            <input asp-for="Horario" class="form-control" />
+            <span asp-validation-for="Horario" class="text-danger"></span>
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="Completada" class="form-check-input" />
+            <label asp-for="Completada" class="form-check-label"></label>
+            <span asp-validation-for="Completada" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ViajeId" class="form-label"></label>
+            <select asp-for="ViajeId" asp-items="Model.ViajeOptions" class="form-select"><option value="">Selecciona...</option></select>
+            <span asp-validation-for="ViajeId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="UbicacionId" class="form-label"></label>
+            <select asp-for="UbicacionId" asp-items="Model.UbicacionOptions" class="form-select"><option value="">Selecciona...</option></select>
+            <span asp-validation-for="UbicacionId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ParadaDestinoId" class="form-label"></label>
+            <select asp-for="ParadaDestinoId" asp-items="Model.ParadaDestinoOptions" class="form-select"><option value="">Selecciona...</option></select>
+            <span asp-validation-for="ParadaDestinoId" class="text-danger"></span>
+        </div>
+                </div>
+                <div class="card-footer bg-body p-4 d-flex flex-column flex-sm-row gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+
+}

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\cliente.hbm.xml" />
+    <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\clientecontacto.hbm.xml" />
     <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\estadisticas.hbm.xml" />
     <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\viaje.hbm.xml" />
     <EmbeddedResource Include="Mappings\ModeloDeDominio_Odyss\paradadestino.hbm.xml" />

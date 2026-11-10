@@ -1,0 +1,41 @@
+@* HARIA-WEB GENERATED sha256:25d56dac4da12053b291fb7fd7a46d8e7a1ee703aebfc84ff4fd306cc2b78f8a *@
+@model DSM_Odyss.Web.ViewModels.EstadisticasViewModel
+
+@{
+    ViewData["Title"] = "Eliminar";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-body p-4">
+                <span class="badge text-bg-danger mb-3">Eliminar</span>
+                <h1 class="h3 mb-1">Estadisticas</h1>
+                <p class="text-body-secondary mb-0">Review the record before deleting it. This action cannot be undone.</p>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0 gy-2">
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Id)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Id)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Anyo)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Anyo)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.PaisesVisitados)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.PaisesVisitados)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.FotosSubidas)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.FotosSubidas)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.DestinoMasVisitado)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.DestinoMasVisitado)</dd>
+                </dl>
+
+            </div>
+            <div class="card-footer bg-body p-4">
+                <form asp-action="Delete" method="post" class="d-flex flex-column flex-sm-row gap-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>

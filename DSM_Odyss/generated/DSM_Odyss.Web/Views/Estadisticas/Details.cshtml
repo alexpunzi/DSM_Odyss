@@ -1,0 +1,39 @@
+@* HARIA-WEB GENERATED sha256:889dd6a7d28d7c0ebdda439c960df7ff7a579e788487221dfef61a790ad36e40 *@
+@model DSM_Odyss.Web.ViewModels.EstadisticasViewModel
+
+@{
+    ViewData["Title"] = "Detalles";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-body p-4">
+                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Detalles</span>
+                <h1 class="h3 mb-1">Estadisticas</h1>
+                <p class="text-body-secondary mb-0">Review the complete record information.</p>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0 gy-2">
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Id)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Id)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Anyo)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Anyo)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.PaisesVisitados)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.PaisesVisitados)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.FotosSubidas)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.FotosSubidas)</dd>
+            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.DestinoMasVisitado)</dt>
+            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.DestinoMasVisitado)</dd>
+                </dl>
+
+            </div>
+            <div class="card-footer bg-body p-4">
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>

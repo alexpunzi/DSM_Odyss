@@ -1,4 +1,4 @@
-ConceptualModel ModeloDeDominio_Odyss {
+ConceptualModel DSM_Odyss {
 
     // Aqui ponemos los valores que usamos en varias clases.
     Enumeration EstadoViaje
