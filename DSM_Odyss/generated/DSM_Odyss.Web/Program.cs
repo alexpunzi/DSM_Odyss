@@ -1,6 +1,13 @@
+using System.Data.SQLite;
+using DSM_Odyss.Infrastructure.Repositories;
+using NHibernate.Cfg;
+using NHibernate.Tool.hbm2ddl;
+
 var builder = WebApplication.CreateBuilder(args);
 // HARIA-WEB: CONFIGURATION BASE
 builder.Configuration.Sources.Insert(0, new Microsoft.Extensions.Configuration.Json.JsonConfigurationSource { Path = "appsettings.Haria.json", Optional = false, ReloadOnChange = true, FileProvider = builder.Environment.ContentRootFileProvider });
+
+EnsureDatabaseSchema(builder.Configuration.GetConnectionString("DbConnection"), builder.Environment.ContentRootPath);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -52,5 +59,58 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
 app.Run();
+
+static void EnsureDatabaseSchema(string? connectionString, string contentRootPath)
+{
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        return;
+    }
+
+    var sqlite = new System.Data.Common.DbConnectionStringBuilder { ConnectionString = connectionString };
+    var dataSourceKey = sqlite.Keys.Cast<string>().FirstOrDefault(key =>
+        string.Equals(key.Replace(" ", string.Empty), "DataSource", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(key, "Filename", StringComparison.OrdinalIgnoreCase));
+
+    string? databasePath = null;
+    if (dataSourceKey is not null)
+    {
+        var candidate = Convert.ToString(sqlite[dataSourceKey]);
+        if (!string.IsNullOrWhiteSpace(candidate) &&
+            !candidate.StartsWith("file:", StringComparison.OrdinalIgnoreCase) &&
+            !Path.IsPathRooted(candidate) &&
+            !string.Equals(candidate, ":memory:", StringComparison.OrdinalIgnoreCase) &&
+            !(sqlite.TryGetValue("Mode", out var mode) && string.Equals(Convert.ToString(mode), "Memory", StringComparison.OrdinalIgnoreCase)))
+        {
+            candidate = Path.GetFullPath(Path.Combine(contentRootPath, candidate));
+        }
+
+        databasePath = candidate;
+    }
+
+    if (databasePath is not null && File.Exists(databasePath))
+    {
+        using var connection = new SQLiteConnection(connectionString);
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';";
+        var tablesCount = Convert.ToInt32(command.ExecuteScalar());
+        if (tablesCount > 0)
+        {
+            return;
+        }
+    }
+
+    var configuration = new Configuration();
+    configuration.SetProperty("connection.provider", "NHibernate.Connection.DriverConnectionProvider");
+    configuration.SetProperty("dialect", "NHibernate.Dialect.SQLiteDialect");
+    configuration.SetProperty("connection.driver_class", "NHibernate.Driver.SQLite20Driver");
+    configuration.SetProperty("adonet.batch_size", "100");
+    configuration.SetProperty("show_sql", "true");
+    configuration.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connectionString);
+    configuration.AddAssembly(typeof(DSM_Odyss.Infrastructure.UnitOfWorkFactory).Assembly);
+
+    new SchemaExport(configuration).Execute(false, true, false);
+}
