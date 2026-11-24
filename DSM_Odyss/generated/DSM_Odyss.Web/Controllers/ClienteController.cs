@@ -46,11 +46,26 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id)
     {
-    /*PROTECTED REGION ID(ClienteController_Details_GET_body) START*/
+    /*PROTECTED REGION ID(ClienteController_Details_GET_body) ENABLED START*/
+
+        // Si llega sin id (por ejemplo, al volver del login), se muestra el perfil del usuario conectado.
+        // Al iniciar sesión, HARIA guarda el Id del cliente en User.Identity.Name.
+        if (id == 0 && int.TryParse(User.Identity?.Name, out var idConectado))
+            id = idConectado;
 
         var entity = await _clienteService.LeerClienteOIDAsync(id);
         if (entity is null) return NotFound();
-        return View(ClienteAssembler.ToViewModel(entity));
+
+        var model = new DSM_Odyss.Web.ViewModels.PerfilUsuarioViewModel
+        {
+            Id = entity.Id,
+            Username = entity.User,
+            NombreCompleto = $"{entity.Nombre} {entity.Apellidos}".Trim(),
+            TotalViajes = entity.Viajes.Count,
+            EsPropio = User.Identity?.Name == entity.Id.ToString()
+        };
+
+        return View(model);
     /*PROTECTED REGION END*/
     }
 
