@@ -43,14 +43,29 @@ public sealed partial class TareaService : ServiceEntity<Tarea>
 
     public async Task<Tarea> CrearTareaAsync(string p_descripcion, bool p_completada, int p_checklist_oid)
     {
-        Tarea entity = new Tarea
+        await _unitOfWork.BeginTransactionAsync("TareaService.CrearTareaAsync");
+        try
         {
-            Descripcion = p_descripcion,
-            Completada = p_completada,
-        };
+            Checklist checklist = await _unitOfWork.ChecklistRepository.ReadAsync(p_checklist_oid)
+                ?? throw new ModelException("Checklist not found.");
+            Tarea entity = new Tarea
+            {
+                Descripcion = p_descripcion,
+                Completada = p_completada,
+            };
 
-        await _repository.SaveAsync(entity);
-        return entity;
+            await _repository.SaveAsync(entity);
+            checklist.Tareas ??= new List<Tarea>();
+            checklist.Tareas.Add(entity);
+            await _unitOfWork.ChecklistRepository.SaveAsync(checklist);
+            await _unitOfWork.CommitAsync();
+            return entity;
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task BorrarTareaAsync(int p_oid)

@@ -1,35 +1,69 @@
-@* HARIA-WEB GENERATED sha256:4c9c554dec722bec136cc8da62153f614e3b271e0c538a9c9eb66bf30b755c25 *@
 @model DSM_Odyss.Web.ViewModels.ChecklistViewModel
 
 @{
-    ViewData["Title"] = "Eliminar";
+    ViewData["Title"] = "Eliminar checklist";
 }
 
-<div class="row justify-content-center">
-    <div class="col-xl-9">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-body p-4">
-                <span class="badge text-bg-danger mb-3">Eliminar</span>
-                <h1 class="h3 mb-1">Checklist</h1>
-                <p class="text-body-secondary mb-0">Review the record before deleting it. This action cannot be undone.</p>
-            </div>
-            <div class="card-body p-4">
-                <dl class="row mb-0 gy-2">
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Id)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Id)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Nombre)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Nombre)</dd>
-                </dl>
+<div class="container py-3" style="max-width: 480px;">
+    @* Cabecera igual al mockup *@
+    <div class="mb-2">
+        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">Mis checklists</h1>
+        <p class="text-muted small mb-2">Organiza tus viajes y no te olvides de nada!</p>
+    </div>
 
+    @* Flecha atrás (<) *@
+    <div class="mb-3">
+        <a asp-action="Index" class="text-dark text-decoration-none fs-4 d-inline-flex align-items-center" title="Volver">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+    </div>
+
+    @* Caja principal de la checklist *@
+    <div class="card border shadow-sm mb-3" style="border-radius: 12px; border-color: #94a3b8 !important; min-height: 360px;">
+        <div class="card-body p-3 d-flex flex-column">
+            
+            @* Aviso de eliminación *@
+            <div class="alert alert-danger py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>¿Seguro que quieres eliminar esta lista? Esta acción no se puede deshacer.</span>
             </div>
-            <div class="card-footer bg-body p-4">
-                <form asp-action="Delete" method="post" class="d-flex flex-column flex-sm-row gap-2">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-            </form>
+
+            @* Cabecera de la tarjeta: icono lista + Nombre de la lista *@
+            <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom border-light">
+                <i class="bi bi-list-ul fs-4 text-dark"></i>
+                <span class="fw-medium px-1" style="font-size: 1rem; color: #1e293b;">@Model.Nombre</span>
             </div>
+
+            @* Listado de tareas asociadas que se borrarán *@
+            <div class="d-flex flex-column gap-3 ps-2">
+                @if (Model.Tareas != null && Model.Tareas.Any())
+                {
+                    @foreach (var tarea in Model.Tareas)
+                    {
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input mt-0 border-dark" 
+                                   style="width: 1.15em; height: 1.15em;" 
+                                   @(tarea.Completada ? "checked" : "") disabled />
+                            <span class="small @(tarea.Completada ? "text-decoration-line-through text-muted" : "text-dark")">
+                                @tarea.Descripcion
+                            </span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted small mb-0">Esta lista no tiene tareas asociadas.</p>
+                }
+            </div>
+
         </div>
     </div>
+
+    @* Formulario y botones inferiores alineados a la derecha *@
+    <form asp-action="Delete" method="post" class="d-flex justify-content-end gap-2">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <a asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Cancelar</a>
+        <button type="submit" class="btn btn-danger btn-sm px-3 py-1 fw-medium" style="border-radius: 6px;">Eliminar definitivamente</button>
+    </form>
 </div>

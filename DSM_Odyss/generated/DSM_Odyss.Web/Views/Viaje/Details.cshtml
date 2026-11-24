@@ -1,49 +1,129 @@
-@* HARIA-WEB GENERATED sha256:6a5af407d844497fa625d831752cf8498654a38f98c092aab4a73e0f732e3699 *@
 @model DSM_Odyss.Web.ViewModels.ViajeViewModel
 
 @{
-    ViewData["Title"] = "Detalles";
+    ViewData["Title"] = "Detalles del itinerario";
 }
 
-<div class="row justify-content-center">
-    <div class="col-xl-9">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-body p-4">
-                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Detalles</span>
-                <h1 class="h3 mb-1">Viaje</h1>
-                <p class="text-body-secondary mb-0">Review the complete record information.</p>
-            </div>
-            <div class="card-body p-4">
-                <dl class="row mb-0 gy-2">
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Id)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Id)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Titulo)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Titulo)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.FechaInicio)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.FechaInicio)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.FechaFin)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.FechaFin)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.EsPublico)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.EsPublico)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Presupuesto)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Presupuesto)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.TipoViaje)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.TipoViaje)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Estado)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Estado)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.CarpetasLabel)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.CarpetasLabel)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.CollagesLabel)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.CollagesLabel)</dd>
-                </dl>
+<div class="container py-3" style="max-width: 480px;">
+    @* Cabecera igual al mockup *@
+    <div class="mb-2">
+        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">@Model.Titulo</h1>
+        <p class="text-muted small mb-2">Consulta los detalles del itinerario de tu viaje</p>
+    </div>
 
+    @* Flecha atrás (<) *@
+    <div class="mb-3">
+        <a asp-action="Index" class="text-dark text-decoration-none fs-4 d-inline-flex align-items-center" title="Volver">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+    </div>
+
+    @* Tarjeta principal con estética del mockup *@
+    <div class="card border shadow-sm mb-3" style="border-radius: 14px; border-color: #94a3b8 !important;">
+        <div class="card-body p-3 d-flex flex-column gap-3">
+
+            @* Título *@
+            <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
+                <i class="bi bi-pencil-fill text-dark"></i>
+                <span class="small fw-semibold text-dark">@Model.Titulo</span>
             </div>
-            <div class="card-footer bg-body p-4">
-                <div class="d-flex flex-column flex-sm-row gap-2">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-                <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+
+            @* Destino (si se informó) *@
+            @if (!string.IsNullOrWhiteSpace(Model.DestinoNombre))
+            {
+                <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
+                    <i class="bi bi-geo-alt text-dark"></i>
+                    <span class="small text-dark">@Model.DestinoNombre</span>
+                </div>
+            }
+
+            @* Fechas *@
+            <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
+                <i class="bi bi-calendar-event text-dark"></i>
+                <span class="small text-dark">De: @Model.FechaInicio.ToString("dd/MM/yyyy") — Hasta: @Model.FechaFin.ToString("dd/MM/yyyy")</span>
             </div>
+
+            @* Presupuesto *@
+            <div class="border rounded-3 px-3 py-2 d-flex align-items-center justify-content-between bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-cash-stack text-dark"></i>
+                    <span class="small text-dark">Presupuesto total</span>
+                </div>
+                <span class="small fw-semibold text-dark">@Model.Presupuesto.ToString("0.##") €</span>
             </div>
+
+            @* Paradas / Actividades (si existen) *@
+            @if (Model.Paradas != null && Model.Paradas.Any())
+            {
+                <div class="border rounded-3 p-3 bg-white d-flex flex-column gap-2">
+                    <div class="small fw-semibold text-muted mb-1">Paradas / Actividades</div>
+                    @foreach (var parada in Model.Paradas)
+                    {
+                        <div class="border-bottom pb-2 last-child-no-border">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-bank text-dark"></i>
+                                    <span class="small fw-medium text-dark">@parada.Nombre</span>
+                                </div>
+                                <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">@parada.Dia Día</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(parada.Horario) || !string.IsNullOrWhiteSpace(parada.Detalles))
+                            {
+                                <div class="mt-1 ps-4 small text-muted">
+                                    @if (!string.IsNullOrWhiteSpace(parada.Horario))
+                                    {
+                                        <span class="me-2"><i class="bi bi-clock me-1"></i>@parada.Horario</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(parada.Detalles))
+                                    {
+                                        <span>@parada.Detalles</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @* Metadatos del viaje *@
+            <div class="px-1 small text-muted d-flex flex-column gap-1">
+                <div class="d-flex justify-content-between">
+                    <span>Tipo de viaje:</span>
+                    <span class="fw-medium text-dark">@Html.DisplayFor(model => model.TipoViaje)</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Estado:</span>
+                    <span class="fw-medium text-dark">@Html.DisplayFor(model => model.Estado)</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Visibilidad:</span>
+                    <span class="fw-medium text-dark">@(Model.EsPublico ? "Itinerario público" : "Privado")</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.CarpetasLabel))
+                {
+                    <div class="d-flex justify-content-between">
+                        <span>Carpeta:</span>
+                        <span class="fw-medium text-dark">@Model.CarpetasLabel</span>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.CollagesLabel))
+                {
+                    <div class="d-flex justify-content-between">
+                        <span>Collage:</span>
+                        <span class="fw-medium text-dark">@Model.CollagesLabel</span>
+                    </div>
+                }
+            </div>
+
         </div>
+    </div>
+
+    @* Botones inferiores *@
+    <div class="d-flex justify-content-end gap-2">
+        <a asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
+           style="background-color: #cbd5e1; border-color: #64748b; color: #1e293b; border-radius: 6px;">
+            Editar
+        </a>
     </div>
 </div>

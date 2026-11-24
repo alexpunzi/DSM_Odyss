@@ -14,6 +14,25 @@ namespace DSM_Odyss.Tests.Manual;
 public sealed class ManualOperationTests
 {
     [Fact]
+    public async Task Crear_tarea_la_asocia_y_persiste_en_su_checklist()
+    {
+        await WithUnitOfWorkAsync(async unitOfWork =>
+        {
+            Checklist checklist = new() { Nombre = "Preparativos" };
+            await unitOfWork.ChecklistRepository.SaveAsync(checklist);
+
+            Tarea tarea = await new TareaService(unitOfWork)
+                .CrearTareaAsync("Reservar vuelos", false, checklist.Id);
+
+            Checklist checklistConTareas = Assert.Single(
+                await unitOfWork.ChecklistRepository.ConTareasAsync());
+            Tarea tareaPersistida = Assert.Single(checklistConTareas.Tareas);
+            Assert.Equal(tarea.Id, tareaPersistida.Id);
+            Assert.Equal("Reservar vuelos", tareaPersistida.Descripcion);
+        });
+    }
+
+    [Fact]
     public async Task Contact_alias_and_album_permissions_are_persisted()
     {
         await WithUnitOfWorkAsync(async unitOfWork =>

@@ -1,39 +1,125 @@
-@* HARIA-WEB GENERATED sha256:b44053b805c7e76c74549a060d1cd3e64da8021e1c3ff1a4d5c88d0e1a3a175a *@
 @model DSM_Odyss.Web.ViewModels.ChecklistViewModel
 
 @{
-    ViewData["Title"] = "Crear";
+    ViewData["Title"] = "Nueva checklist";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-body p-4">
-                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Crear</span>
-                <h1 class="h3 mb-1">Checklist</h1>
-                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
-            </div>
-            <form asp-action="Create" method="post">
-                @Html.AntiForgeryToken()
-                <div class="card-body p-4">
-                    <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
-        <div class="mb-3">
-            <label asp-for="Nombre" class="form-label"></label>
-            <input asp-for="Nombre" class="form-control" />
-            <span asp-validation-for="Nombre" class="text-danger"></span>
-        </div>
-                </div>
-                <div class="card-footer bg-body p-4 d-flex flex-column flex-sm-row gap-2">
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                </div>
-            </form>
-        </div>
+<div class="container py-3" style="max-width: 480px;">
+    @* Cabecera igual al mockup *@
+    <div class="mb-2">
+        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">Mis checklists</h1>
+        <p class="text-muted small mb-2">Organiza tus viajes y no te olvides de nada!</p>
     </div>
+
+    @* Flecha atrás (<) *@
+    <div class="mb-3">
+        <a asp-action="Index" class="text-dark text-decoration-none fs-4 d-inline-flex align-items-center" title="Volver">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+        @* Caja principal de la checklist *@
+        <div class="card border shadow-sm mb-3" style="border-radius: 12px; border-color: #94a3b8 !important; min-height: 360px;">
+            <div class="card-body p-3 d-flex flex-column">
+                
+                @* Cabecera de la tarjeta: icono lista + input "Nombre de la lista" *@
+                <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom border-light">
+                    <i class="bi bi-list-ul fs-4 text-dark"></i>
+                    <input asp-for="Nombre" class="form-control border-0 shadow-none px-1 fw-medium"
+                           placeholder="Nombre de la lista" style="font-size: 1rem;" />
+                </div>
+                <span asp-validation-for="Nombre" class="text-danger small mb-2"></span>
+
+                @* Contenedor dinámico de tareas *@
+                <div id="tareas-container" class="d-flex flex-column gap-3 ps-2">
+                    @for (int i = 0; i < Model.Tareas.Count; i++)
+                    {
+                        <div class="tarea-row d-flex align-items-center justify-content-between gap-2">
+                            <div class="d-flex align-items-center gap-2 flex-grow-1">
+                                <input type="hidden" name="Tareas[@i].Id" value="@Model.Tareas[i].Id" />
+                                <input type="checkbox" name="Tareas[@i].Completada" value="true"
+                                       class="form-check-input mt-0 border-dark" style="width: 1.15em; height: 1.15em;"
+                                       @(Model.Tareas[i].Completada ? "checked" : "") />
+                                <input type="text" name="Tareas[@i].Descripcion" value="@Model.Tareas[i].Descripcion"
+                                       class="form-control form-control-sm border-0 shadow-none px-1"
+                                       placeholder="Escribe una tarea..." />
+                            </div>
+                            <button type="button" class="btn btn-link text-dark p-0 btn-eliminar-tarea" title="Eliminar tarea">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                @* Botón "+ Añadir tarea" *@
+                <div class="mt-3 ps-2">
+                    <button type="button" id="btn-add-tarea" class="btn btn-link text-muted text-decoration-none p-0 small">
+                        <i class="bi bi-plus me-1"></i> Añadir tarea
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        @* Botones inferiores alineados a la derecha: Cancelar y Guardar *@
+        <div class="d-flex justify-content-end gap-2">
+            <a asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Cancelar</a>
+            <button type="submit" class="btn btn-outline-dark btn-sm px-4 py-1 fw-medium" style="border-radius: 6px;">Guardar</button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.getElementById("tareas-container");
+            const btnAdd = document.getElementById("btn-add-tarea");
 
+            function reindexarTareas() {
+                const rows = container.querySelectorAll(".tarea-row");
+                rows.forEach((row, index) => {
+                    const idInput = row.querySelector("input[type='hidden']");
+                    const checkInput = row.querySelector("input[type='checkbox']");
+                    const textInput = row.querySelector("input[type='text']");
+                    if (idInput) idInput.name = `Tareas[${index}].Id`;
+                    if (checkInput) checkInput.name = `Tareas[${index}].Completada`;
+                    if (textInput) textInput.name = `Tareas[${index}].Descripcion`;
+                });
+            }
 
+            btnAdd.addEventListener("click", function () {
+                const index = container.querySelectorAll(".tarea-row").length;
+                const row = document.createElement("div");
+                row.className = "tarea-row d-flex align-items-center justify-content-between gap-2";
+                row.innerHTML = `
+                    <div class="d-flex align-items-center gap-2 flex-grow-1">
+                        <input type="hidden" name="Tareas[${index}].Id" value="0" />
+                        <input type="checkbox" name="Tareas[${index}].Completada" value="true"
+                               class="form-check-input mt-0 border-dark" style="width: 1.15em; height: 1.15em;" />
+                        <input type="text" name="Tareas[${index}].Descripcion"
+                               class="form-control form-control-sm border-0 shadow-none px-1"
+                               placeholder="Tarea ${index + 1}" />
+                    </div>
+                    <button type="button" class="btn btn-link text-dark p-0 btn-eliminar-tarea" title="Eliminar tarea">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+                container.appendChild(row);
+                row.querySelector("input[type='text']").focus();
+            });
+
+            container.addEventListener("click", function (e) {
+                const btnDelete = e.target.closest(".btn-eliminar-tarea");
+                if (btnDelete) {
+                    btnDelete.closest(".tarea-row").remove();
+                    reindexarTareas();
+                }
+            });
+        });
+    </script>
 }
