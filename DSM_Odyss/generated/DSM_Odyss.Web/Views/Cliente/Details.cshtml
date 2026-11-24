@@ -4,37 +4,10 @@
     ViewData["Title"] = "Mi perfil";
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<style>
-    .perfil-avatar {
-        width: 72px; height: 72px; flex-shrink: 0;
-        display: inline-flex; align-items: center; justify-content: center;
-        border: 2px solid #495057; border-radius: 50%;
-        font-size: 2.4rem;
-    }
-</style>
-
 <div class="container py-2" style="max-width: 550px;">
 
-    @* Volver *@
-    <div class="mb-3">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-circle p-2" title="Volver">
-            <i class="bi bi-chevron-left fs-5"></i>
-        </a>
-    </div>
+    @await Component.InvokeAsync("PerfilCabecera", new { pestana = "galeria" })
 
-    @* Cabecera del perfil: foto + nombre de usuario + nº de viajes *@
-    <div class="d-flex align-items-center gap-3">
-        <div class="perfil-avatar">
-            <i class="bi bi-person"></i>
-        </div>
-        <div>
-            <div class="fs-5 fw-semibold">@@@Model.Username</div>
-            <small class="text-muted">@Model.TotalViajes @(Model.TotalViajes == 1 ? "viaje" : "viajes")</small>
-        </div>
-    </div>
-
-    <hr class="my-3" />
+    @* Aquí irá el contenido de "Mi galería": Mis viajes, Reseñas recientes, Galería de recuerdos *@
 
 </div>
