@@ -9,24 +9,63 @@
         border: 2px solid #495057; border-radius: 50%;
         font-size: 2.4rem; color: inherit;
     }
+    .perfil-campana {
+        position: relative;
+        width: 40px; height: 40px;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+    .perfil-campana-globo {
+        position: absolute; top: -4px; right: -4px;
+        min-width: 18px; height: 18px; padding: 0 4px;
+        border-radius: 9px; background: #dc3545; color: #fff;
+        font-size: .65rem; font-weight: 700; line-height: 18px; text-align: center;
+    }
 </style>
 
-@* Volver *@
+@* Volver: desde Mi galería → Home; desde cualquier otra página del perfil → Mi galería *@
 <div class="mb-3">
-    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-circle p-2" title="Volver">
-        <i class="bi bi-chevron-left fs-5"></i>
-    </a>
+    @if (Model.PestanaActiva == "galeria")
+    {
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-circle p-2" title="Volver al inicio">
+            <i class="bi bi-chevron-left fs-5"></i>
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Cliente" asp-action="Details" class="btn btn-outline-secondary rounded-circle p-2" title="Volver a mi perfil">
+            <i class="bi bi-chevron-left fs-5"></i>
+        </a>
+    }
 </div>
 
-@* Foto + nombre de usuario + nº de viajes *@
+@* Foto + nombre de usuario (+ nº de viajes y campana si no es compacta) *@
 <div class="d-flex align-items-center gap-3">
     <a asp-controller="Cliente" asp-action="Details" class="perfil-avatar text-decoration-none" title="Mi perfil">
         <i class="bi bi-person"></i>
     </a>
     <div>
         <div class="fs-5 fw-semibold">@@@Model.Username</div>
-        <small class="text-muted">@Model.TotalViajes @(Model.TotalViajes == 1 ? "viaje" : "viajes")</small>
+        @if (!Model.Compacta)
+        {
+            <small class="text-muted">@Model.TotalViajes @(Model.TotalViajes == 1 ? "viaje" : "viajes")</small>
+        }
     </div>
+
+    @if (!Model.Compacta)
+    {
+        @* Campana → Notificaciones y recordatorios (M12) *@
+        <a asp-controller="Recordatorio" asp-action="Index"
+           class="perfil-campana btn btn-outline-secondary rounded-circle p-2 ms-auto align-self-start"
+           title="Notificaciones y recordatorios">
+            <i class="bi bi-bell fs-5"></i>
+            @if (Model.NotificacionesPendientes > 0)
+            {
+                <span class="perfil-campana-globo">
+                    @(Model.NotificacionesPendientes > 9 ? "9+" : Model.NotificacionesPendientes.ToString())
+                </span>
+            }
+        </a>
+    }
 </div>
 
 <hr class="my-3" />

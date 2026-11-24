@@ -7,6 +7,12 @@ public class PerfilCabeceraViewModel
     public string Username { get; set; } = string.Empty;
     public int TotalViajes { get; set; }
 
+    // Recordatorios pendientes del usuario (globo rojo de la campana).
+    public int NotificacionesPendientes { get; set; }
+
     // "galeria", "mapa", "itinerarios", "estadisticas" o null (sin barra de pestañas).
     public string? PestanaActiva { get; set; }
+
+    // true = solo foto y nombre, sin nº de viajes ni campana (M12).
+    public bool Compacta { get; set; }
 }

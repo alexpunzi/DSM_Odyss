@@ -11,4 +11,6 @@ public class PerfilUsuarioViewModel
 
     // True si el perfil que se ve es el del usuario conectado.
     public bool EsPropio { get; set; }
+    // true = solo foto y nombre (M12).
+    public bool Compacta { get; set; }
 }

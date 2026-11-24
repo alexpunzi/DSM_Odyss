@@ -34,10 +34,21 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Index()
     {
-    /*PROTECTED REGION ID(RecordatorioController_Index_GET_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Index_GET_body) ENABLED START*/
+
+        // Solo los recordatorios del usuario conectado, ordenados por fecha y hora.
+        if (!int.TryParse(User.Identity?.Name, out var clienteId))
+            return RedirectToAction("Login", "Account");
 
         var entities = await _recordatorioService.LeerTodosRecordatoriosAsync();
-        return View(entities.Select(RecordatorioAssembler.ToViewModel).ToList());
+        var misRecordatorios = entities
+            .Where(r => r.Recordatorios.Any(c => c.Id == clienteId))
+            .OrderBy(r => r.Fecha.Date)
+            .ThenBy(r => r.Hora.TimeOfDay)
+            .Select(RecordatorioAssembler.ToViewModel)
+            .ToList();
+
+        return View(misRecordatorios);
     /*PROTECTED REGION END*/
     }
 
