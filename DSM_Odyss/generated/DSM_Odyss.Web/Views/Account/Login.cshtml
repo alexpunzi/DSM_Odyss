@@ -11,17 +11,17 @@
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
                     <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Acceso seguro</span>
-                    <h1 class="h3 mb-2">Bienvenido</h1>
-                    <p class="text-body-secondary mb-0">Accede con tus credenciales del dominio HARIA.</p>
+                    <h1 class="h3 mb-2">Bienvenido a Odyss</h1>
+                    <p class="text-body-secondary mb-0">Inicia sesión para comenzar</p>
                 </div>
                 <form asp-action="Login" method="post">
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
                     <input asp-for="ReturnUrl" type="hidden" />
                     <div class="mb-3">
-                        <label asp-for="Id" class="form-label fw-semibold"></label>
-                        <input asp-for="Id" class="form-control form-control-lg" autocomplete="username" />
-                        <span asp-validation-for="Id" class="text-danger small"></span>
+                        <label asp-for="User" class="form-label fw-semibold"></label>
+                        <input asp-for="User" class="form-control form-control-lg" autocomplete="username" />
+                        <span asp-validation-for="User" class="text-danger small"></span>
                     </div>
                     
                     <div class="mb-4">

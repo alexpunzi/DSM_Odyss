@@ -7,8 +7,10 @@ public sealed class LoginViewModel
 {
     public string UserClass { get; set; } = "Cliente";
     public string? Identifier { get; set; }
-    [Display(Name = "id")]
-    public int Id { get; set; }
+
+    [Required(ErrorMessage = "Debes indicar {0}.")]
+    [Display(Name = "Nombre de usuario")]
+    public string User { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Debes indicar {0}.")]
     [DataType(DataType.Password)]

@@ -37,7 +37,7 @@ public sealed class AccountController : Controller
             return View(model);
         }
 
-        var token = await _userService.LoginAsync(model.Id, model.Password);
+        var token = await _userService.LoginAsync(model.User, model.Password);
         if (string.IsNullOrWhiteSpace(token))
         {
             ModelState.AddModelError(string.Empty, "Credenciales incorrectas.");
@@ -45,7 +45,9 @@ public sealed class AccountController : Controller
         }
 
         await using var unitOfWork = _userRepository.Create();
-        var entity = await unitOfWork.ClienteRepository.ReadAsync(model.Id);
+        var entity = (await unitOfWork.ClienteRepository.ReadAllAsync())
+            .FirstOrDefault(cliente =>
+                string.Equals(cliente.User, model.User.Trim(), StringComparison.OrdinalIgnoreCase));
         if (entity is null)
         {
             ModelState.AddModelError(string.Empty, "Credenciales incorrectas.");
