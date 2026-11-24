@@ -1,74 +1,155 @@
-@* HARIA-WEB GENERATED sha256:78be60a75f11ed6434f2b2698a49146b7a1ae4cd6d277aa88b025d444b5c0dcc *@
 @model DSM_Odyss.Web.ViewModels.ClienteViewModel
 
 @{
-    ViewData["Title"] = "Crear";
+    ViewData["Title"] = "Crear cuenta";
+    var meses = new[] { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-body p-4">
-                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Crear</span>
-                <h1 class="h3 mb-1">Cliente</h1>
-                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
+<div class="row justify-content-center align-items-center my-4 my-md-5">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <div class="card border-0 shadow-sm rounded-4 p-3 p-sm-4">
+            <div class="card-body">
+
+                <!-- Flecha volver atrás -->
+                <div class="mb-2">
+                    <a href="javascript:history.back()" class="text-dark text-decoration-none fs-4 lh-1" title="Volver">
+                        &#8249;
+                    </a>
+                </div>
+
+                <!-- Cabecera -->
+                <div class="text-center mb-4">
+                    <p class="text-primary fw-semibold small mb-1" style="color: #0d3b66 !important;">Registro en Odyss</p>
+                    <h1 class="h2 fw-bold text-dark mb-1">¡Bienvenido!</h1>
+                    <p class="text-muted small mb-0">Crea tu cuenta para comenzar</p>
+                </div>
+
+                <form asp-action="Register" method="post" id="registerForm">
+                    @Html.AntiForgeryToken()
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger py-2 small rounded-3" role="alert"></div>
+                    }
+
+                    <!-- Campos ocultos necesarios para satisfacer [Required] de Nombre y Apellidos -->
+                    <input type="hidden" asp-for="Nombre" id="hiddenNombre" value="Usuario" />
+                    <input type="hidden" asp-for="Apellidos" value="-" />
+
+                    <!-- Usuario -->
+                    <div class="mb-3">
+                        <label asp-for="User" class="form-label fw-semibold small text-dark">Usuario:</label>
+                        <input asp-for="User" id="inputUser" class="form-control form-control-lg rounded-3 fs-6" placeholder="Ingresa tu nombre de usuario" />
+                        <span asp-validation-for="User" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Correo electrónico -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold small text-dark">Correo electrónico:</label>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg rounded-3 fs-6" placeholder="Ingresa tu email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold small text-dark">Contraseña:</label>
+                        <input asp-for="Password" type="password" value="" autocomplete="new-password" required class="form-control form-control-lg rounded-3 fs-6" placeholder="Ingresa una contraseña" />
+                        <div class="form-text text-muted" style="font-size: 0.75rem;">
+                            * Debe tener al menos 8 caracteres, 1 número y 1 caracter especial
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Confirmar contraseña -->
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label fw-semibold small text-dark">Confirmar contraseña:</label>
+                        <input asp-for="ConfirmPassword" type="password" value="" autocomplete="new-password" required class="form-control form-control-lg rounded-3 fs-6" placeholder="Ingresa la contraseña de nuevo" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Fecha de nacimiento -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark">Fecha de nacimiento:</label>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <select asp-for="DiaNacimiento" class="form-select rounded-3">
+                                    <option value="">Día</option>
+                                    @for (int d = 1; d <= 31; d++)
+                                    {
+                                        <option value="@d">@d</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <select asp-for="MesNacimiento" class="form-select rounded-3">
+                                    <option value="">Mes</option>
+                                    @for (int m = 1; m <= 12; m++)
+                                    {
+                                        <option value="@m">@meses[m - 1]</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <select asp-for="AnioNacimiento" class="form-select rounded-3">
+                                    <option value="">Año</option>
+                                    @for (int y = DateTime.Now.Year; y >= 1920; y--)
+                                    {
+                                        <option value="@y">@y</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                    </div>
+
+                    <hr class="my-3 text-muted opacity-25" />
+
+                    <!-- Canal de notificación (Enum CanalNotificacion) -->
+                    <div class="mb-3">
+                        <label asp-for="CanalNotificacion" class="form-label fw-semibold small text-dark">Canal de notificación:</label>
+                        <select asp-for="CanalNotificacion" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.CanalNotificacion>()" class="form-select form-select-lg rounded-3 fs-6"></select>
+                        <span asp-validation-for="CanalNotificacion" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Recibir recordatorios -->
+                    <div class="form-check form-switch mb-4">
+                        <input asp-for="RecibirRecordatorios" class="form-check-input" role="switch" />
+                        <label asp-for="RecibirRecordatorios" class="form-check-label small text-dark">
+                            Recibir recordatorios
+                        </label>
+                        <span asp-validation-for="RecibirRecordatorios" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Botón principal -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold fs-6 py-2">
+                            Crear cuenta
+                        </button>
+                    </div>
+
+                    <!-- Enlace inferior -->
+                    <div class="text-start">
+                        <a asp-controller="Account" asp-action="Login" class="text-primary text-decoration-underline small">
+                            Ya tengo cuenta
+                        </a>
+                    </div>
+                </form>
+
             </div>
-            <form asp-action="Register" method="post">
-                @Html.AntiForgeryToken()
-                <div class="card-body p-4">
-                    <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
-        <div class="mb-3">
-            <label asp-for="User" class="form-label"></label>
-            <input asp-for="User" class="form-control" />
-            <span asp-validation-for="User" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" type="password" value="" autocomplete="new-password" required class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Nombre" class="form-label"></label>
-            <input asp-for="Nombre" class="form-control" />
-            <span asp-validation-for="Nombre" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Apellidos" class="form-label"></label>
-            <input asp-for="Apellidos" class="form-control" />
-            <span asp-validation-for="Apellidos" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="FechaNacimiento" class="form-label"></label>
-            <input asp-for="FechaNacimiento" type="date" class="form-control" />
-            <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="CanalNotificacion" class="form-label"></label>
-            <select asp-for="CanalNotificacion" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.CanalNotificacion>()" class="form-select"></select>
-            <span asp-validation-for="CanalNotificacion" class="text-danger"></span>
-        </div>
-        <div class="form-check mb-3">
-            <input asp-for="RecibirRecordatorios" class="form-check-input" />
-            <label asp-for="RecibirRecordatorios" class="form-check-label"></label>
-            <span asp-validation-for="RecibirRecordatorios" class="text-danger"></span>
-        </div>
-                </div>
-                <div class="card-footer bg-body p-4 d-flex flex-column flex-sm-row gap-2">
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        const inputUser = document.getElementById('inputUser');
+        const hiddenNombre = document.getElementById('hiddenNombre');
 
-
+        function syncNombre() {
+            hiddenNombre.value = inputUser.value.trim() || 'Usuario';
+        }
+        inputUser.addEventListener('input', syncNombre);
+        document.getElementById('registerForm').addEventListener('submit', syncNombre);
+    </script>
 }

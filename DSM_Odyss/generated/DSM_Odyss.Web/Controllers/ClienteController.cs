@@ -112,9 +112,12 @@ public partial class ClienteController : Controller
     public async Task<IActionResult> Register(DSM_Odyss.Web.ViewModels.ClienteViewModel model, int p_checklist_oid, int p_recordatorio_oid)
     {
     /*PROTECTED REGION ID(ClienteController_Register_POST_body) START*/
-
-
         if (string.IsNullOrEmpty(model.Password)) ModelState.AddModelError(nameof(model.Password), "Debes indicar una contraseña.");
+        if (!model.DiaNacimiento.HasValue || !model.MesNacimiento.HasValue || !model.AnioNacimiento.HasValue)
+            ModelState.AddModelError(nameof(model.FechaNacimiento), "Debes indicar tu fecha de nacimiento.");
+            
+        if (!ModelState.IsValid) return View(model);
+
         if (!ModelState.IsValid) return View(model);
         Cliente createdUser;
         try
