@@ -58,11 +58,21 @@ public partial class ViajeController : Controller
     public async Task<IActionResult> Create()
     {
     /*PROTECTED REGION ID(ViajeController_Create_GET_body) START*/
+        var hoy = DateTime.Today;
+        var fin = hoy.AddDays(3);
+
         var model = new ViajeViewModel
         {
-            FechaInicio = DateTime.Today,
-            FechaFin = DateTime.Today.AddDays(3),
-            Paradas = new List<ParadaItemViewModel> { new() { Dia = 1 } }
+            FechaInicio = hoy,
+            FechaFin = fin,
+            Destinos = new List<DestinoParadaItemViewModel>
+            {
+                new() { Orden = 1, FechaLlegada = hoy, FechaSalida = fin}
+            },
+            Paradas = new List<ParadaItemViewModel>
+            {
+                new() { Dia = 1 }
+            }
         };
 
         await LoadFormOptionsAsync(model);
@@ -79,6 +89,9 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION ID(ViajeController_Create_POST_body) START*/
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
         var service = new ViajeService(unitOfWork);
+        var destinoService = new DestinoService(unitOfWork);
+        var paradaDestinoService = new ParadaDestinoService(unitOfWork);
+        var paradaActividadService = new ParadaActividadService(unitOfWork);
 
         await LoadFormOptionsAsync(model, unitOfWork);
 
@@ -96,6 +109,7 @@ public partial class ViajeController : Controller
         await unitOfWork.BeginTransactionAsync("MVC.Viaje.Create");
         try
         {
+            // Crear el viaje
             var entity = await service.CrearViajeAsync(
                 model.Titulo,
                 model.FechaInicio,
@@ -120,14 +134,98 @@ public partial class ViajeController : Controller
             }
 
             await service.ModifierViajeDefaultAsync(entity);
+
+            // Procesar los destinos y crear cada ParadaDestino ordenada
+            var catalogoDestinos = await unitOfWork.DestinoRepository.ReadAllAsync();
+            var paradasDestinoCreadas = new Dictionary<int, int>(); // Diccionario para mapear el índice del destino al ID de la ParadaDestino creada
+            int ordenActual = 1;
+
+            for (int i = 0; i < model.Destinos.Count; i++)
+            {
+                var itemDestino = model.Destinos[i];
+                if (string.IsNullOrWhiteSpace(itemDestino.Ciudad) && !itemDestino.DestinoId.HasValue)
+                {
+                    // Saltar destinos vacíos
+                    continue;
+                }
+
+                int destinoOid;
+                if (itemDestino.DestinoId.HasValue && itemDestino.DestinoId.Value > 0)
+                {
+                    destinoOid = itemDestino.DestinoId.Value;
+                }
+                else
+                {
+                    var ciudadNorm = itemDestino.Ciudad.Trim();
+                    var paisNorm = string.IsNullOrWhiteSpace(itemDestino.Pais) ? "Sin especificar" : itemDestino.Pais.Trim();
+
+                    var existente = catalogoDestinos.FirstOrDefault(d =>
+                        (!string.IsNullOrWhiteSpace(ciudadNorm) && string.Equals(d.Ciudad, ciudadNorm, StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(d.Pais, paisNorm, StringComparison.OrdinalIgnoreCase)) ||
+                        (string.IsNullOrWhiteSpace(ciudadNorm) && string.Equals(d.Pais, paisNorm, StringComparison.OrdinalIgnoreCase))
+                    );
+
+                    if (existente != null)
+                    {
+                        destinoOid = existente.Id;
+                    }
+                    else
+                    {
+                        var nuevoDestino = await destinoService.CrearDestinoAsync(paisNorm);
+                        if (!string.IsNullOrWhiteSpace(ciudadNorm))
+                        {
+                            nuevoDestino.Ciudad = ciudadNorm;
+                            await destinoService.ModifierDestinoDefaultAsync(nuevoDestino);
+                        }
+                        destinoOid = nuevoDestino.Id;
+                    }
+                }
+
+                // Crear ParadaDestino enlazada al Viaje y al Destino con orden único
+                var paradaDestino = await paradaDestinoService.CrearParadaDestinoAsync(
+                    ordenActual,
+                    itemDestino.FechaLlegada,
+                    itemDestino.FechaSalida,
+                    entity.Id,
+                    destinoOid
+                );
+
+                paradasDestinoCreadas[i] = paradaDestino.Id;
+                ordenActual++;
+            }
+
+            // Procesar las actividades (ParadaActividad)
+            foreach (var act in model.Paradas.Where(p => !string.IsNullOrWhiteSpace(p.Nombre)))
+            {
+                var fechaActividad = model.FechaInicio.Date.AddDays(Math.Max(0, act.Dia - 1));
+                DateTime horarioDt = fechaActividad;
+
+                if (!string.IsNullOrWhiteSpace(act.Horario) && TimeSpan.TryParse(act.Horario, out var horaSpan))
+                {
+                    horarioDt = fechaActividad.Add(horaSpan);
+                }
+                else if (!string.IsNullOrWhiteSpace(act.Horario) && DateTime.TryParse(act.Horario, out var parsedDt))
+                {
+                    horarioDt = fechaActividad.Add(parsedDt.TimeOfDay);
+                }
+
+                await paradaActividadService.CrearParadaActividadAsync(
+                    act.Nombre.Trim(),
+                    act.Dia,
+                    horarioDt,
+                    false,
+                    entity.Id
+                );
+            }
+
             await unitOfWork.CommitAsync();
         }
         catch (Exception error)
         {
             await unitOfWork.RollbackAsync();
             if (error is OperationCanceledException) throw;
-            _logger.LogError(error, "Could not save the record and its lines.");
-            ModelState.AddModelError(string.Empty, "No se han podido guardar el registro y sus líneas.");
+            _logger.LogError(error, "No se pudo guardar el viaje con sus destinos y actividades.");
+            ModelState.AddModelError(string.Empty, "No se han podido guardar el viaje y sus destinos.");
             return View(model);
         }
 
@@ -366,10 +464,16 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION ID(ViajeController_method_LoadFormOptionsAsync_DSMOdyssWebViewModelsViajeViewModel_DSMOdyssApplicationAbstractionsIUnitOfWork) START*/
     private async Task LoadFormOptionsAsync(ViajeViewModel model, DSM_Odyss.Application.Abstractions.IUnitOfWork unitOfWork)
     {
-        var options0 = (await unitOfWork.CarpetaRepository.ReadAllAsync()).Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = Convert.ToString(item.Id, System.Globalization.CultureInfo.InvariantCulture), Text = Convert.ToString(item.Nombre, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty }).ToList();
-        var options1 = (await unitOfWork.CollageRepository.ReadAllAsync()).Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = Convert.ToString(item.Id, System.Globalization.CultureInfo.InvariantCulture), Text = Convert.ToString(item.UrlImagen, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty }).ToList();
+        var options0 = (await unitOfWork.CarpetaRepository.ReadAllAsync())
+            .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = item.Nombre ?? string.Empty }).ToList();
+        var options1 = (await unitOfWork.CollageRepository.ReadAllAsync())
+            .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = item.UrlImagen ?? string.Empty }).ToList();
+        var optionsDestinos = (await unitOfWork.DestinoRepository.ReadAllAsync())
+            .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = $"{item.Ciudad} ({item.Pais})" }).ToList();
+
         model.CarpetasOptions = options0;
         model.CollagesOptions = options1;
+        model.DestinosCatalogoOptions = optionsDestinos;
     }
     /*PROTECTED REGION END*/
 }

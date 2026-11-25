@@ -1,14 +1,14 @@
 @model DSM_Odyss.Web.ViewModels.ViajeViewModel
 
 @{
-    ViewData["Title"] = "Detalles del itinerario";
+    ViewData["Title"] = "Detalles del viaje";
 }
 
 <div class="container py-3" style="max-width: 480px;">
     @* Cabecera igual al mockup *@
     <div class="mb-2">
-        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">@Model.Titulo</h1>
-        <p class="text-muted small mb-2">Consulta los detalles del itinerario de tu viaje</p>
+        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">@(Model?.Titulo ?? string.Empty)</h1>
+        <p class="text-muted small mb-2">Consulta los detalles de tu viaje</p>
     </div>
 
     @* Flecha atrás (<) *@
@@ -25,22 +25,42 @@
             @* Título *@
             <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
                 <i class="bi bi-pencil-fill text-dark"></i>
-                <span class="small fw-semibold text-dark">@Model.Titulo</span>
+                <span class="small fw-semibold text-dark">@(Model?.Titulo ?? string.Empty)</span>
             </div>
 
-            @* Destino (si se informó) *@
-            @if (!string.IsNullOrWhiteSpace(Model.DestinoNombre))
+            @* Destinos del viaje (si existen) *@
+            @if (Model?.Destinos != null && Model.Destinos.Any())
             {
-                <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
-                    <i class="bi bi-geo-alt text-dark"></i>
-                    <span class="small text-dark">@Model.DestinoNombre</span>
+                <div class="border rounded-3 p-3 bg-white d-flex flex-column gap-2">
+                    <div class="small fw-semibold text-muted mb-1">Destinos</div>
+                    @foreach (var dest in Model.Destinos)
+                    {
+                        <div class="border-bottom pb-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-geo-alt text-dark"></i>
+                                    <span class="small fw-medium text-dark">
+                                        @(!string.IsNullOrWhiteSpace(dest.Ciudad) ? dest.Ciudad : $"Destino #{dest.Orden}")
+                                        @if (!string.IsNullOrWhiteSpace(dest.Pais))
+                                        {
+                                            <span class="text-muted">(@dest.Pais)</span>
+                                        }
+                                    </span>
+                                </div>
+                                <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">#@dest.Orden</span>
+                            </div>
+                            <div class="mt-1 ps-4 small text-muted">
+                                @dest.FechaLlegada.ToString("dd/MM/yyyy") — @dest.FechaSalida.ToString("dd/MM/yyyy")
+                            </div>
+                        </div>
+                    }
                 </div>
             }
 
             @* Fechas *@
             <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
                 <i class="bi bi-calendar-event text-dark"></i>
-                <span class="small text-dark">De: @Model.FechaInicio.ToString("dd/MM/yyyy") — Hasta: @Model.FechaFin.ToString("dd/MM/yyyy")</span>
+                <span class="small text-dark">De: @(Model?.FechaInicio.ToString("dd/MM/yyyy")) — Hasta: @(Model?.FechaFin.ToString("dd/MM/yyyy"))</span>
             </div>
 
             @* Presupuesto *@
@@ -49,11 +69,11 @@
                     <i class="bi bi-cash-stack text-dark"></i>
                     <span class="small text-dark">Presupuesto total</span>
                 </div>
-                <span class="small fw-semibold text-dark">@Model.Presupuesto.ToString("0.##") €</span>
+                <span class="small fw-semibold text-dark">@((Model?.Presupuesto ?? 0f).ToString("0.##")) €</span>
             </div>
 
             @* Paradas / Actividades (si existen) *@
-            @if (Model.Paradas != null && Model.Paradas.Any())
+            @if (Model?.Paradas != null && Model.Paradas.Any())
             {
                 <div class="border rounded-3 p-3 bg-white d-flex flex-column gap-2">
                     <div class="small fw-semibold text-muted mb-1">Paradas / Actividades</div>
@@ -97,16 +117,16 @@
                 </div>
                 <div class="d-flex justify-content-between">
                     <span>Visibilidad:</span>
-                    <span class="fw-medium text-dark">@(Model.EsPublico ? "Itinerario público" : "Privado")</span>
+                    <span class="fw-medium text-dark">@((Model?.EsPublico ?? false) ? "Viaje público" : "Privado")</span>
                 </div>
-                @if (!string.IsNullOrWhiteSpace(Model.CarpetasLabel))
+                @if (!string.IsNullOrWhiteSpace(Model?.CarpetasLabel))
                 {
                     <div class="d-flex justify-content-between">
                         <span>Carpeta:</span>
                         <span class="fw-medium text-dark">@Model.CarpetasLabel</span>
                     </div>
                 }
-                @if (!string.IsNullOrWhiteSpace(Model.CollagesLabel))
+                @if (!string.IsNullOrWhiteSpace(Model?.CollagesLabel))
                 {
                     <div class="d-flex justify-content-between">
                         <span>Collage:</span>
@@ -121,7 +141,7 @@
     @* Botones inferiores *@
     <div class="d-flex justify-content-end gap-2">
         <a asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver</a>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
+        <a asp-action="Edit" asp-route-id="@(Model?.Id ?? 0)" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
            style="background-color: #cbd5e1; border-color: #64748b; color: #1e293b; border-radius: 6px;">
             Editar
         </a>

@@ -53,17 +53,70 @@ public sealed class ViajeViewModel : IValidatableObject
     /*PROTECTED REGION END*/
 
     /*PROTECTED REGION ID(ViajeViewModel_manual) ENABLED START*/
-    public string? DestinoNombre { get; set; }
+    // Lista de destinos del viaje (1 o más)
+    public List<DestinoParadaItemViewModel> Destinos { get; set; } = new();
+
+    // Lista de paradas del viaje (1 o más)
     public List<ParadaItemViewModel> Paradas { get; set; } = new();
+
+    // Catálogo de destinos existentes para sugerir/seleccionar en la vista
+    [BindNever, ValidateNever]
+    public List<SelectListItem> DestinosCatalogoOptions { get; set; } = new();
 
     private IEnumerable<ValidationResult> ValidateAdditional(ValidationContext validationContext)
     {
         if (FechaFin < FechaInicio)
         {
-            yield return new ValidationResult("La fecha de fin no puede ser anterior a la de inicio.", new[] { nameof(FechaFin) });
+            yield return new ValidationResult("La fecha de fin no puede ser anterior a la de inicio.",
+            new[] { nameof(FechaFin) });
+        }
+
+        // Validar que haya al menos un destino
+        var destinosValidos = Destinos.Where(d => !string.IsNullOrWhiteSpace(d.Ciudad) || d.DestinoId.HasValue).ToList();
+        if (!destinosValidos.Any())
+        {
+            yield return new ValidationResult("Debes indicar al menos un destino.",
+            new[] { nameof(Destinos) });
+        }
+
+        // Validar reglas de negocio de ParadaDestino del backend (fechas dentro del viaje y llegada <= salida)
+        for (int i = 0; i < Destinos.Count; i++)
+        {
+            var d = Destinos[i];
+            if (string.IsNullOrWhiteSpace(d.Ciudad) && !d.DestinoId.HasValue) continue;
+
+            if (d.FechaSalida < d.FechaLlegada)
+            {
+                yield return new ValidationResult(
+                    $"La fecha de salida del destino '{d.Ciudad}' no puede ser anterior a la fecha de llegada.",
+                    new[] { $"{nameof(Destinos)}[{i}].{nameof(d.FechaSalida)}" }
+                );
+            }
+
+            if (d.FechaLlegada < FechaInicio || d.FechaSalida > FechaFin)
+            {
+                yield return new ValidationResult(
+                    $"Las fechas del destino '{d.Ciudad}' deben estar dentro del rango del viaje.",
+                    new[] { $"{nameof(Destinos)}[{i}].{nameof(d.FechaLlegada)}", $"{nameof(Destinos)}[{i}].{nameof(d.FechaSalida)}" }
+                );
+            }
         }
     }
     /*PROTECTED REGION END*/
+}
+
+public class DestinoParadaItemViewModel
+{
+    public int? DestinoId { get; set; }
+    public string Pais { get; set; } = string.Empty;
+    public string Ciudad { get; set; } = string.Empty;
+    public int Orden { get; set; } = 1;
+
+    [DataType(DataType.Date)]
+    public DateTime FechaLlegada { get; set; } = DateTime.Today;
+
+    [DataType(DataType.Date)]
+    public DateTime FechaSalida { get; set; } = DateTime.Today.AddDays(3);
 }
 
 public class ParadaItemViewModel
@@ -74,4 +127,7 @@ public class ParadaItemViewModel
     public string? Horario { get; set; }
     public string? Detalles { get; set; }
     public float Coste { get; set; }
+
+    // Índice (0, 1, 2...) del destino al que pertenece la parada
+    public int? DestinoIndex { get; set; }
 }

@@ -1,81 +1,13 @@
 @model IEnumerable<DSM_Odyss.Web.ViewModels.ViajeViewModel>
 
 @{
-    ViewData["Title"] = "Mis viajes";
+    ViewData["Title"] = "Mis itinerarios privados";
 }
 
-<div class="container py-3" style="max-width: 480px;">
-    @* Cabecera igual al mockup *@
-    <div class="mb-3">
-        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">Mis itinerarios</h1>
-        <p class="text-muted small mb-3">Consulta y organiza todos tus viajes planificados</p>
+<div class="container py-2" style="max-width: 550px;">
 
-        @* Botón principal "Crear itinerario" estilo Odyss *@
-        <a asp-action="Create" class="btn w-100 fw-medium py-2 shadow-sm"
-           style="background-color: #93c1e8; border: 1px solid #6fa3d2; color: #1e3a5f; border-radius: 8px;">
-            <i class="bi bi-plus-lg me-1"></i> Crear itinerario
-        </a>
-    </div>
+    @await Component.InvokeAsync("PerfilCabecera", new { pestana = "itinerarios" })
 
-    <hr class="my-3 opacity-25" />
+    @* Contenido específico de M11: itinerarios privados *@
 
-    @if (Model.Any())
-    {
-        <div class="d-flex flex-column gap-3">
-            @foreach (var item in Model)
-            {
-                <div class="card border shadow-sm" style="border-radius: 12px; border-color: #cbd5e1 !important;">
-                    <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                        <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark flex-grow-1 pe-2">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="fw-bold text-dark">@item.Titulo</span>
-                                @if (item.EsPublico)
-                                {
-                                    <span class="badge bg-light text-secondary border" style="font-size: 0.7rem;">Público</span>
-                                }
-                            </div>
-                            <div class="text-muted small">
-                                <i class="bi bi-calendar3 me-1"></i>@item.FechaInicio.ToString("dd/MM/yyyy") — @item.FechaFin.ToString("dd/MM/yyyy")
-                                <span class="mx-1">·</span>
-                                <i class="bi bi-cash me-1"></i>@item.Presupuesto.ToString("0.##") €
-                            </div>
-                        </a>
-
-                        @* Menú de opciones (tres puntos verticales) *@
-                        <div class="dropdown">
-                            <button class="btn btn-link text-dark p-1 text-decoration-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical fs-5"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                <li>
-                                    <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">
-                                        <i class="bi bi-eye me-2"></i>Detalles
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">
-                                        <i class="bi bi-pencil me-2"></i>Editar
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li>
-                                    <a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id">
-                                        <i class="bi bi-trash me-2"></i>Eliminar
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="text-center py-5 text-muted">
-            <i class="bi bi-compass fs-1 d-block mb-2"></i>
-            <p class="small mb-2">Todavía no tienes itinerarios creados.</p>
-            <a asp-action="Create" class="btn btn-outline-dark btn-sm px-3" style="border-radius: 6px;">Crear el primero</a>
-        </div>
-    }
 </div>

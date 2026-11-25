@@ -19,7 +19,7 @@
                 <i class="bi bi-funnel"></i>
             </button>
         </div>
-        <a asp-controller="Cliente" asp-action="Index" class="btn btn-outline-secondary rounded-circle p-2" title="Perfil">
+        <a asp-controller="Cliente" asp-action="Details" asp-route-id="@User.Identity?.Name" class="btn btn-outline-secondary rounded-circle p-2" title="Perfil">
             <i class="bi bi-person fs-5"></i>
         </a>
     </div>
