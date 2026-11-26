@@ -4,7 +4,41 @@
     ViewData["Title"] = "Crear viaje";
 }
 
-<div class="container py-3" style="max-width: 480px;">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="container py-2" style="max-width: 600px;">
+
+    @* 1. BARRA SUPERIOR / BUSCADOR (igual que Home/Index, Mockup M07) *@
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <button class="btn btn-outline-secondary rounded-circle p-2" type="button" title="Menú">
+            <i class="bi bi-list fs-5"></i>
+        </button>
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0 bg-white" placeholder="Buscar viajes..." aria-label="Buscar viajes">
+            <button class="btn btn-outline-secondary border-start-0 rounded-end-pill" type="button" title="Filtros">
+                <i class="bi bi-funnel"></i>
+            </button>
+        </div>
+        <a asp-controller="Cliente" asp-action="Details" asp-route-id="@User.Identity?.Name" class="btn btn-outline-secondary rounded-circle p-2" title="Perfil">
+            <i class="bi bi-person fs-5"></i>
+        </a>
+    </div>
+
+    @* 2. SELECTOR DE VISTAS / PÍLDORAS (igual que Home/Index) *@
+    <div class="d-flex gap-2 mb-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3 py-1 btn-sm">
+            <i class="bi bi-eye me-1"></i> Ver todo
+        </a>
+        <a asp-controller="Viaje" asp-action="Create" class="btn btn-dark rounded-pill px-3 py-1 btn-sm fw-semibold">
+            <i class="bi bi-map me-1"></i> Crear viaje
+        </a>
+        <a asp-controller="Checklist" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3 py-1 btn-sm">
+            <i class="bi bi-check2-square me-1"></i> Checklists
+        </a>
+    </div>
+
+    <div class="mx-auto" style="max-width: 480px;">
     @* Cabecera igual al mockup *@
     <div class="mb-3">
         <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">Formulario de planificación</h1>
@@ -270,6 +304,7 @@
             </button>
         </div>
     </form>
+    </div>
 </div>
 
 @* Plantilla oculta de opciones del catálogo para clonar nuevos destinos en JS *@
@@ -299,6 +334,8 @@
 
             const paradasContainer = document.getElementById("paradas-container");
             const btnAddParada = document.getElementById("btn-add-parada");
+            // Contador independiente para los ids de Horario/Detalles (nunca se reutiliza tras borrar)
+            let paradaSeq = paradasContainer.querySelectorAll(".parada-card").length;
 
             // 1. Presupuesto dinámico
             const inputPresupuesto = document.getElementById("input-presupuesto");
@@ -503,7 +540,8 @@
             });
 
             btnAddParada?.addEventListener("click", function () {
-                const idx = paradasContainer.querySelectorAll(".parada-card").length;
+                const idx = paradasContainer.querySelectorAll(".parada-card").length; // solo para name=
+                const seq = paradaSeq++;                                              // solo para id=
                 const card = document.createElement("div");
                 card.className = "parada-card border-bottom pb-2";
                 card.innerHTML = `
@@ -524,18 +562,18 @@
                         <select name="Paradas[${idx}].DestinoIndex" class="form-select form-select-sm py-0 px-2 select-actividad-destino"
                                 style="width: auto; max-width: 140px; font-size: 0.78rem; border-radius: 6px;"></select>
                         <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 d-inline-flex align-items-center gap-1 btn-toggle-extra"
-                                data-target="horario-${idx}" style="font-size: 0.78rem; border-radius: 6px;">
+                                data-target="horario-${seq}" style="font-size: 0.78rem; border-radius: 6px;">
                             <i class="bi bi-clock"></i> Horario
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 d-inline-flex align-items-center gap-1 btn-toggle-extra"
-                                data-target="detalles-${idx}" style="font-size: 0.78rem; border-radius: 6px;">
+                                data-target="detalles-${seq}" style="font-size: 0.78rem; border-radius: 6px;">
                             <i class="bi bi-pencil-square"></i> Detalles
                         </button>
                     </div>
-                    <div id="horario-${idx}" class="mt-2 d-none">
+                    <div id="horario-${seq}" class="mt-2 d-none">
                         <input type="time" name="Paradas[${idx}].Horario" class="form-control form-control-sm" />
                     </div>
-                    <div id="detalles-${idx}" class="mt-2 d-none">
+                    <div id="detalles-${seq}" class="mt-2 d-none">
                         <input type="text" name="Paradas[${idx}].Detalles" class="form-control form-control-sm" placeholder="Notas, dirección o precio estimado..." />
                     </div>
                 `;
