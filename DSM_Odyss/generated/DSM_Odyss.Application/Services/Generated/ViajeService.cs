@@ -43,6 +43,9 @@ public sealed partial class ViajeService : ServiceEntity<Viaje>
 
     public async Task<Viaje> CrearViajeAsync(string p_titulo, DateTime p_fechaInicio, DateTime p_fechaFin, bool p_esPublico, float p_presupuesto, TipoViaje p_tipoViaje, EstadoViaje p_estado, int p_autor_oid, int p_carpetas_oid)
     {
+        Cliente propietario = await _unitOfWork.ClienteRepository.ReadAsync(p_autor_oid)
+            ?? throw new ModelException("Cliente not found.");
+
         Viaje entity = new Viaje
         {
             Titulo = p_titulo,
@@ -55,6 +58,13 @@ public sealed partial class ViajeService : ServiceEntity<Viaje>
         };
 
         await _repository.SaveAsync(entity);
+        propietario.Viajes ??= new List<Viaje>();
+        if (!propietario.Viajes.Contains(entity))
+        {
+            propietario.Viajes.Add(entity);
+        }
+        await _unitOfWork.ClienteRepository.SaveAsync(propietario);
+
         return entity;
     }
 

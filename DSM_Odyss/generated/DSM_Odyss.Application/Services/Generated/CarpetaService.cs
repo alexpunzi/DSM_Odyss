@@ -43,12 +43,28 @@ public sealed partial class CarpetaService : ServiceEntity<Carpeta>
 
     public async Task<Carpeta> CrearCarpetaAsync(string p_nombre, int p_viaje_oid)
     {
-        Carpeta entity = new Carpeta
+        Viaje viaje = await _unitOfWork.ViajeRepository.ReadAsync(p_viaje_oid)
+            ?? throw new ModelException("Viaje not found.");
+        if (viaje.Carpetas is not null)
         {
-            Nombre = p_nombre,
-        };
+            throw new ModelException("El viaje ya tiene una carpeta.");
+        }
 
-        await _repository.SaveAsync(entity);
+        Carpeta entity = new() { Nombre = p_nombre };
+
+        await _unitOfWork.BeginTransactionAsync("Carpeta.CrearCarpeta");
+        try
+        {
+            await _repository.SaveAsync(entity);
+            viaje.Carpetas = entity;
+            await _unitOfWork.ViajeRepository.SaveAsync(viaje);
+            await _unitOfWork.CommitAsync();
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync();
+            throw;
+        }
         return entity;
     }
 

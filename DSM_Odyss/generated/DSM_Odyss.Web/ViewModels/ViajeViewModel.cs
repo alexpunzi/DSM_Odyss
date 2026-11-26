@@ -37,6 +37,8 @@ public sealed class ViajeViewModel : IValidatableObject
     public List<SelectListItem> CarpetasOptions { get; set; } = new();
     [BindNever, UIHint("HariaAssociationLabel"), Display(Name = "Carpetas")]
     public string? CarpetasLabel { get; set; }
+    [BindNever, ValidateNever]
+    public bool EsPropietario { get; set; }
 
     [UIHint("HariaAssociation")]
     [Display(Name = "Collages")]

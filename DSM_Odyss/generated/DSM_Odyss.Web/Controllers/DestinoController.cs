@@ -18,10 +18,12 @@ public partial class DestinoController : Controller
 {
     /*PROTECTED REGION ID(DestinoController_dependencies) START*/
     private readonly DestinoService _destinoService;
+    private readonly DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<DestinoController> _logger;
-    public DestinoController(DestinoService destinoService, ILogger<DestinoController>? logger = null)
+    public DestinoController(DestinoService destinoService, DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory unitOfWorkFactory, ILogger<DestinoController>? logger = null)
     {
         _destinoService = destinoService;
+        _unitOfWorkFactory = unitOfWorkFactory;
 
 
 
@@ -35,8 +37,22 @@ public partial class DestinoController : Controller
     {
     /*PROTECTED REGION ID(DestinoController_Index_GET_body) START*/
 
-        var entities = await _destinoService.LeerTodasDestinosAsync();
-        return View(entities.Select(DestinoAssembler.ToViewModel).ToList());
+        if (!int.TryParse(User.Identity?.Name, out var clienteId))
+            return Challenge();
+
+        await using var unitOfWork = _unitOfWorkFactory.Create();
+        var cliente = await unitOfWork.ClienteRepository.ReadAsync(clienteId);
+        if (cliente is null) return NotFound();
+
+        var destinos = cliente.Viajes
+            .SelectMany(viaje => viaje.ParadasDestino)
+            .Where(parada => parada.Destino is not null && !string.IsNullOrWhiteSpace(parada.Destino.Pais))
+            .Select(parada => parada.Destino)
+            .GroupBy(destino => destino.Pais.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(grupo => DestinoAssembler.ToViewModel(grupo.First()))
+            .ToList();
+
+        return View(destinos);
     /*PROTECTED REGION END*/
     }
 

@@ -1,33 +1,249 @@
-@* HARIA-WEB GENERATED sha256:3ca08db67d0b455ec921f3bfa5b3ea7eeb1a5befb527ab65817ab0b2db93952c *@
-@model DSM_Odyss.Web.ViewModels.CarpetaViewModel
+@model DSM_Odyss.Web.ViewModels.CarpetaDetailsViewModel
 
 @{
-    ViewData["Title"] = "Detalles";
+    ViewData["Title"] = Model.Nombre;
 }
 
-<div class="row justify-content-center">
-    <div class="col-xl-9">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-body p-4">
-                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Detalles</span>
-                <h1 class="h3 mb-1">Carpeta</h1>
-                <p class="text-body-secondary mb-0">Review the complete record information.</p>
-            </div>
-            <div class="card-body p-4">
-                <dl class="row mb-0 gy-2">
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Id)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Id)</dd>
-            <dt class="col-sm-4 col-lg-3 text-body-secondary">@Html.DisplayNameFor(model => model.Nombre)</dt>
-            <dd class="col-sm-8 col-lg-9">@Html.DisplayFor(model => model.Nombre)</dd>
-                </dl>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-            </div>
-            <div class="card-footer bg-body p-4">
-                <div class="d-flex flex-column flex-sm-row gap-2">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-                <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
-            </div>
-            </div>
+<div class="container py-3" style="max-width: 760px;">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Carpeta" asp-action="Index" class="btn btn-light rounded-circle" aria-label="Volver a mis carpetas">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="Index" class="btn btn-light rounded-circle" aria-label="Volver al inicio">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        }
+        <div class="flex-grow-1 min-w-0">
+            <div class="small text-body-secondary">@Model.ViajeTitulo</div>
+            <h1 class="h4 mb-0 text-truncate">@Model.Nombre</h1>
         </div>
+        @if (Model.EsPropietario)
+        {
+            <button type="button" class="btn btn-outline-primary" id="toggleSharePanel" aria-controls="sharePanel" aria-expanded="@(!string.IsNullOrWhiteSpace(Model.Busqueda))" title="Compartir carpeta">
+                <i class="bi bi-share"></i>
+            </button>
+        }
+        @if (Model.PuedeEditar)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary" title="Editar carpeta">
+                <i class="bi bi-pencil"></i>
+            </a>
+        }
     </div>
+
+    @if (Model.EsEnlacePublico)
+    {
+        <div class="alert alert-info py-2 small">Estás viendo una carpeta compartida mediante enlace. El acceso es de solo lectura.</div>
+    }
+
+    @if (TempData["CarpetaError"] is string error)
+    {
+        <div class="alert alert-danger" role="alert">@error</div>
+    }
+
+    <section aria-label="Fotos y vídeos de la carpeta">
+        @if (Model.Archivos.Count == 0)
+        {
+            <div class="text-center rounded-4 border bg-body p-5">
+                <i class="bi bi-images display-5 text-body-secondary"></i>
+                <h2 class="h5 mt-3">Aún no hay recuerdos</h2>
+                <p class="text-body-secondary mb-0">Sube fotos o vídeos para empezar la galería de este viaje.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-2 row-cols-sm-3 g-2">
+                @foreach (var archivo in Model.Archivos)
+                {
+                    <div class="col">
+                        <div class="ratio ratio-1x1 overflow-hidden rounded-3 bg-dark-subtle">
+                            @if (!archivo.TieneArchivo)
+                            {
+                                <div class="d-flex flex-column align-items-center justify-content-center text-body-secondary p-3 text-center">
+                                    <i class="bi @(archivo.EsVideo ? "bi-camera-video" : "bi-image") fs-2"></i>
+                                    <span class="small mt-2">Archivo sin contenido</span>
+                                </div>
+                            }
+                            else if (archivo.EsVideo)
+                            {
+                                <video src="@archivo.Url" controls preload="metadata" aria-label="@archivo.Nombre"></video>
+                            }
+                            else
+                            {
+                                <a href="@archivo.Url" target="_blank" rel="noopener" aria-label="Abrir @archivo.Nombre">
+                                    <img src="@archivo.Url" alt="@archivo.Nombre" class="w-100 h-100 object-fit-cover" loading="lazy" />
+                                </a>
+                            }
+                        </div>
+                        <div class="small text-truncate mt-1" title="@archivo.Nombre">@archivo.Nombre</div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    @if (Model.PuedeEditar)
+    {
+        <form asp-action="SubirArchivo" method="post" enctype="multipart/form-data" class="border rounded-3 bg-body p-3 mt-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="carpetaId" value="@Model.Id" />
+            <label for="archivo" class="form-label fw-semibold">Añadir foto o vídeo</label>
+            <div class="input-group">
+                <input id="archivo" name="archivo" type="file" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime" required />
+                <button type="submit" class="btn btn-primary">Subir</button>
+            </div>
+            <div class="form-text">JPG, PNG, GIF, WEBP, MP4, WEBM o MOV. Máximo 25 MB.</div>
+        </form>
+    }
+
+    @if (Model.EsPropietario)
+    {
+        <section id="sharePanel" class="card border shadow-sm mt-4 @(string.IsNullOrWhiteSpace(Model.Busqueda) ? "d-none" : string.Empty)" aria-label="Compartir carpeta">
+            <div class="card-body p-3 p-sm-4">
+                <h2 class="h5 text-center mb-3">Compartir esta carpeta de viaje</h2>
+
+                <form asp-action="Details" asp-route-id="@Model.Id" method="get" class="mb-3">
+                    <label for="userSearch" class="form-label visually-hidden">Buscar usuarios</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input id="userSearch" name="q" value="@Model.Busqueda" class="form-control" placeholder="Buscar por usuario o nombre" minlength="2" />
+                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                    </div>
+                </form>
+
+                @if (Model.ResultadosBusqueda.Count > 0)
+                {
+                    <div class="list-group mb-3">
+                        @foreach (var usuario in Model.ResultadosBusqueda)
+                        {
+                            <form asp-action="ActualizarPermiso" method="post" class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="carpetaId" value="@Model.Id" />
+                                <input type="hidden" name="clienteId" value="@usuario.Id" />
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">@@@usuario.Usuario</div>
+                                    <div class="small text-body-secondary">@usuario.NombreCompleto</div>
+                                </div>
+                                <select name="puedeEditar" class="form-select form-select-sm" style="width:auto" aria-label="Permiso para @usuario.Usuario">
+                                    <option value="false">Solo ver</option>
+                                    <option value="true">Editar</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Compartir</button>
+                            </form>
+                        }
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.Busqueda))
+                {
+                    <p class="small text-body-secondary">No se encontraron usuarios para esa búsqueda.</p>
+                }
+
+                @if (Model.Compartidos.Count > 0)
+                {
+                    <h3 class="h6 mt-3">Personas con acceso</h3>
+                    <div class="list-group mb-4">
+                        @foreach (var compartido in Model.Compartidos)
+                        {
+                            <div class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="flex-grow-1">@@@compartido.Usuario</span>
+                                <form asp-action="ActualizarPermiso" method="post" class="d-flex align-items-center gap-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="carpetaId" value="@Model.Id" />
+                                    <input type="hidden" name="clienteId" value="@compartido.Id" />
+                                    <select name="puedeEditar" class="form-select form-select-sm" aria-label="Cambiar permiso de @compartido.Usuario">
+                                        <option value="false" selected="@(!compartido.PuedeEditar)">Solo ver</option>
+                                        <option value="true" selected="@compartido.PuedeEditar">Editar</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Guardar</button>
+                                </form>
+                                <form asp-action="QuitarCompartido" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="carpetaId" value="@Model.Id" />
+                                    <input type="hidden" name="clienteId" value="@compartido.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Quitar a @compartido.Usuario">
+                                        <i class="bi bi-person-x"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <hr />
+                <h3 class="h6 text-center">O copia un enlace público de solo lectura</h3>
+                <div class="input-group">
+                    <input id="shareUrl" type="url" class="form-control" value="@Model.EnlacePublico" readonly aria-label="Enlace público de la carpeta" />
+                    <button id="copyShareUrl" class="btn btn-outline-primary" type="button">
+                        <i class="bi bi-copy me-1"></i>Copiar
+                    </button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span id="copyStatus" class="small text-body-secondary" role="status">Cualquiera con el enlace podrá ver la galería.</span>
+                    <form asp-action="RevocarEnlace" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="carpetaId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-sm btn-link text-danger">Generar otro enlace</button>
+                    </form>
+                </div>
+                <div class="text-center mt-3">
+                    <button id="nativeShare" type="button" class="btn btn-link text-body-secondary" aria-label="Compartir enlace">
+                        <i class="bi bi-send fs-5"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const toggle = document.getElementById("toggleSharePanel");
+            const panel = document.getElementById("sharePanel");
+            if (toggle && panel) {
+                toggle.addEventListener("click", () => {
+                    const isHidden = panel.classList.toggle("d-none");
+                    toggle.setAttribute("aria-expanded", String(!isHidden));
+                });
+            }
+
+            const urlInput = document.getElementById("shareUrl");
+            const copyButton = document.getElementById("copyShareUrl");
+            const status = document.getElementById("copyStatus");
+            if (urlInput && copyButton && status) {
+                copyButton.addEventListener("click", async () => {
+                    try {
+                        await navigator.clipboard.writeText(urlInput.value);
+                        status.textContent = "Enlace copiado.";
+                    } catch {
+                        urlInput.select();
+                        status.textContent = "Copia el enlace seleccionado.";
+                    }
+                });
+            }
+
+            const shareButton = document.getElementById("nativeShare");
+            if (shareButton && urlInput) {
+                shareButton.addEventListener("click", async () => {
+                    if (navigator.share) {
+                        try {
+                            await navigator.share({ title: document.title, url: urlInput.value });
+                        } catch {
+                            if (status) status.textContent = "No se pudo abrir el menú para compartir.";
+                        }
+                    } else if (copyButton) {
+                        copyButton.click();
+                    }
+                });
+            }
+        })();
+    </script>
+}

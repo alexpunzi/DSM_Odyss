@@ -204,7 +204,7 @@ public partial class ClienteController : Controller
             ModelState.AddModelError(string.Empty, "Tu cuenta ya está creada. Inicia sesión desde la página de acceso.");
             return View(model);
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Details), new { id = createdUser.Id });
     /*PROTECTED REGION END*/
     }
 

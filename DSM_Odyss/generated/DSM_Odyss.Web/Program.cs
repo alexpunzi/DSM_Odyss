@@ -99,6 +99,7 @@ static void EnsureDatabaseSchema(string? connectionString, string contentRootPat
         var tablesCount = Convert.ToInt32(command.ExecuteScalar());
         if (tablesCount > 0)
         {
+            EnsureCarpetaFeatureSchema(connection);
             return;
         }
     }
@@ -113,4 +114,47 @@ static void EnsureDatabaseSchema(string? connectionString, string contentRootPat
     configuration.AddAssembly(typeof(DSM_Odyss.Infrastructure.UnitOfWorkFactory).Assembly);
 
     new SchemaExport(configuration).Execute(false, true, false);
+
+    if (databasePath is not null && File.Exists(databasePath))
+    {
+        using var connection = new SQLiteConnection(connectionString);
+        connection.Open();
+        EnsureCarpetaFeatureSchema(connection);
+    }
+}
+
+static void EnsureCarpetaFeatureSchema(SQLiteConnection connection)
+{
+    EnsureColumnExists(connection, "Carpeta", "publicShareToken", "TEXT NULL");
+    EnsureColumnExists(connection, "Multimedia", "rutaArchivo", "TEXT NOT NULL DEFAULT ''");
+
+    using var command = connection.CreateCommand();
+    command.CommandText = """
+        CREATE TABLE IF NOT EXISTS REL_CarpetaClienteEditor (
+            FK_Carpeta_compartidoCon INTEGER NOT NULL,
+            FK_Cliente_carpetasCompartidas INTEGER NOT NULL,
+            UNIQUE (FK_Carpeta_compartidoCon, FK_Cliente_carpetasCompartidas),
+            FOREIGN KEY (FK_Carpeta_compartidoCon) REFERENCES Carpeta(id) ON DELETE CASCADE,
+            FOREIGN KEY (FK_Cliente_carpetasCompartidas) REFERENCES Cliente(id) ON DELETE CASCADE
+        );
+        """;
+    command.ExecuteNonQuery();
+}
+
+static void EnsureColumnExists(SQLiteConnection connection, string tableName, string columnName, string definition)
+{
+    using var inspect = connection.CreateCommand();
+    inspect.CommandText = $"PRAGMA table_info(\"{tableName}\");";
+    using var reader = inspect.ExecuteReader();
+    while (reader.Read())
+    {
+        if (string.Equals(reader["name"]?.ToString(), columnName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+    }
+
+    using var alter = connection.CreateCommand();
+    alter.CommandText = $"ALTER TABLE \"{tableName}\" ADD COLUMN \"{columnName}\" {definition};";
+    alter.ExecuteNonQuery();
 }

@@ -11,10 +11,11 @@
             <div class="card-header bg-body p-4">
                 <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Crear</span>
                 <h1 class="h3 mb-1">Carpeta</h1>
-                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
+                <p class="text-body-secondary mb-0">Crea la carpeta de recuerdos para @Model.ViajeTitulo.</p>
             </div>
             <form asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
+                <input asp-for="ViajeId" type="hidden" />
                 <div class="card-body p-4">
                     <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
         <div class="mb-3">

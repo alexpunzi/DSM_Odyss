@@ -14,6 +14,88 @@ namespace DSM_Odyss.Tests.Manual;
 public sealed class ManualOperationTests
 {
     [Fact]
+    public async Task Crear_viaje_lo_asocia_al_cliente_y_lo_persiste()
+    {
+        await WithUnitOfWorkAsync(async unitOfWork =>
+        {
+            Cliente primerCliente = CrearCliente("primer-cliente");
+            Cliente propietario = CrearCliente("viajero");
+            await new ClienteService(unitOfWork).AddClienteDefaultAsync(primerCliente);
+            await new ClienteService(unitOfWork).AddClienteDefaultAsync(propietario);
+
+            Viaje viaje = await new ViajeService(unitOfWork).CrearViajeAsync(
+                "Viaje de prueba",
+                new DateTime(2026, 7, 1),
+                new DateTime(2026, 7, 5),
+                false,
+                500,
+                TipoViaje.ocio,
+                EstadoViaje.planificado,
+                propietario.Id,
+                0);
+
+            Cliente clientePersistido = await unitOfWork.ClienteRepository.ReadAsync(propietario.Id)
+                ?? throw new InvalidOperationException("The owner was not saved.");
+            Viaje viajeDelCliente = Assert.Single(clientePersistido.Viajes);
+            Assert.Equal(viaje.Id, viajeDelCliente.Id);
+
+            Cliente primerClientePersistido = await unitOfWork.ClienteRepository.ReadAsync(primerCliente.Id)
+                ?? throw new InvalidOperationException("The other client was not saved.");
+            Assert.Empty(primerClientePersistido.Viajes);
+        });
+    }
+
+    [Fact]
+    public async Task Crear_carpeta_la_asocia_al_viaje_y_persiste_el_permiso_de_edicion()
+    {
+        await WithUnitOfWorkAsync(async unitOfWork =>
+        {
+            Cliente propietario = CrearCliente("propietario-carpeta");
+            Cliente colaborador = CrearCliente("colaborador-carpeta");
+            var clienteService = new ClienteService(unitOfWork);
+            await clienteService.AddClienteDefaultAsync(propietario);
+            await clienteService.AddClienteDefaultAsync(colaborador);
+
+            Viaje viaje = await new ViajeService(unitOfWork).CrearViajeAsync(
+                "Viaje con recuerdos",
+                new DateTime(2026, 8, 1),
+                new DateTime(2026, 8, 5),
+                false,
+                300,
+                TipoViaje.ocio,
+                EstadoViaje.planificado,
+                propietario.Id,
+                0);
+
+            Carpeta carpeta = await new CarpetaService(unitOfWork)
+                .CrearCarpetaAsync("Recuerdos", viaje.Id);
+            carpeta.CompartidoCon.Add(colaborador);
+            carpeta.CompartidoConEdicion.Add(colaborador);
+            Multimedia multimedia = new()
+            {
+                Tipo = TipoMultimedia.foto,
+                Nombre = "playa.jpg",
+                FechaSubida = new DateTime(2026, 8, 2),
+                Descripcion = "Día de playa",
+                RutaArchivo = "test-photo.jpg"
+            };
+            carpeta.Multimedia.Add(multimedia);
+            await unitOfWork.MultimediaRepository.SaveAsync(multimedia);
+            await unitOfWork.CarpetaRepository.SaveAsync(carpeta);
+
+            Viaje viajeGuardado = await unitOfWork.ViajeRepository.ReadAsync(viaje.Id)
+                ?? throw new InvalidOperationException("The trip was not saved.");
+            Assert.Equal(carpeta.Id, viajeGuardado.Carpetas?.Id);
+
+            Carpeta carpetaGuardada = await unitOfWork.CarpetaRepository.ReadAsync(carpeta.Id)
+                ?? throw new InvalidOperationException("The folder was not saved.");
+            Assert.Contains(carpetaGuardada.CompartidoCon, cliente => cliente.Id == colaborador.Id);
+            Assert.Contains(carpetaGuardada.CompartidoConEdicion, cliente => cliente.Id == colaborador.Id);
+            Assert.Equal("test-photo.jpg", Assert.Single(carpetaGuardada.Multimedia).RutaArchivo);
+        });
+    }
+
+    [Fact]
     public async Task Crear_tarea_la_asocia_y_persiste_en_su_checklist()
     {
         await WithUnitOfWorkAsync(async unitOfWork =>

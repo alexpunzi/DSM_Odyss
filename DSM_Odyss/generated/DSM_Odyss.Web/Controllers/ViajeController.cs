@@ -40,6 +40,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     }
 
+    [AllowAnonymous]
     [HttpGet]
     /*PROTECTED REGION ID(ViajeController_Details_GET_attributes) START*/
     /*PROTECTED REGION END*/
@@ -48,7 +49,21 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION ID(ViajeController_Details_GET_body) START*/
         var entity = await _viajeService.LeerViajeOIDAsync(id);
         if (entity is null) return NotFound();
-        return View(ViajeAssembler.ToViewModel(entity));
+        if (User.Identity?.IsAuthenticated != true && !entity.EsPublico) return NotFound();
+
+        var model = ViajeAssembler.ToViewModel(entity);
+        if (int.TryParse(User.Identity?.Name, out var currentClientId))
+        {
+            await using var unitOfWork = _formUnitOfWorkFactory.Create();
+            var client = await unitOfWork.ClienteRepository.ReadAsync(currentClientId);
+            model.EsPropietario = client?.Viajes.Any(viaje => viaje.Id == id) == true;
+        }
+        if (!model.EsPropietario)
+        {
+            model.CarpetasId = null;
+            model.CarpetasLabel = null;
+        }
+        return View(model);
     /*PROTECTED REGION END*/
     }
 
@@ -84,7 +99,7 @@ public partial class ViajeController : Controller
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(ViajeController_Create_POST_attributes) START*/
     /*PROTECTED REGION END*/
-    public async Task<IActionResult> Create(ViajeViewModel model, int p_autor_oid)
+    public async Task<IActionResult> Create(ViajeViewModel model)
     {
     /*PROTECTED REGION ID(ViajeController_Create_POST_body) START*/
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
@@ -95,16 +110,15 @@ public partial class ViajeController : Controller
 
         await LoadFormOptionsAsync(model, unitOfWork);
 
-        // Resolver autor automáticamente si no viene en el formulario
-        if (p_autor_oid <= 0)
-        {
-            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name;
-            var clientes = await unitOfWork.ClienteRepository.ReadAllAsync();
-            var clienteActual = clientes.FirstOrDefault(c => c.Email == email) ?? clientes.FirstOrDefault();
-            if (clienteActual != null) p_autor_oid = clienteActual.Id;
-        }
+        if (!int.TryParse(User.Identity?.Name, out var p_autor_oid))
+            return Challenge();
+        if (await unitOfWork.ClienteRepository.ReadAsync(p_autor_oid) is null)
+            return Forbid();
 
         if (!ModelState.IsValid) return View(model);
+        if (model.CarpetasId is int carpetaId &&
+            !await IsOwnerOfCarpetaAsync(unitOfWork, carpetaId, p_autor_oid))
+            return Forbid();
 
         await unitOfWork.BeginTransactionAsync("MVC.Viaje.Create");
         try
@@ -229,7 +243,7 @@ public partial class ViajeController : Controller
             return View(model);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Index", "Destino");
     /*PROTECTED REGION END*/
     }
 
@@ -239,8 +253,13 @@ public partial class ViajeController : Controller
     public async Task<IActionResult> Edit(int id)
     {
     /*PROTECTED REGION ID(ViajeController_Edit_GET_body) START*/
+        if (!int.TryParse(User.Identity?.Name, out var currentClientId)) return Challenge();
         var entity = await _viajeService.LeerViajeOIDAsync(id);
         if (entity is null) return NotFound();
+        await using (var unitOfWork = _formUnitOfWorkFactory.Create())
+        {
+            if (!await IsOwnerOfTripAsync(unitOfWork, id, currentClientId)) return Forbid();
+        }
         var model = ViajeAssembler.ToViewModel(entity);
         await LoadFormOptionsAsync(model);
         return View(model);
@@ -254,22 +273,20 @@ public partial class ViajeController : Controller
     public async Task<IActionResult> Edit(int id, ViajeViewModel model, int p_autor_oid)
     {
     /*PROTECTED REGION ID(ViajeController_Edit_POST_body) START*/
+        if (!int.TryParse(User.Identity?.Name, out var currentClientId)) return Challenge();
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
         var service = new ViajeService(unitOfWork);
         var entity = await service.ReadOIDViajeDefaultAsync(id);
         if (entity is null) return NotFound();
+        if (!await IsOwnerOfTripAsync(unitOfWork, id, currentClientId)) return Forbid();
 
         await LoadFormOptionsAsync(model, unitOfWork);
-
-        if (p_autor_oid <= 0)
-        {
-            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name;
-            var clientes = await unitOfWork.ClienteRepository.ReadAllAsync();
-            var clienteActual = clientes.FirstOrDefault(c => c.Email == email) ?? clientes.FirstOrDefault();
-            if (clienteActual != null) p_autor_oid = clienteActual.Id;
-        }
+        p_autor_oid = currentClientId;
 
         if (!ModelState.IsValid) return View(model);
+        if (model.CarpetasId is int carpetaId &&
+            !await IsOwnerOfCarpetaAsync(unitOfWork, carpetaId, currentClientId))
+            return Forbid();
 
         await unitOfWork.BeginTransactionAsync("MVC.Viaje.Edit");
         try
@@ -464,7 +481,15 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION ID(ViajeController_method_LoadFormOptionsAsync_DSMOdyssWebViewModelsViajeViewModel_DSMOdyssApplicationAbstractionsIUnitOfWork) START*/
     private async Task LoadFormOptionsAsync(ViajeViewModel model, DSM_Odyss.Application.Abstractions.IUnitOfWork unitOfWork)
     {
+        var clientId = int.TryParse(User.Identity?.Name, out var currentClientId) ? currentClientId : 0;
+        var client = clientId > 0 ? await unitOfWork.ClienteRepository.ReadAsync(clientId) : null;
+        var ownedFolderIds = client?.Viajes
+            .Where(viaje => viaje.Carpetas is not null)
+            .Select(viaje => viaje.Carpetas!.Id)
+            .ToHashSet() ?? new HashSet<int>();
+
         var options0 = (await unitOfWork.CarpetaRepository.ReadAllAsync())
+            .Where(item => ownedFolderIds.Contains(item.Id))
             .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = item.Nombre ?? string.Empty }).ToList();
         var options1 = (await unitOfWork.CollageRepository.ReadAllAsync())
             .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = item.UrlImagen ?? string.Empty }).ToList();
@@ -474,6 +499,24 @@ public partial class ViajeController : Controller
         model.CarpetasOptions = options0;
         model.CollagesOptions = options1;
         model.DestinosCatalogoOptions = optionsDestinos;
+    }
+
+    private static async Task<bool> IsOwnerOfTripAsync(
+        DSM_Odyss.Application.Abstractions.IUnitOfWork unitOfWork,
+        int viajeId,
+        int clientId)
+    {
+        var client = await unitOfWork.ClienteRepository.ReadAsync(clientId);
+        return client?.Viajes.Any(viaje => viaje.Id == viajeId) == true;
+    }
+
+    private static async Task<bool> IsOwnerOfCarpetaAsync(
+        DSM_Odyss.Application.Abstractions.IUnitOfWork unitOfWork,
+        int carpetaId,
+        int clientId)
+    {
+        var client = await unitOfWork.ClienteRepository.ReadAsync(clientId);
+        return client?.Viajes.Any(viaje => viaje.Carpetas?.Id == carpetaId) == true;
     }
     /*PROTECTED REGION END*/
 }

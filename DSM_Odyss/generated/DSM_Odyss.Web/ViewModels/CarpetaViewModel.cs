@@ -11,7 +11,9 @@ public sealed class CarpetaViewModel : IValidatableObject
     [Required(ErrorMessage = "Debes indicar {0}.")]
     public string Nombre { get; set; } = string.Empty;
 
-
+    public int ViajeId { get; set; }
+    public int TotalArchivos { get; set; }
+    public string ViajeTitulo { get; set; } = string.Empty;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

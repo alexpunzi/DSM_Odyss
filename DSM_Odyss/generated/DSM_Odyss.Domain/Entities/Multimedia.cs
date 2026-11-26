@@ -11,6 +11,7 @@ public partial class Multimedia
     public virtual string Nombre { get; set; } = string.Empty;
     public virtual DateTime FechaSubida { get; set; }
     public virtual string Descripcion { get; set; } = string.Empty;
+    public virtual string RutaArchivo { get; set; } = string.Empty;
 
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);
 

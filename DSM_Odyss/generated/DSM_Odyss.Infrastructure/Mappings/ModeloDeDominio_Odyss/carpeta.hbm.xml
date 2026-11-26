@@ -9,6 +9,9 @@
     <property name="Nombre" type="String">
       <column name="nombre" not-null="true"/>
     </property>
+    <property name="PublicShareToken" type="String">
+      <column name="publicShareToken" />
+    </property>
     <bag name="CompartidoCon" table="REL_CarpetaCliente">
       <key>
         <column name="FK_Carpeta_compartidoCon"/>
@@ -17,7 +20,15 @@
         <column name="FK_Cliente_carpetasCompartidas"/>
       </many-to-many>
     </bag>
-    <bag name="Multimedia">
+    <bag name="CompartidoConEdicion" table="REL_CarpetaClienteEditor">
+      <key>
+        <column name="FK_Carpeta_compartidoCon"/>
+      </key>
+      <many-to-many class="Cliente">
+        <column name="FK_Cliente_carpetasCompartidas"/>
+      </many-to-many>
+    </bag>
+    <bag name="Multimedia" cascade="all-delete-orphan">
       <key>
         <column name="FK_Carpeta_multimedia"/>
       </key>

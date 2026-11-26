@@ -13,7 +13,8 @@
 
     @* Flecha atrás (<) *@
     <div class="mb-3">
-        <a asp-action="Index" class="text-dark text-decoration-none fs-4 d-inline-flex align-items-center" title="Volver">
+        <a asp-controller="@(User.Identity?.IsAuthenticated == true ? "Viaje" : "Home")"
+           asp-action="Index" class="text-dark text-decoration-none fs-4 d-inline-flex align-items-center" title="Volver">
             <i class="bi bi-chevron-left"></i>
         </a>
     </div>
@@ -119,11 +120,22 @@
                     <span>Visibilidad:</span>
                     <span class="fw-medium text-dark">@((Model?.EsPublico ?? false) ? "Viaje público" : "Privado")</span>
                 </div>
-                @if (!string.IsNullOrWhiteSpace(Model?.CarpetasLabel))
+                @if (Model?.EsPropietario == true && Model.CarpetasId is int carpetaId)
                 {
                     <div class="d-flex justify-content-between">
                         <span>Carpeta:</span>
-                        <span class="fw-medium text-dark">@Model.CarpetasLabel</span>
+                        <a asp-controller="Carpeta" asp-action="Details" asp-route-id="@carpetaId" class="fw-medium">
+                            @(Model.CarpetasLabel ?? "Abrir carpeta de viaje")
+                        </a>
+                    </div>
+                }
+                else if (Model?.EsPropietario == true)
+                {
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Carpeta de recuerdos:</span>
+                        <a asp-controller="Carpeta" asp-action="Create" asp-route-viajeId="@Model.Id" class="btn btn-sm btn-outline-primary">
+                            Crear carpeta
+                        </a>
                     </div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model?.CollagesLabel))
@@ -140,10 +152,17 @@
 
     @* Botones inferiores *@
     <div class="d-flex justify-content-end gap-2">
-        <a asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver</a>
-        <a asp-action="Edit" asp-route-id="@(Model?.Id ?? 0)" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
-           style="background-color: #cbd5e1; border-color: #64748b; color: #1e293b; border-radius: 6px;">
-            Editar
-        </a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Viaje" asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver</a>
+            <a asp-controller="Viaje" asp-action="Edit" asp-route-id="@(Model?.Id ?? 0)" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
+               style="background-color: #cbd5e1; border-color: #64748b; color: #1e293b; border-radius: 6px;">
+                Editar
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver al inicio</a>
+        }
     </div>
 </div>

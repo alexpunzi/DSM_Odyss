@@ -22,34 +22,36 @@ public sealed class HomeController : Controller
         await using var unitOfWork = _unitOfWorkFactory.Create();
 
         var viajesPublicos = (await _viajeService.ViajesPublicosAsync()).ToList();
-        if (!viajesPublicos.Any())
-        {
-            viajesPublicos = (await _viajeService.LeerTodosViajesAsync()).ToList();
-        }
 
         var clientes = (await unitOfWork.ClienteRepository.ReadAllAsync()).ToList();
 
         var viajesVm = viajesPublicos.Select(v =>
         {
-            var cliente = clientes.FirstOrDefault(c => c.Id == v.Id);
+            var cliente = clientes.FirstOrDefault(c => c.Viajes.Any(viaje => viaje.Id == v.Id));
+            var autorNombre = cliente is null
+                ? string.Empty
+                : $"{cliente.Nombre} {cliente.Apellidos}".Trim();
+
             return new ViajePopularItemViewModel
             {
                 Id = v.Id,
                 Titulo = v.Titulo ?? string.Empty,
-                AutorNombre = cliente?.Email ?? "Viajero",
+                AutorNombre = string.IsNullOrWhiteSpace(autorNombre) ? "Viajero" : autorNombre,
                 ImagenUrl = v.Collages?.UrlImagen
             };
         }).ToList();
 
         var destinosCatalogo = (await unitOfWork.DestinoRepository.ReadAllAsync()).ToList();
         var paradasDestino = (await unitOfWork.ParadaDestinoRepository.ReadAllAsync()).ToList();
+        var viajeIdsPublicos = viajesPublicos.Select(v => v.Id).ToHashSet();
 
         var conteoPorDestino = paradasDestino
-            .Where(p => p.Destino != null)
+            .Where(p => p.Destino != null && p.Viaje != null && viajeIdsPublicos.Contains(p.Viaje.Id))
             .GroupBy(p => p.Destino.Id)
-            .ToDictionary(g => g.Key, g => g.Select(p => p.Viaje?.Id ?? 0).Distinct().Count());
+            .ToDictionary(g => g.Key, g => g.Select(p => p.Viaje!.Id).Distinct().Count());
 
         var topDestinosVm = destinosCatalogo
+            .Where(d => conteoPorDestino.ContainsKey(d.Id))
             .Select(d =>
             {
                 conteoPorDestino.TryGetValue(d.Id, out var numViajes);

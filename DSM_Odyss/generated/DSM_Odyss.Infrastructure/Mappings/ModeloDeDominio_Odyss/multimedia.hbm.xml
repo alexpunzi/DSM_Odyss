@@ -18,6 +18,9 @@
     <property name="Descripcion" type="String">
       <column name="descripcion" not-null="true"/>
     </property>
+    <property name="RutaArchivo" type="String">
+      <column name="rutaArchivo" not-null="true" />
+    </property>
   </class>
   <query name="MultimediaReadAllHQL">from Multimedia</query>
 </hibernate-mapping>
