@@ -1660,5 +1660,1132 @@
       "DELETE FROM Checklist WHERE id = ?"
     ]
   }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:02",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=UbicacionRepository.SaveAsync Operation=Save Entity=Ubicacion TransactionId=858b0a77-64ea-48fd-9567-3aec04cab90b SqlStatementCount=1",
+  "BusinessOperation": "UbicacionRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Ubicacion",
+    "TransactionId": "858b0a77-64ea-48fd-9567-3aec04cab90b",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:02",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=UbicacionRepository.SaveAsync Operation=Save Entity=Ubicacion TransactionId=858b0a77-64ea-48fd-9567-3aec04cab90b SqlStatements=INSERT INTO Ubicacion (nombre, latitud, longitud, id) VALUES (?, ?, ?, ?)",
+  "BusinessOperation": "UbicacionRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Ubicacion",
+    "TransactionId": "858b0a77-64ea-48fd-9567-3aec04cab90b",
+    "SqlStatements": [
+      "INSERT INTO Ubicacion (nombre, latitud, longitud, id) VALUES (?, ?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=UbicacionRepository.SaveAsync Operation=Save Entity=Ubicacion TransactionId=fcf6c84e-a884-454d-9ddc-10681c4de32a SqlStatementCount=0",
+  "BusinessOperation": "UbicacionRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Ubicacion",
+    "TransactionId": "fcf6c84e-a884-454d-9ddc-10681c4de32a",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=DestinoRepository.SaveAsync Operation=Save Entity=Destino TransactionId=1359ffb5-2f36-4b80-81a4-ebea9193826a SqlStatementCount=1",
+  "BusinessOperation": "DestinoRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Destino",
+    "TransactionId": "1359ffb5-2f36-4b80-81a4-ebea9193826a",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=DestinoRepository.SaveAsync Operation=Save Entity=Destino TransactionId=1359ffb5-2f36-4b80-81a4-ebea9193826a SqlStatements=INSERT INTO Destino (pais, ciudad, id) VALUES (?, ?, ?)",
+  "BusinessOperation": "DestinoRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Destino",
+    "TransactionId": "1359ffb5-2f36-4b80-81a4-ebea9193826a",
+    "SqlStatements": [
+      "INSERT INTO Destino (pais, ciudad, id) VALUES (?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=DestinoRepository.SaveAsync Operation=Save Entity=Destino TransactionId=6ef200ca-122c-4563-b629-411be8b32021 SqlStatementCount=0",
+  "BusinessOperation": "DestinoRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Destino",
+    "TransactionId": "6ef200ca-122c-4563-b629-411be8b32021",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=a2b4b8ee-04b4-4816-920e-040a6e7d0f7b SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "a2b4b8ee-04b4-4816-920e-040a6e7d0f7b",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=a2b4b8ee-04b4-4816-920e-040a6e7d0f7b SqlStatements=INSERT INTO Recordatorio (titulo, detalles, fecha, hora, tipoAviso, enviado, FK_Tarea_tarea, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "a2b4b8ee-04b4-4816-920e-040a6e7d0f7b",
+    "SqlStatements": [
+      "INSERT INTO Recordatorio (titulo, detalles, fecha, hora, tipoAviso, enviado, FK_Tarea_tarea, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=45e80eec-0304-4300-beaa-936f8047b584 SqlStatementCount=0",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "45e80eec-0304-4300-beaa-936f8047b584",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=eb647201-80f0-4c5f-8d94-b9ccf8ccd1c9 SqlStatementCount=1",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "eb647201-80f0-4c5f-8d94-b9ccf8ccd1c9",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=eb647201-80f0-4c5f-8d94-b9ccf8ccd1c9 SqlStatements=INSERT INTO Checklist (nombre, id) VALUES (?, ?)",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "eb647201-80f0-4c5f-8d94-b9ccf8ccd1c9",
+    "SqlStatements": [
+      "INSERT INTO Checklist (nombre, id) VALUES (?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=21196fdd-77e7-408f-acc4-15d26d0ff8c1 SqlStatementCount=0",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "21196fdd-77e7-408f-acc4-15d26d0ff8c1",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=TareaRepository.SaveAsync Operation=Save Entity=Tarea TransactionId=f7d2e890-e81e-4b4b-9e5f-dbb2c017a67e SqlStatementCount=1",
+  "BusinessOperation": "TareaRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Tarea",
+    "TransactionId": "f7d2e890-e81e-4b4b-9e5f-dbb2c017a67e",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=TareaRepository.SaveAsync Operation=Save Entity=Tarea TransactionId=f7d2e890-e81e-4b4b-9e5f-dbb2c017a67e SqlStatements=INSERT INTO Tarea (descripcion, completada, id) VALUES (?, ?, ?)",
+  "BusinessOperation": "TareaRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Tarea",
+    "TransactionId": "f7d2e890-e81e-4b4b-9e5f-dbb2c017a67e",
+    "SqlStatements": [
+      "INSERT INTO Tarea (descripcion, completada, id) VALUES (?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=TareaRepository.SaveAsync Operation=Save Entity=Tarea TransactionId=3f8e46dc-f412-4089-981b-b8ea6d63d96b SqlStatementCount=0",
+  "BusinessOperation": "TareaRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Tarea",
+    "TransactionId": "3f8e46dc-f412-4089-981b-b8ea6d63d96b",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=ffad7720-7deb-4d1d-b453-f6215fd70eb9 SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "ffad7720-7deb-4d1d-b453-f6215fd70eb9",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=ffad7720-7deb-4d1d-b453-f6215fd70eb9 SqlStatements=UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "ffad7720-7deb-4d1d-b453-f6215fd70eb9",
+    "SqlStatements": [
+      "UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=c37699d1-1a33-4faa-8bbb-4c1fe3f3d9fc SqlStatementCount=1",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "c37699d1-1a33-4faa-8bbb-4c1fe3f3d9fc",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=c37699d1-1a33-4faa-8bbb-4c1fe3f3d9fc SqlStatements=UPDATE Tarea SET FK_Checklist_tareas = ? WHERE id = ?",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "c37699d1-1a33-4faa-8bbb-4c1fe3f3d9fc",
+    "SqlStatements": [
+      "UPDATE Tarea SET FK_Checklist_tareas = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=c270a219-3f6a-47c5-8730-1759ee6d1b04 SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "c270a219-3f6a-47c5-8730-1759ee6d1b04",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=c270a219-3f6a-47c5-8730-1759ee6d1b04 SqlStatements=UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "c270a219-3f6a-47c5-8730-1759ee6d1b04",
+    "SqlStatements": [
+      "UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=UbicacionRepository.DeleteAsync Operation=Delete Entity=Ubicacion TransactionId=46f6abbb-d76a-4802-b511-66f8f3cf90ac SqlStatementCount=1",
+  "BusinessOperation": "UbicacionRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Ubicacion",
+    "TransactionId": "46f6abbb-d76a-4802-b511-66f8f3cf90ac",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=UbicacionRepository.DeleteAsync Operation=Delete Entity=Ubicacion TransactionId=46f6abbb-d76a-4802-b511-66f8f3cf90ac SqlStatements=DELETE FROM Ubicacion WHERE id = ?",
+  "BusinessOperation": "UbicacionRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Ubicacion",
+    "TransactionId": "46f6abbb-d76a-4802-b511-66f8f3cf90ac",
+    "SqlStatements": [
+      "DELETE FROM Ubicacion WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=DestinoRepository.DeleteAsync Operation=Delete Entity=Destino TransactionId=5fc0f62f-994b-4c67-8c79-ae093184acc8 SqlStatementCount=1",
+  "BusinessOperation": "DestinoRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Destino",
+    "TransactionId": "5fc0f62f-994b-4c67-8c79-ae093184acc8",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=DestinoRepository.DeleteAsync Operation=Delete Entity=Destino TransactionId=5fc0f62f-994b-4c67-8c79-ae093184acc8 SqlStatements=DELETE FROM Destino WHERE id = ?",
+  "BusinessOperation": "DestinoRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Destino",
+    "TransactionId": "5fc0f62f-994b-4c67-8c79-ae093184acc8",
+    "SqlStatements": [
+      "DELETE FROM Destino WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.DeleteAsync Operation=Delete Entity=Recordatorio TransactionId=eaa71a38-1f50-4ac3-bd25-2a675d8f21ab SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Recordatorio",
+    "TransactionId": "eaa71a38-1f50-4ac3-bd25-2a675d8f21ab",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.DeleteAsync Operation=Delete Entity=Recordatorio TransactionId=eaa71a38-1f50-4ac3-bd25-2a675d8f21ab SqlStatements=DELETE FROM Recordatorio WHERE id = ?",
+  "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Recordatorio",
+    "TransactionId": "eaa71a38-1f50-4ac3-bd25-2a675d8f21ab",
+    "SqlStatements": [
+      "DELETE FROM Recordatorio WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=TareaRepository.DeleteAsync Operation=Delete Entity=Tarea TransactionId=19eb7420-6789-4acc-b1eb-f685d0959837 SqlStatementCount=1",
+  "BusinessOperation": "TareaRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Tarea",
+    "TransactionId": "19eb7420-6789-4acc-b1eb-f685d0959837",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=TareaRepository.DeleteAsync Operation=Delete Entity=Tarea TransactionId=19eb7420-6789-4acc-b1eb-f685d0959837 SqlStatements=DELETE FROM Tarea WHERE id = ?",
+  "BusinessOperation": "TareaRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Tarea",
+    "TransactionId": "19eb7420-6789-4acc-b1eb-f685d0959837",
+    "SqlStatements": [
+      "DELETE FROM Tarea WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.DeleteAsync Operation=Delete Entity=Checklist TransactionId=1adc0da4-db7a-48c0-9221-022d9de18c76 SqlStatementCount=2",
+  "BusinessOperation": "ChecklistRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Checklist",
+    "TransactionId": "1adc0da4-db7a-48c0-9221-022d9de18c76",
+    "SqlStatementCount": 2
+  }
+},
+{
+  "TimestampUtc": "2026-11-24, 10:37:03",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=ChecklistRepository.DeleteAsync Operation=Delete Entity=Checklist TransactionId=1adc0da4-db7a-48c0-9221-022d9de18c76 SqlStatements=UPDATE Tarea SET FK_Checklist_tareas = null WHERE FK_Checklist_tareas = ?, DELETE FROM Checklist WHERE id = ?",
+  "BusinessOperation": "ChecklistRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Checklist",
+    "TransactionId": "1adc0da4-db7a-48c0-9221-022d9de18c76",
+    "SqlStatements": [
+      "UPDATE Tarea SET FK_Checklist_tareas = null WHERE FK_Checklist_tareas = ?",
+      "DELETE FROM Checklist WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:39",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=UbicacionRepository.SaveAsync Operation=Save Entity=Ubicacion TransactionId=c47d20a0-b21b-42be-8c0b-043033f11d1d SqlStatementCount=1",
+  "BusinessOperation": "UbicacionRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Ubicacion",
+    "TransactionId": "c47d20a0-b21b-42be-8c0b-043033f11d1d",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:39",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=UbicacionRepository.SaveAsync Operation=Save Entity=Ubicacion TransactionId=c47d20a0-b21b-42be-8c0b-043033f11d1d SqlStatements=INSERT INTO Ubicacion (nombre, latitud, longitud, id) VALUES (?, ?, ?, ?)",
+  "BusinessOperation": "UbicacionRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Ubicacion",
+    "TransactionId": "c47d20a0-b21b-42be-8c0b-043033f11d1d",
+    "SqlStatements": [
+      "INSERT INTO Ubicacion (nombre, latitud, longitud, id) VALUES (?, ?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=UbicacionRepository.SaveAsync Operation=Save Entity=Ubicacion TransactionId=16a21ae6-d4eb-4421-a28c-c74060767e87 SqlStatementCount=0",
+  "BusinessOperation": "UbicacionRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Ubicacion",
+    "TransactionId": "16a21ae6-d4eb-4421-a28c-c74060767e87",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=DestinoRepository.SaveAsync Operation=Save Entity=Destino TransactionId=b4edeeff-a6f0-4754-8606-96beb2ced232 SqlStatementCount=1",
+  "BusinessOperation": "DestinoRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Destino",
+    "TransactionId": "b4edeeff-a6f0-4754-8606-96beb2ced232",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=DestinoRepository.SaveAsync Operation=Save Entity=Destino TransactionId=b4edeeff-a6f0-4754-8606-96beb2ced232 SqlStatements=INSERT INTO Destino (pais, ciudad, id) VALUES (?, ?, ?)",
+  "BusinessOperation": "DestinoRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Destino",
+    "TransactionId": "b4edeeff-a6f0-4754-8606-96beb2ced232",
+    "SqlStatements": [
+      "INSERT INTO Destino (pais, ciudad, id) VALUES (?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=DestinoRepository.SaveAsync Operation=Save Entity=Destino TransactionId=cfe9fa56-6f0c-4a72-a5f3-2d402b12990a SqlStatementCount=0",
+  "BusinessOperation": "DestinoRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Destino",
+    "TransactionId": "cfe9fa56-6f0c-4a72-a5f3-2d402b12990a",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=d9cb6290-fd5c-4126-b94f-9ce6081cb4a8 SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "d9cb6290-fd5c-4126-b94f-9ce6081cb4a8",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=d9cb6290-fd5c-4126-b94f-9ce6081cb4a8 SqlStatements=INSERT INTO Recordatorio (titulo, detalles, fecha, hora, tipoAviso, enviado, FK_Tarea_tarea, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "d9cb6290-fd5c-4126-b94f-9ce6081cb4a8",
+    "SqlStatements": [
+      "INSERT INTO Recordatorio (titulo, detalles, fecha, hora, tipoAviso, enviado, FK_Tarea_tarea, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=efe47e58-b2a9-45bd-a0ab-9e191d19fdc4 SqlStatementCount=0",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "efe47e58-b2a9-45bd-a0ab-9e191d19fdc4",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=643803c3-3321-4820-b441-9f2c9e998267 SqlStatementCount=1",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "643803c3-3321-4820-b441-9f2c9e998267",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=643803c3-3321-4820-b441-9f2c9e998267 SqlStatements=INSERT INTO Checklist (nombre, id) VALUES (?, ?)",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "643803c3-3321-4820-b441-9f2c9e998267",
+    "SqlStatements": [
+      "INSERT INTO Checklist (nombre, id) VALUES (?, ?)"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=a1aa01ea-5a98-4f74-bb62-95fd12046b97 SqlStatementCount=0",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "a1aa01ea-5a98-4f74-bb62-95fd12046b97",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.UnitOfWork",
+  "EventId": 0,
+  "Message": "NHibernate transaction started. BusinessOperation=TareaService.CrearTareaAsync TransactionId=3dccaa81-c67d-45d2-96b9-f622bfd588b0",
+  "BusinessOperation": "TareaService.CrearTareaAsync",
+  "Properties": {
+    "BusinessOperation": "TareaService.CrearTareaAsync",
+    "TransactionId": "3dccaa81-c67d-45d2-96b9-f622bfd588b0"
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.UnitOfWork",
+  "EventId": 0,
+  "Message": "NHibernate transaction committed successfully. BusinessOperation=TareaService.CrearTareaAsync BusinessOperations=TareaService.CrearTareaAsync TransactionId=3dccaa81-c67d-45d2-96b9-f622bfd588b0 SqlStatementCount=4",
+  "BusinessOperation": "TareaService.CrearTareaAsync",
+  "BusinessOperations": [
+    "TareaService.CrearTareaAsync"
+  ],
+  "Properties": {
+    "BusinessOperation": "TareaService.CrearTareaAsync",
+    "BusinessOperations": [
+      "TareaService.CrearTareaAsync"
+    ],
+    "TransactionId": "3dccaa81-c67d-45d2-96b9-f622bfd588b0",
+    "SqlStatementCount": 4
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.UnitOfWork",
+  "EventId": 0,
+  "Message": "NHibernate SQL statements committed. BusinessOperation=TareaService.CrearTareaAsync BusinessOperations=TareaService.CrearTareaAsync TransactionId=3dccaa81-c67d-45d2-96b9-f622bfd588b0 SqlStatements=SELECT checklist0_.id as id1_16_0_, checklist0_.nombre as nombre2_16_0_ FROM Checklist checklist0_ WHERE checklist0_.id=?, SELECT tareas0_.FK_Checklist_tareas as fk4_17_1_, tareas0_.id as id1_17_1_, tareas0_.id as id1_17_0_, tareas0_.descripcion as descripcion2_17_0_, tareas0_.completada as completada3_17_0_ FROM Tarea tareas0_ WHERE tareas0_.FK_Checklist_tareas=?, INSERT INTO Tarea (descripcion, completada, id) VALUES (?, ?, ?), UPDATE Tarea SET FK_Checklist_tareas = ? WHERE id = ?",
+  "BusinessOperation": "TareaService.CrearTareaAsync",
+  "BusinessOperations": [
+    "TareaService.CrearTareaAsync"
+  ],
+  "Properties": {
+    "BusinessOperation": "TareaService.CrearTareaAsync",
+    "BusinessOperations": [
+      "TareaService.CrearTareaAsync"
+    ],
+    "TransactionId": "3dccaa81-c67d-45d2-96b9-f622bfd588b0",
+    "SqlStatements": [
+      "SELECT checklist0_.id as id1_16_0_, checklist0_.nombre as nombre2_16_0_ FROM Checklist checklist0_ WHERE checklist0_.id=?",
+      "SELECT tareas0_.FK_Checklist_tareas as fk4_17_1_, tareas0_.id as id1_17_1_, tareas0_.id as id1_17_0_, tareas0_.descripcion as descripcion2_17_0_, tareas0_.completada as completada3_17_0_ FROM Tarea tareas0_ WHERE tareas0_.FK_Checklist_tareas=?",
+      "INSERT INTO Tarea (descripcion, completada, id) VALUES (?, ?, ?)",
+      "UPDATE Tarea SET FK_Checklist_tareas = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=TareaRepository.SaveAsync Operation=Save Entity=Tarea TransactionId=d2ff90e9-806a-481c-a4e4-721d67d170dc SqlStatementCount=0",
+  "BusinessOperation": "TareaRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Tarea",
+    "TransactionId": "d2ff90e9-806a-481c-a4e4-721d67d170dc",
+    "SqlStatementCount": 0
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=8077d674-d4d3-4edf-8d76-ff2e39266c79 SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "8077d674-d4d3-4edf-8d76-ff2e39266c79",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=8077d674-d4d3-4edf-8d76-ff2e39266c79 SqlStatements=UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "8077d674-d4d3-4edf-8d76-ff2e39266c79",
+    "SqlStatements": [
+      "UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=9348fdb0-a6fe-4994-8b1f-20be91694680 SqlStatementCount=1",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "9348fdb0-a6fe-4994-8b1f-20be91694680",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=ChecklistRepository.SaveAsync Operation=Save Entity=Checklist TransactionId=9348fdb0-a6fe-4994-8b1f-20be91694680 SqlStatements=UPDATE Tarea SET FK_Checklist_tareas = ? WHERE id = ?",
+  "BusinessOperation": "ChecklistRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Checklist",
+    "TransactionId": "9348fdb0-a6fe-4994-8b1f-20be91694680",
+    "SqlStatements": [
+      "UPDATE Tarea SET FK_Checklist_tareas = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=3ec36f86-84cc-4458-a1f4-2415c0cbea0f SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "3ec36f86-84cc-4458-a1f4-2415c0cbea0f",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.SaveAsync Operation=Save Entity=Recordatorio TransactionId=3ec36f86-84cc-4458-a1f4-2415c0cbea0f SqlStatements=UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?",
+  "BusinessOperation": "RecordatorioRepository.SaveAsync",
+  "Operation": "Save",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.SaveAsync",
+    "Operation": "Save",
+    "Entity": "Recordatorio",
+    "TransactionId": "3ec36f86-84cc-4458-a1f4-2415c0cbea0f",
+    "SqlStatements": [
+      "UPDATE Recordatorio SET titulo = ?, detalles = ?, fecha = ?, hora = ?, tipoAviso = ?, enviado = ?, FK_Tarea_tarea = ? WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=UbicacionRepository.DeleteAsync Operation=Delete Entity=Ubicacion TransactionId=9ee042a0-f86a-4497-8246-468853a0eb19 SqlStatementCount=1",
+  "BusinessOperation": "UbicacionRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Ubicacion",
+    "TransactionId": "9ee042a0-f86a-4497-8246-468853a0eb19",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.UbicacionRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=UbicacionRepository.DeleteAsync Operation=Delete Entity=Ubicacion TransactionId=9ee042a0-f86a-4497-8246-468853a0eb19 SqlStatements=DELETE FROM Ubicacion WHERE id = ?",
+  "BusinessOperation": "UbicacionRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Ubicacion",
+  "Properties": {
+    "BusinessOperation": "UbicacionRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Ubicacion",
+    "TransactionId": "9ee042a0-f86a-4497-8246-468853a0eb19",
+    "SqlStatements": [
+      "DELETE FROM Ubicacion WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=DestinoRepository.DeleteAsync Operation=Delete Entity=Destino TransactionId=847c5010-4082-4ec5-811c-b923dbaf3d23 SqlStatementCount=1",
+  "BusinessOperation": "DestinoRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Destino",
+    "TransactionId": "847c5010-4082-4ec5-811c-b923dbaf3d23",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.DestinoRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=DestinoRepository.DeleteAsync Operation=Delete Entity=Destino TransactionId=847c5010-4082-4ec5-811c-b923dbaf3d23 SqlStatements=DELETE FROM Destino WHERE id = ?",
+  "BusinessOperation": "DestinoRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Destino",
+  "Properties": {
+    "BusinessOperation": "DestinoRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Destino",
+    "TransactionId": "847c5010-4082-4ec5-811c-b923dbaf3d23",
+    "SqlStatements": [
+      "DELETE FROM Destino WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=RecordatorioRepository.DeleteAsync Operation=Delete Entity=Recordatorio TransactionId=898148b1-d7d1-4f9d-874b-55c67c1dd11c SqlStatementCount=1",
+  "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Recordatorio",
+    "TransactionId": "898148b1-d7d1-4f9d-874b-55c67c1dd11c",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.RecordatorioRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=RecordatorioRepository.DeleteAsync Operation=Delete Entity=Recordatorio TransactionId=898148b1-d7d1-4f9d-874b-55c67c1dd11c SqlStatements=DELETE FROM Recordatorio WHERE id = ?",
+  "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Recordatorio",
+  "Properties": {
+    "BusinessOperation": "RecordatorioRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Recordatorio",
+    "TransactionId": "898148b1-d7d1-4f9d-874b-55c67c1dd11c",
+    "SqlStatements": [
+      "DELETE FROM Recordatorio WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=TareaRepository.DeleteAsync Operation=Delete Entity=Tarea TransactionId=181d2c9e-0444-421a-b41f-47081758ec61 SqlStatementCount=1",
+  "BusinessOperation": "TareaRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Tarea",
+    "TransactionId": "181d2c9e-0444-421a-b41f-47081758ec61",
+    "SqlStatementCount": 1
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.TareaRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=TareaRepository.DeleteAsync Operation=Delete Entity=Tarea TransactionId=181d2c9e-0444-421a-b41f-47081758ec61 SqlStatements=DELETE FROM Tarea WHERE id = ?",
+  "BusinessOperation": "TareaRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Tarea",
+  "Properties": {
+    "BusinessOperation": "TareaRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Tarea",
+    "TransactionId": "181d2c9e-0444-421a-b41f-47081758ec61",
+    "SqlStatements": [
+      "DELETE FROM Tarea WHERE id = ?"
+    ]
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Information",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository transaction committed successfully. BusinessOperation=ChecklistRepository.DeleteAsync Operation=Delete Entity=Checklist TransactionId=02812312-665c-492e-a031-5dc9ddc586b1 SqlStatementCount=2",
+  "BusinessOperation": "ChecklistRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Checklist",
+    "TransactionId": "02812312-665c-492e-a031-5dc9ddc586b1",
+    "SqlStatementCount": 2
+  }
+},
+{
+  "TimestampUtc": "2026-11-26, 21:15:40",
+  "Level": "Debug",
+  "Category": "DSM_Odyss.Infrastructure.Repositories.ChecklistRepository",
+  "EventId": 0,
+  "Message": "NHibernate repository SQL statements committed. BusinessOperation=ChecklistRepository.DeleteAsync Operation=Delete Entity=Checklist TransactionId=02812312-665c-492e-a031-5dc9ddc586b1 SqlStatements=UPDATE Tarea SET FK_Checklist_tareas = null WHERE FK_Checklist_tareas = ?, DELETE FROM Checklist WHERE id = ?",
+  "BusinessOperation": "ChecklistRepository.DeleteAsync",
+  "Operation": "Delete",
+  "Entity": "Checklist",
+  "Properties": {
+    "BusinessOperation": "ChecklistRepository.DeleteAsync",
+    "Operation": "Delete",
+    "Entity": "Checklist",
+    "TransactionId": "02812312-665c-492e-a031-5dc9ddc586b1",
+    "SqlStatements": [
+      "UPDATE Tarea SET FK_Checklist_tareas = null WHERE FK_Checklist_tareas = ?",
+      "DELETE FROM Checklist WHERE id = ?"
+    ]
+  }
 }
 ]

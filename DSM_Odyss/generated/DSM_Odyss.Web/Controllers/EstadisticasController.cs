@@ -36,13 +36,14 @@ public partial class EstadisticasController : Controller
     [HttpGet]
     /*PROTECTED REGION ID(EstadisticasController_Index_GET_attributes) START*/
     /*PROTECTED REGION END*/
+
     public async Task<IActionResult> Index(int? anyo = null)
     {
     /*PROTECTED REGION ID(EstadisticasController_Index_GET_body) START*/
         int anyoObjetivo = anyo ?? DateTime.Now.Year;
-        var (cliente, estadisticas) = await ObtenerOCrearEstadisticasClienteActualAsync(anyoObjetivo);
+        var (cliente, estadisticas, metricas) = await ObtenerOCrearEstadisticasClienteActualAsync(anyoObjetivo);
 
-        if (cliente is null || estadisticas is null)
+        if (cliente is null || estadisticas is null || metricas is null)
         {
             return RedirectToAction("Login", "Cliente");
         }
@@ -54,9 +55,8 @@ public partial class EstadisticasController : Controller
 
         var viewModel = EstadisticasAssembler.ToDashboardViewModel(
             estadisticas,
-            cliente,
             paisesColoreados,
-            anyoObjetivo);
+            metricas);
 
         if (TempData["PassportRecapMsg"] is string msg)
         {
@@ -71,13 +71,14 @@ public partial class EstadisticasController : Controller
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(EstadisticasController_PassportRecap_POST_attributes) ENABLED START*/
     /*PROTECTED REGION END*/
+
     public async Task<IActionResult> PassportRecap(int anyo)
     {
     /*PROTECTED REGION ID(EstadisticasController_PassportRecap_POST_body) ENABLED START*/
         int anyoObjetivo = anyo > 0 ? anyo : DateTime.Now.Year;
-        var (cliente, estadisticas) = await ObtenerOCrearEstadisticasClienteActualAsync(anyoObjetivo);
+        var (cliente, estadisticas, metricas) = await ObtenerOCrearEstadisticasClienteActualAsync(anyoObjetivo);
 
-        if (cliente is null || estadisticas is null)
+        if (cliente is null || estadisticas is null || metricas is null)
         {
             return RedirectToAction("Login", "Cliente");
         }
@@ -95,8 +96,8 @@ public partial class EstadisticasController : Controller
     public async Task<IActionResult> PaisesColoreados()
     {
     /*PROTECTED REGION ID(EstadisticasController_PaisesColoreados_GET_body) ENABLED START*/
-        var (cliente, estadisticas) = await ObtenerOCrearEstadisticasClienteActualAsync(DateTime.Now.Year);
-        if (cliente is null || estadisticas is null)
+        var (cliente, estadisticas, metricas) = await ObtenerOCrearEstadisticasClienteActualAsync(DateTime.Now.Year);
+        if (cliente is null || estadisticas is null || metricas is null)
         {
             return Unauthorized();
         }
@@ -132,6 +133,7 @@ public partial class EstadisticasController : Controller
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(EstadisticasController_Create_POST_attributes) START*/
     /*PROTECTED REGION END*/
+
     public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.EstadisticasViewModel model, int p_cliente_oid)
     {
     /*PROTECTED REGION ID(EstadisticasController_Create_POST_body) START*/
@@ -173,6 +175,7 @@ public partial class EstadisticasController : Controller
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(EstadisticasController_Edit_POST_attributes) START*/
     /*PROTECTED REGION END*/
+
     public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.EstadisticasViewModel model, int p_cliente_oid)
     {
     /*PROTECTED REGION ID(EstadisticasController_Edit_POST_body) START*/
@@ -234,7 +237,17 @@ public partial class EstadisticasController : Controller
     }
 
     /*PROTECTED REGION ID(EstadisticasController_custom_helpers) ENABLED START*/
-    private async Task<(Cliente? cliente, Estadisticas? estadisticas)> ObtenerOCrearEstadisticasClienteActualAsync(int anyo)
+    public sealed record EstadisticasMetricasCalculadas(
+        string NombreUsuario,
+        List<int> AnyosDisponibles,
+        int TotalViajes,
+        int ArchivosAlmacenados,
+        List<string> TopDestinos,
+        double PuntuacionMediaResenas,
+        double KilometrosRecorridos);
+
+    private async Task<(Cliente? cliente, Estadisticas? estadisticas, EstadisticasMetricasCalculadas? metricas)>
+        ObtenerOCrearEstadisticasClienteActualAsync(int anyo)
     {
         await using var uow = _useCaseUnitOfWorkFactory.Create();
         var clientes = await uow.ClienteRepository.ReadAllAsync();
@@ -264,7 +277,7 @@ public partial class EstadisticasController : Controller
 
         if (cliente is null)
         {
-            return (null, null);
+            return (null, null, null);
         }
 
         var estadisticas = cliente.Estadisticas.FirstOrDefault(e => e.Anyo == anyo)
@@ -286,7 +299,86 @@ public partial class EstadisticasController : Controller
             await uow.CommitAsync();
         }
 
-        return (cliente, estadisticas);
+        var viajesCliente = cliente.Viajes?.ToList() ?? new List<Viaje>();
+        var anyosDisponibles = viajesCliente
+            .Select(v => v.FechaInicio.Year)
+            .Append(DateTime.Now.Year)
+            .Distinct()
+            .OrderByDescending(y => y)
+            .ToList();
+
+        var viajesFiltrados = viajesCliente
+            .Where(v => v.FechaInicio.Year == anyo)
+            .ToList();
+
+        int archivosAlmacenados = viajesFiltrados
+            .SelectMany(v => v.Carpetas?.Multimedia ?? Enumerable.Empty<Multimedia>())
+            .Count();
+
+        var topDestinos = viajesFiltrados
+            .SelectMany(v => v.ParadasDestino ?? Enumerable.Empty<ParadaDestino>())
+            .Where(pd => pd.Destino != null)
+            .Select(pd => string.IsNullOrWhiteSpace(pd.Destino.Ciudad)
+                ? pd.Destino.Pais
+                : $"{pd.Destino.Ciudad} ({pd.Destino.Pais})")
+            .Where(nombre => !string.IsNullOrWhiteSpace(nombre))
+            .GroupBy(nombre => nombre, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => g.Key)
+            .Take(3)
+            .Select(g => g.Key)
+            .ToList();
+
+        var puntuaciones = viajesFiltrados
+            .SelectMany(v => v.Resenas ?? Enumerable.Empty<Resena>())
+            .Concat(cliente.Resenas ?? Enumerable.Empty<Resena>())
+            .Select(r => (double)r.Puntuacion)
+            .ToList();
+
+        double puntuacionMedia = puntuaciones.Count > 0
+            ? Math.Round(puntuaciones.Average(), 1)
+            : 0.0;
+
+        double totalKm = 0;
+        foreach (var viaje in viajesFiltrados)
+        {
+            var coordenadas = (viaje.Paradas ?? Enumerable.Empty<ParadaActividad>())
+                .Where(p => p.Ubicacion != null && (p.Ubicacion.Latitud != 0 || p.Ubicacion.Longitud != 0))
+                .Select(p => p.Ubicacion!)
+                .ToList();
+
+            for (int i = 0; i < coordenadas.Count - 1; i++)
+            {
+                totalKm += CalcularDistanciaHaversineKm(
+                    coordenadas[i].Latitud, coordenadas[i].Longitud,
+                    coordenadas[i + 1].Latitud, coordenadas[i + 1].Longitud);
+            }
+        }
+
+        string nombreUsuario = string.IsNullOrWhiteSpace(cliente.User) ? cliente.Email : cliente.User;
+
+        var metricas = new EstadisticasMetricasCalculadas(
+            NombreUsuario: nombreUsuario,
+            AnyosDisponibles: anyosDisponibles,
+            TotalViajes: viajesFiltrados.Count,
+            ArchivosAlmacenados: archivosAlmacenados,
+            TopDestinos: topDestinos,
+            PuntuacionMediaResenas: puntuacionMedia,
+            KilometrosRecorridos: Math.Round(totalKm, 1));
+
+        return (cliente, estadisticas, metricas);
+    }
+
+    private static double CalcularDistanciaHaversineKm(double lat1, double lon1, double lat2, double lon2)
+    {
+        const double R = 6371.0;
+        double dLat = (lat2 - lat1) * Math.PI / 180.0;
+        double dLon = (lon2 - lon1) * Math.PI / 180.0;
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                   Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0) *
+                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return R * c;
     }
     /*PROTECTED REGION END*/
 }
