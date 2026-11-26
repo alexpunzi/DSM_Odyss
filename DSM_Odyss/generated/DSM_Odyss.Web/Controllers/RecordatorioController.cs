@@ -70,9 +70,17 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create()
     {
-    /*PROTECTED REGION ID(RecordatorioController_Create_GET_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Create_GET_body) ENABLED START*/
 
-        var model = new DSM_Odyss.Web.ViewModels.RecordatorioViewModel();
+        // Valores iniciales: hoy, a la próxima hora en punto, tipo notificación.
+        var proximaHora = DateTime.Today.AddHours(DateTime.Now.Hour + 1);
+        var model = new DSM_Odyss.Web.ViewModels.RecordatorioViewModel
+        {
+            Fecha = DateTime.Today,
+            Hora = proximaHora,
+            TipoAviso = DSM_Odyss.Domain.Enums.TipoAviso.notificacion,
+            Enviado = false
+        };
 
         await LoadFormOptionsAsync(model);
         return View(model);

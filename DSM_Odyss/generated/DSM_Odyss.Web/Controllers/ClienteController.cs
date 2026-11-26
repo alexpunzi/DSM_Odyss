@@ -17,15 +17,14 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class ClienteController : Controller
 {
-    /*PROTECTED REGION ID(ClienteController_dependencies) START*/
+    /*PROTECTED REGION ID(ClienteController_dependencies) ENABLED START*/
     private readonly ClienteService _clienteService;
+    private readonly ViajeService _viajeService;
     private readonly ILogger<ClienteController> _logger;
-    public ClienteController(ClienteService clienteService, ILogger<ClienteController>? logger = null)
+    public ClienteController(ClienteService clienteService, ViajeService viajeService, ILogger<ClienteController>? logger = null)
     {
         _clienteService = clienteService;
-
-
-
+        _viajeService = viajeService;
         _logger = logger ?? global::Microsoft.Extensions.Logging.Abstractions.NullLogger<ClienteController>.Instance;
     }
     /*PROTECTED REGION END*/
@@ -49,12 +48,18 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION ID(ClienteController_Details_GET_body) ENABLED START*/
 
         // Si llega sin id (por ejemplo, al volver del login), se muestra el perfil del usuario conectado.
-        // Al iniciar sesión, HARIA guarda el Id del cliente en User.Identity.Name.
         if (id == 0 && int.TryParse(User.Identity?.Name, out var idConectado))
             id = idConectado;
 
         var entity = await _clienteService.LeerClienteOIDAsync(id);
         if (entity is null) return NotFound();
+
+        // Una Resena no sabe de qué Viaje es: lo buscamos recorriendo los viajes.
+        var todosLosViajes = await _viajeService.LeerTodosViajesAsync();
+        var viajePorResena = new Dictionary<int, Viaje>();
+        foreach (var v in todosLosViajes)
+            foreach (var r in v.Resenas)
+                viajePorResena[r.Id] = v;
 
         var model = new DSM_Odyss.Web.ViewModels.PerfilUsuarioViewModel
         {
@@ -62,7 +67,50 @@ public partial class ClienteController : Controller
             Username = entity.User,
             NombreCompleto = $"{entity.Nombre} {entity.Apellidos}".Trim(),
             TotalViajes = entity.Viajes.Count,
-            EsPropio = User.Identity?.Name == entity.Id.ToString()
+            EsPropio = User.Identity?.Name == entity.Id.ToString(),
+
+            // Mis viajes: del más reciente al más antiguo.
+            Viajes = entity.Viajes
+                .OrderByDescending(v => v.FechaInicio)
+                .Select(v => new DSM_Odyss.Web.ViewModels.PerfilViajeItem
+                {
+                    Id = v.Id,
+                    Titulo = v.Titulo,
+                    FechaInicio = v.FechaInicio
+                })
+                .ToList(),
+
+            // Reseñas recientes: las 3 últimas, con el título de su viaje.
+            Resenas = entity.Resenas
+                .OrderByDescending(r => r.Fecha)
+                .Take(3)
+                .Select(r =>
+                {
+                    viajePorResena.TryGetValue(r.Id, out var viaje);
+                    return new DSM_Odyss.Web.ViewModels.PerfilResenaItem
+                    {
+                        Id = r.Id,
+                        TituloViaje = viaje?.Titulo ?? "Viaje desconocido",
+                        Puntuacion = r.Puntuacion,
+                        FechaViaje = viaje?.FechaInicio ?? r.Fecha
+                    };
+                })
+                .ToList(),
+
+            // Galería de recuerdos: carpetas de sus viajes + carpetas compartidas con él (sin repetir).
+            Carpetas = entity.Viajes
+                .Where(v => v.Carpetas is not null)
+                .Select(v => v.Carpetas!)
+                .Concat(entity.CarpetasCompartidas)
+                .GroupBy(c => c.Id)
+                .Select(g => g.First())
+                .Select(c => new DSM_Odyss.Web.ViewModels.PerfilCarpetaItem
+                {
+                    Id = c.Id,
+                    Nombre = c.Nombre,
+                    TotalArchivos = c.Multimedia.Count
+                })
+                .ToList()
         };
 
         return View(model);
