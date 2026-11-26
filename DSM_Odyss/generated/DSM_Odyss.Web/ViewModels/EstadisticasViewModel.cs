@@ -2,38 +2,30 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DSM_Odyss.Web.ViewModels;
 
-public sealed class EstadisticasViewModel : IValidatableObject
+public class EstadisticasViewModel
 {
-    /*PROTECTED REGION ID(EstadisticasViewModel_generated) START*/
-    [Key]
     public int Id { get; set; }
 
-    [UIHint("HariaReadOnly:Create,Edit")]
-    public int? Anyo { get; set; }
+    [Display(Name = "Año")]
+    public int? Anyo { get; set; } = DateTime.Now.Year;
 
-    [UIHint("HariaReadOnly:Create,Edit")]
+    [Display(Name = "Países visitados")]
     public int? PaisesVisitados { get; set; }
 
-    [UIHint("HariaReadOnly:Create,Edit")]
+    [Display(Name = "Fotos subidas")]
     public int? FotosSubidas { get; set; }
 
-    [UIHint("HariaReadOnly:Create,Edit")]
+    [Display(Name = "Destino más visitado")]
     public string? DestinoMasVisitado { get; set; }
 
-
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        foreach (var result in ValidateAdditional(validationContext)) yield return result;
-    }
-    /*PROTECTED REGION END*/
-
-    /*PROTECTED REGION ID(EstadisticasViewModel_manual) ENABLED START*/
-    // Add custom properties and validation here.
-    private IEnumerable<ValidationResult> ValidateAdditional(ValidationContext validationContext)
-    {
-        yield break;
-    }
-
-    /*PROTECTED REGION END*/
+    // --- Propiedades extendidas para RF-05, RF-11, RF-12 y Mockup M13 ---
+    public string NombreUsuario { get; set; } = string.Empty;
+    public int TotalViajes { get; set; }
+    public double KilometrosRecorridos { get; set; }
+    public int ArchivosAlmacenados { get; set; }
+    public double PuntuacionMediaResenas { get; set; }
+    public List<string> TopDestinos { get; set; } = new();
+    public List<string> PaisesColoreados { get; set; } = new();
+    public List<int> AnyosDisponibles { get; set; } = new();
+    public string? MensajePassportRecap { get; set; }
 }

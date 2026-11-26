@@ -1,13 +1,184 @@
-@model IEnumerable<DSM_Odyss.Web.ViewModels.EstadisticasViewModel>
+@model DSM_Odyss.Web.ViewModels.EstadisticasViewModel
 
 @{
     ViewData["Title"] = "Mis estadísticas";
 }
 
-<div class="container py-2" style="max-width: 550px;">
+<div class="container py-4" style="max-width: 1140px;">
 
     @await Component.InvokeAsync("PerfilCabecera", new { pestana = "estadisticas" })
 
-    @* Contenido específico de M13: estadísticas y Passport Recap *@
+    <!-- Barra superior: selector de año y botón Passport Recap -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4 mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">Estadísticas de viaje</h4>
+            <p class="text-muted mb-0">Resumen de actividad y destinos explorados por @Model.NombreUsuario</p>
+        </div>
 
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <form asp-action="Index" method="get" class="d-flex align-items-center gap-2">
+                <label for="anyoSelect" class="form-label mb-0 fw-semibold">Año:</label>
+                <select id="anyoSelect" name="anyo" class="form-select form-select-sm" style="width: 110px;" onchange="this.form.submit()">
+                    @foreach (var y in Model.AnyosDisponibles)
+                    {
+                        <option value="@y" selected="@(Model.Anyo == y)">@y</option>
+                    }
+                </select>
+            </form>
+
+            <button type="button" class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#passportRecapModal">
+                Passport Recap @(Model.Anyo ?? DateTime.Now.Year)
+            </button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.MensajePassportRecap))
+    {
+        <div class="alert alert-info alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+            <strong>Passport Recap generado:</strong> @Model.MensajePassportRecap
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    <!-- Tarjetas principales de métricas (Grid escritorio 4 columnas) -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <span class="text-muted small text-uppercase fw-semibold">Países visitados</span>
+                    <h2 class="fw-bold mt-2 mb-0">@(Model.PaisesVisitados ?? 0)</h2>
+                    <small class="text-muted">@Model.TotalViajes viajes registrados</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <span class="text-muted small text-uppercase fw-semibold">Distancia recorrida</span>
+                    <h2 class="fw-bold mt-2 mb-0">@Model.KilometrosRecorridos.ToString("N1") <small class="fs-6 fw-normal">km</small></h2>
+                    <small class="text-muted">Calculado por rutas y paradas</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <span class="text-muted small text-uppercase fw-semibold">Recuerdos subidos</span>
+                    <h2 class="fw-bold mt-2 mb-0">@(Model.FotosSubidas ?? Model.ArchivosAlmacenados)</h2>
+                    <small class="text-muted">@Model.ArchivosAlmacenados archivos multimedia</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <span class="text-muted small text-uppercase fw-semibold">Valoración media</span>
+                    <h2 class="fw-bold mt-2 mb-0">@Model.PuntuacionMediaResenas.ToString("0.0") <small class="fs-6 fw-normal">/ 5</small></h2>
+                    <small class="text-muted">Media de tus reseñas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda fila: Top destinos y Países desbloqueados -->
+    <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Destinos más visitados</h5>
+                    <p class="text-muted small mb-3">
+                        Destino destacado: <strong>@(string.IsNullOrWhiteSpace(Model.DestinoMasVisitado) ? "Aún sin datos" : Model.DestinoMasVisitado)</strong>
+                    </p>
+
+                    @if (Model.TopDestinos.Any())
+                    {
+                        <ol class="list-group list-group-numbered list-group-flush">
+                            @foreach (var destino in Model.TopDestinos)
+                            {
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                    <span>@destino</span>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill">Top</span>
+                                </li>
+                            }
+                        </ol>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No hay paradas de destino registradas para este año.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Países desbloqueados en tu mapa</h5>
+                        <span class="badge bg-dark rounded-pill">@Model.PaisesColoreados.Count países</span>
+                    </div>
+
+                    @if (Model.PaisesColoreados.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var pais in Model.PaisesColoreados)
+                            {
+                                <span class="badge rounded-pill border text-dark bg-light px-3 py-2 fs-6 fw-normal">
+                                    @pais
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Aún no has desbloqueado países. Añade destinos a tus viajes para colorear tu mapa.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Passport Recap (M13) -->
+<div class="modal fade" id="passportRecapModal" tabindex="-1" aria-labelledby="passportRecapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="passportRecapModalLabel">Passport Recap @(Model.Anyo ?? DateTime.Now.Year)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Tu resumen anual de viajes en <strong>Odyss</strong>:</p>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Viajes realizados</span>
+                        <strong>@Model.TotalViajes</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Países visitados</span>
+                        <strong>@(Model.PaisesVisitados ?? 0)</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Kilómetros recorridos</span>
+                        <strong>@Model.KilometrosRecorridos.ToString("N1") km</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Destino estrella</span>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.DestinoMasVisitado) ? "-" : Model.DestinoMasVisitado)</strong>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <form asp-action="PassportRecap" method="post" class="w-100 d-flex justify-content-between gap-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="anyo" value="@(Model.Anyo ?? DateTime.Now.Year)" />
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-dark rounded-pill px-4">Recalcular y guardar Recap</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
