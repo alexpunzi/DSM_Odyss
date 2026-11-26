@@ -27,6 +27,7 @@ public class PerfilResenaItem
     public string TituloViaje { get; set; } = string.Empty;
     public int Puntuacion { get; set; }        // de 0 a 5
     public DateTime FechaViaje { get; set; }
+    public string Comentario { get; set; } = string.Empty;
 }
 
 public class PerfilCarpetaItem

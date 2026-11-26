@@ -1,39 +1,36 @@
-@* HARIA-WEB GENERATED sha256:23d032272d7f57d4f902f339e232d09794db3d7d6cccb733d9e6c3b40973a624 *@
 @model IEnumerable<DSM_Odyss.Web.ViewModels.CarpetaViewModel>
 
 @{
-    ViewData["Title"] = "Carpetas de viaje";
+    ViewData["Title"] = "Galería de recuerdos";
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    .tarjeta-enlace { color: inherit; text-decoration: none; transition: background .15s; }
+    .tarjeta-enlace:hover { background: #f8f9fa; }
+</style>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-body d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 p-4">
-        <div>
-            <h1 class="h3 mb-1">Carpetas de viaje</h1>
-            <p class="text-body-secondary mb-0">Tus carpetas y las que otras personas han compartido contigo.</p>
-        </div>
-    </div>
-    <div class="card-body p-0">
+<div class="container py-2" style="max-width: 550px;">
+
+    @* Cabecera sin pestañas: el botón de volver lleva a Mi perfil *@
+    @await Component.InvokeAsync("PerfilCabecera")
+
+    <h2 class="h4 fw-semibold mb-1">Galería de recuerdos</h2>
+    <p class="text-muted small mb-3">Tus carpetas y las que otras personas han compartido contigo.</p>
+
     @if (Model.Any())
     {
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 p-3">
+        <div class="row row-cols-3 g-2">
             @foreach (var item in Model)
             {
                 <div class="col">
-                    <a asp-action="Details" asp-route-id="@item.Id" class="card h-100 text-decoration-none text-body shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <span class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
-                                    <i class="bi bi-folder2-open fs-4"></i>
-                                </span>
-                                <div class="min-w-0">
-                                    <h2 class="h6 mb-1 text-truncate">@item.Nombre</h2>
-                                    <div class="small text-body-secondary text-truncate">@item.ViajeTitulo</div>
-                                </div>
-                            </div>
-                            <span class="small text-body-secondary">@item.TotalArchivos recuerdos</span>
+                    <a asp-controller="Carpeta" asp-action="Details" asp-route-id="@item.Id"
+                       class="tarjeta-enlace d-block text-center rounded-3 p-1 h-100">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="bi bi-folder-fill text-warning" style="font-size: 3.5rem;"></i>
                         </div>
+                        <div class="small fw-semibold text-truncate">@item.Nombre</div>
+                        <div class="text-muted text-truncate" style="font-size: .7rem;">@item.ViajeTitulo</div>
+                        <div class="text-muted" style="font-size: .7rem;">@item.TotalArchivos recuerdos</div>
                     </a>
                 </div>
             }
@@ -41,11 +38,11 @@
     }
     else
     {
-        <div class="text-center p-5">
-            <h2 class="h5">Todavía no tienes carpetas de viaje</h2>
-            <p class="text-body-secondary">Abre uno de tus viajes para crear su carpeta de recuerdos.</p>
-            <a asp-controller="Viaje" asp-action="Index" class="btn btn-primary">Ver mis viajes</a>
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-folder2-open fs-1 d-block mb-2"></i>
+            <p class="mb-1">Todavía no tienes carpetas de viaje.</p>
+            <p class="small mb-0">Abre uno de tus viajes para crear su carpeta de recuerdos.</p>
         </div>
     }
-    </div>
+
 </div>

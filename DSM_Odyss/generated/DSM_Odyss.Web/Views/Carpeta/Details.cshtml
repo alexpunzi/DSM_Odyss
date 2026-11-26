@@ -6,33 +6,46 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<div class="container py-3" style="max-width: 760px;">
-    <div class="d-flex align-items-center gap-3 mb-3">
+<div class="container py-2" style="max-width: 550px;">
+
+    @* Cabecera común del perfil. Si alguien entra con el enlace público (sin sesión), no se muestra. *@
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        @await Component.InvokeAsync("PerfilCabecera")
+    }
+
+    @* Barra de la carpeta, como en M17/M18:  <  📁 Nombre   [compartir] [editar] *@
+    <div class="d-flex align-items-center gap-2 mb-3">
         @if (User.Identity?.IsAuthenticated == true)
         {
-            <a asp-controller="Carpeta" asp-action="Index" class="btn btn-light rounded-circle" aria-label="Volver a mis carpetas">
+            <a asp-controller="Carpeta" asp-action="Index" class="btn btn-link text-body p-0 fs-4" aria-label="Volver a mis carpetas">
                 <i class="bi bi-chevron-left"></i>
             </a>
         }
         else
         {
-            <a asp-controller="Home" asp-action="Index" class="btn btn-light rounded-circle" aria-label="Volver al inicio">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-link text-body p-0 fs-4" aria-label="Volver al inicio">
                 <i class="bi bi-chevron-left"></i>
             </a>
         }
-        <div class="flex-grow-1 min-w-0">
-            <div class="small text-body-secondary">@Model.ViajeTitulo</div>
-            <h1 class="h4 mb-0 text-truncate">@Model.Nombre</h1>
+
+        <i class="bi bi-folder2-open fs-4"></i>
+
+        <div class="flex-grow-1" style="min-width: 0;">
+            <h1 class="h5 fw-semibold mb-0 text-truncate">@Model.Nombre</h1>
+            <div class="small text-muted text-truncate">@Model.ViajeTitulo</div>
         </div>
+
         @if (Model.EsPropietario)
         {
-            <button type="button" class="btn btn-outline-primary" id="toggleSharePanel" aria-controls="sharePanel" aria-expanded="@(!string.IsNullOrWhiteSpace(Model.Busqueda))" title="Compartir carpeta">
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" id="toggleSharePanel"
+                    aria-controls="sharePanel" aria-expanded="@(!string.IsNullOrWhiteSpace(Model.Busqueda))" title="Compartir carpeta">
                 <i class="bi bi-share"></i>
             </button>
         }
         @if (Model.PuedeEditar)
         {
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary" title="Editar carpeta">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm rounded-3" title="Editar carpeta">
                 <i class="bi bi-pencil"></i>
             </a>
         }
@@ -285,7 +298,7 @@
                                 },
                                 body: new URLSearchParams({
                                     p_viaje_oid: collagePanel.dataset.viajeId,
-                                    imagenDataUrl
+                                    imageDataUrl
                                 })
                             });
                             if (!response.ok) throw new Error("El collage se creó, pero no se pudo guardar.");

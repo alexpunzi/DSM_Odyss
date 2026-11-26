@@ -71,6 +71,7 @@ public partial class ClienteController : Controller
 
             // Mis viajes: del más reciente al más antiguo.
             Viajes = entity.Viajes
+                .Where(v => v.EsPublico)
                 .OrderByDescending(v => v.FechaInicio)
                 .Select(v => new DSM_Odyss.Web.ViewModels.PerfilViajeItem
                 {

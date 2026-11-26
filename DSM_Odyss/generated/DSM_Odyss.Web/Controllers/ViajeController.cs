@@ -34,9 +34,24 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Index()
     {
-    /*PROTECTED REGION ID(ViajeController_Index_GET_body) START*/
-        var entities = await _viajeService.LeerTodosViajesAsync();
-        return View(entities.Select(ViajeAssembler.ToViewModel).ToList());
+    /*PROTECTED REGION ID(ViajeController_Index_GET_body) ENABLED START*/
+
+        // Mis viajes privados: los viajes del usuario conectado con EsPublico = false.
+        if (!int.TryParse(User.Identity?.Name, out var clienteId))
+            return RedirectToAction("Login", "Account");
+
+        await using var unitOfWork = _formUnitOfWorkFactory.Create();
+        var cliente = await unitOfWork.ClienteRepository.ReadAsync(clienteId);
+        if (cliente is null)
+            return RedirectToAction("Login", "Account");
+
+        var privados = cliente.Viajes
+            .Where(v => !v.EsPublico)
+            .OrderByDescending(v => v.FechaInicio)
+            .Select(ViajeAssembler.ToViewModel)
+            .ToList();
+
+        return View(privados);
     /*PROTECTED REGION END*/
     }
 

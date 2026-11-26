@@ -16,15 +16,16 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class ResenaController : Controller
 {
-    /*PROTECTED REGION ID(ResenaController_dependencies) START*/
+    /*PROTECTED REGION ID(ResenaController_dependencies) ENABLED START*/
     private readonly ResenaService _resenaService;
+    private readonly ClienteService _clienteService;
+    private readonly ViajeService _viajeService;
     private readonly ILogger<ResenaController> _logger;
-    public ResenaController(ResenaService resenaService, ILogger<ResenaController>? logger = null)
+    public ResenaController(ResenaService resenaService, ClienteService clienteService, ViajeService viajeService, ILogger<ResenaController>? logger = null)
     {
         _resenaService = resenaService;
-
-
-
+        _clienteService = clienteService;
+        _viajeService = viajeService;
         _logger = logger ?? global::Microsoft.Extensions.Logging.Abstractions.NullLogger<ResenaController>.Instance;
     }
     /*PROTECTED REGION END*/
@@ -33,10 +34,40 @@ public partial class ResenaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Index()
     {
-    /*PROTECTED REGION ID(ResenaController_Index_GET_body) START*/
+    /*PROTECTED REGION ID(ResenaController_Index_GET_body) ENABLED START*/
 
-        var entities = await _resenaService.LeerTodasResenasAsync();
-        return View(entities.Select(ResenaAssembler.ToViewModel).ToList());
+        // Mis reseñas: todas las del usuario conectado, de la más reciente a la más antigua.
+        if (!int.TryParse(User.Identity?.Name, out var clienteId))
+            return RedirectToAction("Login", "Account");
+
+        var cliente = await _clienteService.LeerClienteOIDAsync(clienteId);
+        if (cliente is null)
+            return RedirectToAction("Login", "Account");
+
+        // Una Resena no sabe de qué Viaje es: lo buscamos recorriendo los viajes.
+        var todosLosViajes = await _viajeService.LeerTodosViajesAsync();
+        var viajePorResena = new Dictionary<int, DSM_Odyss.Domain.Entities.Viaje>();
+        foreach (var v in todosLosViajes)
+            foreach (var r in v.Resenas)
+                viajePorResena[r.Id] = v;
+
+        var model = cliente.Resenas
+            .OrderByDescending(r => r.Fecha)
+            .Select(r =>
+            {
+                viajePorResena.TryGetValue(r.Id, out var viaje);
+                return new DSM_Odyss.Web.ViewModels.PerfilResenaItem
+                {
+                    Id = r.Id,
+                    TituloViaje = viaje?.Titulo ?? "Viaje desconocido",
+                    Puntuacion = r.Puntuacion,
+                    FechaViaje = viaje?.FechaInicio ?? r.Fecha,
+                    Comentario = r.Comentario
+                };
+            })
+            .ToList();
+
+        return View(model);
     /*PROTECTED REGION END*/
     }
 
