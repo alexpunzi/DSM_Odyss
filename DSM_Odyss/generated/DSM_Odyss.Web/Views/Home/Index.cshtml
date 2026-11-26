@@ -8,35 +8,8 @@
 
 <div class="container py-2" style="max-width: 600px;">
 
-    <!-- 1. BARRA SUPERIOR / BUSCADOR (Mockup M07) -->
-    <div class="d-flex align-items-center gap-2 mb-3">
-        <button class="btn btn-outline-secondary rounded-circle p-2" type="button" title="Menú">
-            <i class="bi bi-list fs-5"></i>
-        </button>
-        <div class="input-group">
-            <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" class="form-control border-start-0 bg-white" placeholder="Buscar viajes..." aria-label="Buscar viajes">
-            <button class="btn btn-outline-secondary border-start-0 rounded-end-pill" type="button" title="Filtros">
-                <i class="bi bi-funnel"></i>
-            </button>
-        </div>
-        <a asp-controller="Cliente" asp-action="Details" asp-route-id="@User.Identity?.Name" class="btn btn-outline-secondary rounded-circle p-2" title="Perfil">
-            <i class="bi bi-person fs-5"></i>
-        </a>
-    </div>
-
-    <!-- 2. SELECTOR DE VISTAS / PÍLDORAS -->
-    <div class="d-flex gap-2 mb-4">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-dark rounded-pill px-3 py-1 btn-sm fw-semibold">
-            <i class="bi bi-eye me-1"></i> Ver todo
-        </a>
-        <a asp-controller="Viaje" asp-action="Create" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm">
-            <i class="bi bi-map me-1"></i> Crear viaje
-        </a>
-        <a asp-controller="Checklist" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3 py-1 btn-sm">
-            <i class="bi bi-check2-square me-1"></i> Checklists
-        </a>
-    </div>
+    @{ ViewData["TopBarActiva"] = "inicio"; }
+    <partial name="_TopBar" />
 
     <!-- 3. SECCIÓN: VIAJES POPULARES -->
     <div class="mb-4">
@@ -106,5 +79,3 @@
             <p class="text-muted small mb-0">No hay destinos registrados en la base de datos todavía.</p>
         }
     </div>
-
-</div>

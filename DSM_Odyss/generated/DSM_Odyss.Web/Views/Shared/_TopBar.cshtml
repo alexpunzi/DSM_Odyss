@@ -1,0 +1,34 @@
+@{
+    var activa = ViewData["TopBarActiva"]?.ToString()?.ToLowerInvariant() ?? "";
+}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <button class="btn btn-outline-secondary rounded-circle p-2" type="button" title="Menú">
+        <i class="bi bi-list fs-5"></i>
+    </button>
+    <div class="input-group">
+        <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
+        <input type="text" class="form-control border-start-0 bg-white" placeholder="Buscar viajes..." aria-label="Buscar viajes">
+        <button class="btn btn-outline-secondary border-start-0 rounded-end-pill" type="button" title="Filtros">
+            <i class="bi bi-funnel"></i>
+        </button>
+    </div>
+    <a asp-controller="Cliente" asp-action="Details" asp-route-id="@User.Identity?.Name" class="btn btn-outline-secondary rounded-circle p-2" title="Perfil">
+        <i class="bi bi-person fs-5"></i>
+    </a>
+</div>
+
+<div class="d-flex gap-2 mb-4">
+    <a asp-controller="Home" asp-action="Index"
+       class="btn rounded-pill px-3 py-1 btn-sm @(activa == "inicio" ? "btn-dark fw-semibold" : "btn-outline-secondary")">
+        <i class="bi bi-eye me-1"></i> Ver todo
+    </a>
+    <a asp-controller="Viaje" asp-action="Create"
+       class="btn rounded-pill px-3 py-1 btn-sm @(activa == "crear" ? "btn-dark fw-semibold" : "btn-outline-secondary")">
+        <i class="bi bi-map me-1"></i> Crear viaje
+    </a>
+    <a asp-controller="Checklist" asp-action="Index"
+       class="btn rounded-pill px-3 py-1 btn-sm @(activa == "checklist" ? "btn-dark fw-semibold" : "btn-outline-secondary")">
+        <i class="bi bi-check2-square me-1"></i> Checklists
+    </a>
+</div>

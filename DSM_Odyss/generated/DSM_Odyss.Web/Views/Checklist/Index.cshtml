@@ -5,6 +5,9 @@
 }
 
 <div class="container py-3" style="max-width: 480px;">
+    @{ ViewData["TopBarActiva"] = "checklist"; }
+    <partial name="_TopBar" />
+
     @* Cabecera igual al mockup *@
     <div class="mb-3">
         <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">Mis checklists</h1>
