@@ -6,6 +6,8 @@ public sealed class CarpetaDetailsViewModel
     public int ViajeId { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string ViajeTitulo { get; set; } = string.Empty;
+    public string? CollageUrl { get; set; }
+    public bool AutoGenerateCollage { get; set; }
     public bool PuedeEditar { get; set; }
     public bool EsPropietario { get; set; }
     public bool EsEnlacePublico { get; set; }

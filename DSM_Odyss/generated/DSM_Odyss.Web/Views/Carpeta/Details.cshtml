@@ -48,6 +48,27 @@
         <div class="alert alert-danger" role="alert">@error</div>
     }
 
+    @if (!string.IsNullOrWhiteSpace(Model.CollageUrl) || Model.AutoGenerateCollage)
+    {
+        <section id="tripCollage"
+                 class="card border-0 shadow-sm mb-4"
+                 data-auto-generate="@Model.AutoGenerateCollage.ToString().ToLowerInvariant()"
+                 data-viaje-id="@Model.ViajeId"
+                 data-save-url="@Url.Action("GenerarCollageAutomatico", "Collage")"
+                 aria-label="Resumen automático del viaje">
+            <div class="card-body p-2">
+                <h2 class="h6 px-2 pt-1">Resumen del viaje</h2>
+                <img id="tripCollageImage"
+                     src="@Model.CollageUrl"
+                     alt="Collage automático de @Model.ViajeTitulo"
+                     class="img-fluid w-100 rounded-3 @(string.IsNullOrWhiteSpace(Model.CollageUrl) ? "d-none" : string.Empty)" />
+                <div id="collageStatus" class="small text-body-secondary px-2 py-2" role="status">
+                    @(Model.AutoGenerateCollage ? "Creando el collage automáticamente…" : "Collage creado a partir de las fotos del viaje.")
+                </div>
+            </div>
+        </section>
+    }
+
     <section aria-label="Fotos y vídeos de la carpeta">
         @if (Model.Archivos.Count == 0)
         {
@@ -78,7 +99,7 @@
                             else
                             {
                                 <a href="@archivo.Url" target="_blank" rel="noopener" aria-label="Abrir @archivo.Nombre">
-                                    <img src="@archivo.Url" alt="@archivo.Nombre" class="w-100 h-100 object-fit-cover" loading="lazy" />
+                                    <img src="@archivo.Url" alt="@archivo.Nombre" class="w-100 h-100 object-fit-cover" loading="lazy" data-collage-source="true" />
                                 </a>
                             }
                         </div>
@@ -206,6 +227,76 @@
 @section Scripts {
     <script>
         (() => {
+            const collagePanel = document.getElementById("tripCollage");
+            if (collagePanel && collagePanel.dataset.autoGenerate === "true") {
+                const status = document.getElementById("collageStatus");
+                const collageImage = document.getElementById("tripCollageImage");
+                const imageSources = Array.from(document.querySelectorAll('img[data-collage-source]')).slice(0, 6);
+
+                const loadImage = (source) => new Promise((resolve, reject) => {
+                    const image = new Image();
+                    image.onload = () => resolve(image);
+                    image.onerror = () => reject(new Error("No se pudo cargar una de las fotos."));
+                    image.src = source;
+                });
+
+                const drawCover = (context, image, x, y, width, height) => {
+                    const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+                    const drawnWidth = image.naturalWidth * scale;
+                    const drawnHeight = image.naturalHeight * scale;
+                    context.drawImage(
+                        image,
+                        x + (width - drawnWidth) / 2,
+                        y + (height - drawnHeight) / 2,
+                        drawnWidth,
+                        drawnHeight);
+                };
+
+                if (imageSources.length > 0) {
+                    (async () => {
+                        try {
+                            const images = await Promise.all(imageSources.map(item => loadImage(item.src)));
+                            const canvas = document.createElement("canvas");
+                            canvas.width = 1200;
+                            canvas.height = 800;
+                            const context = canvas.getContext("2d");
+                            if (!context) throw new Error("No se pudo preparar el collage.");
+
+                            const columns = Math.min(3, images.length);
+                            const rows = Math.ceil(images.length / columns);
+                            const cellWidth = canvas.width / columns;
+                            const cellHeight = canvas.height / rows;
+                            images.forEach((image, index) => {
+                                drawCover(context, image, (index % columns) * cellWidth, Math.floor(index / columns) * cellHeight, cellWidth, cellHeight);
+                            });
+
+                            const imageDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+                            collageImage.src = imageDataUrl;
+                            collageImage.classList.remove("d-none");
+
+                            const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                            if (!antiForgeryToken) throw new Error("No se pudo validar la sesión para guardar el collage.");
+
+                            const response = await fetch(collagePanel.dataset.saveUrl, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                                    "RequestVerificationToken": antiForgeryToken
+                                },
+                                body: new URLSearchParams({
+                                    p_viaje_oid: collagePanel.dataset.viajeId,
+                                    imagenDataUrl
+                                })
+                            });
+                            if (!response.ok) throw new Error("El collage se creó, pero no se pudo guardar.");
+                            status.textContent = "Collage generado y guardado automáticamente.";
+                        } catch (error) {
+                            status.textContent = error instanceof Error ? error.message : "No se pudo generar el collage.";
+                        }
+                    })();
+                }
+            }
+
             const toggle = document.getElementById("toggleSharePanel");
             const panel = document.getElementById("sharePanel");
             if (toggle && panel) {

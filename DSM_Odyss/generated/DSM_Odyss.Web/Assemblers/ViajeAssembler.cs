@@ -20,7 +20,7 @@ public static class ViajeAssembler
             CarpetasId = entity.Carpetas?.Id,
             CarpetasLabel = entity.Carpetas is null ? null : Convert.ToString(entity.Carpetas.Nombre, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty,
             CollagesId = entity.Collages?.Id,
-            CollagesLabel = entity.Collages is null ? null : Convert.ToString(entity.Collages.UrlImagen, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty,
+            CollagesLabel = entity.Collages is null ? null : $"Collage #{entity.Collages.Id}",
         };
     /*PROTECTED REGION END*/
 

@@ -492,7 +492,11 @@ public partial class ViajeController : Controller
             .Where(item => ownedFolderIds.Contains(item.Id))
             .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = item.Nombre ?? string.Empty }).ToList();
         var options1 = (await unitOfWork.CollageRepository.ReadAllAsync())
-            .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = item.UrlImagen ?? string.Empty }).ToList();
+            .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+            {
+                Value = item.Id.ToString(),
+                Text = $"Collage #{item.Id} ({item.FechaCreacion:yyyy-MM-dd})"
+            }).ToList();
         var optionsDestinos = (await unitOfWork.DestinoRepository.ReadAllAsync())
             .Select(item => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = item.Id.ToString(), Text = $"{item.Ciudad} ({item.Pais})" }).ToList();
 

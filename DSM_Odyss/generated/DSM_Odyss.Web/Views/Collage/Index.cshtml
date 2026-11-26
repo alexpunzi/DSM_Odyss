@@ -21,7 +21,7 @@
                 <thead class="table-light">
                     <tr>
                         <th scope="col">@Html.DisplayNameFor(model => model.Id)</th>
-                        <th scope="col">@Html.DisplayNameFor(model => model.UrlImagen)</th>
+                        <th scope="col">Vista previa</th>
                         <th scope="col">@Html.DisplayNameFor(model => model.FechaCreacion)</th>
                         <th scope="col" class="text-end">Acciones</th>
                     </tr>
@@ -31,7 +31,16 @@
                 {
                     <tr>
                             <td>@Html.DisplayFor(modelItem => item.Id)</td>
-                            <td>@Html.DisplayFor(modelItem => item.UrlImagen)</td>
+                            <td>
+                                @if (item.UrlImagen.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <img src="@item.UrlImagen" alt="Collage del viaje" class="rounded object-fit-cover" style="width: 120px; height: 80px;" />
+                                }
+                                else
+                                {
+                                    <span class="text-body-secondary">Collage #@item.Id</span>
+                                }
+                            </td>
                             <td>@Html.DisplayFor(modelItem => item.FechaCreacion)</td>
                             <td class="text-end text-nowrap">
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Detalles</a>

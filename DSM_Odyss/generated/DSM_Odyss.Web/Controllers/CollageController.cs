@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DSM_Odyss.Domain.Entities;
+using DSM_Odyss.Application.Abstractions;
 using DSM_Odyss.Application.Services;
 using DSM_Odyss.Web.Assemblers;
 
@@ -18,13 +19,15 @@ public partial class CollageController : Controller
 {
     /*PROTECTED REGION ID(CollageController_dependencies) START*/
     private readonly CollageService _collageService;
+    private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<CollageController> _logger;
-    public CollageController(CollageService collageService, ILogger<CollageController>? logger = null)
+    public CollageController(
+        CollageService collageService,
+        IUnitOfWorkFactory unitOfWorkFactory,
+        ILogger<CollageController>? logger = null)
     {
         _collageService = collageService;
-
-
-
+        _unitOfWorkFactory = unitOfWorkFactory;
         _logger = logger ?? global::Microsoft.Extensions.Logging.Abstractions.NullLogger<CollageController>.Instance;
     }
     /*PROTECTED REGION END*/

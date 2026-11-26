@@ -96,6 +96,37 @@ public sealed class ManualOperationTests
     }
 
     [Fact]
+    public async Task Generar_collage_automatico_lo_asocia_al_viaje_y_actualiza_el_existente()
+    {
+        await WithUnitOfWorkAsync(async unitOfWork =>
+        {
+            Cliente propietario = CrearCliente("propietario-collage");
+            await new ClienteService(unitOfWork).AddClienteDefaultAsync(propietario);
+            Viaje viaje = await new ViajeService(unitOfWork).CrearViajeAsync(
+                "Viaje con collage",
+                new DateTime(2026, 8, 1),
+                new DateTime(2026, 8, 5),
+                false,
+                300,
+                TipoViaje.ocio,
+                EstadoViaje.planificado,
+                propietario.Id,
+                0);
+
+            var service = new CollageService(unitOfWork);
+            await service.GenerarCollageAutomaticoAsync(viaje.Id, "data:image/jpeg;base64,Zmlyc3Q=");
+            await service.GenerarCollageAutomaticoAsync(viaje.Id, "data:image/jpeg;base64,c2Vjb25k");
+
+            Viaje viajeGuardado = await unitOfWork.ViajeRepository.ReadAsync(viaje.Id)
+                ?? throw new InvalidOperationException("The trip was not saved.");
+            Collage collage = viajeGuardado.Collages
+                ?? throw new InvalidOperationException("The generated collage was not linked.");
+            Assert.Equal("data:image/jpeg;base64,c2Vjb25k", collage.UrlImagen);
+            Assert.Single(await unitOfWork.CollageRepository.ReadAllAsync());
+        });
+    }
+
+    [Fact]
     public async Task Crear_tarea_la_asocia_y_persiste_en_su_checklist()
     {
         await WithUnitOfWorkAsync(async unitOfWork =>

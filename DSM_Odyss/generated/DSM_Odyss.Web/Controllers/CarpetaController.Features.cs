@@ -79,6 +79,8 @@ public partial class CarpetaController
             await unitOfWork.MultimediaRepository.SaveAsync(media);
             await unitOfWork.CarpetaRepository.SaveAsync(context.Carpeta);
             await unitOfWork.CommitAsync();
+            if (tipo == TipoMultimedia.foto)
+                TempData["GenerarCollage"] = true;
         }
         catch (Exception error)
         {

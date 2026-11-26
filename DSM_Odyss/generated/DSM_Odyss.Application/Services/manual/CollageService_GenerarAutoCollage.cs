@@ -11,10 +11,10 @@ namespace DSM_Odyss.Application.Services;
 
 public sealed partial class CollageService
 {
-    public async Task<Collage> GenerarAutoCollageAsync(int p_viaje_oid)
+    public async Task<Collage> GenerarAutoCollageAsync(int p_viaje_oid, string imagenDataUrl)
     {
         /*PROTECTED REGION ID(DSM_Odyss.Application.Services_Collage_generarAutoCollage) ENABLED START*/
-        return await GenerarCollageAutomaticoAsync(p_viaje_oid);
+        return await GenerarCollageAutomaticoAsync(p_viaje_oid, imagenDataUrl);
         /*PROTECTED REGION END*/
     }
 }

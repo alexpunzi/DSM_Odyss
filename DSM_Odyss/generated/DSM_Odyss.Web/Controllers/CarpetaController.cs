@@ -101,6 +101,7 @@ public partial class CarpetaController : Controller
 
         var canEdit = isOwner || (clientId.HasValue &&
             context.Carpeta.CompartidoConEdicion.Any(cliente => cliente.Id == clientId.Value));
+        var viaje = context.Viajes.FirstOrDefault();
         if (isOwner && string.IsNullOrWhiteSpace(context.Carpeta.PublicShareToken))
         {
             context.Carpeta.PublicShareToken = CreateShareToken();
@@ -108,12 +109,23 @@ public partial class CarpetaController : Controller
         }
 
         var mediaToken = isPublicLink ? token : null;
+        var photoFiles = context.Carpeta.Multimedia
+            .Where(item => item.Tipo == TipoMultimedia.foto)
+            .ToList();
+        var hasGeneratedCollage = viaje?.Collages?.UrlImagen?.StartsWith(
+            "data:image/jpeg;base64,", StringComparison.Ordinal) == true;
+        var generateCollage = canEdit &&
+                              viaje is not null &&
+                              photoFiles.Count > 0 &&
+                              (TempData["GenerarCollage"] as bool? == true || !hasGeneratedCollage);
         var model = new DSM_Odyss.Web.ViewModels.CarpetaDetailsViewModel
         {
             Id = context.Carpeta.Id,
             Nombre = context.Carpeta.Nombre,
-            ViajeId = context.Viajes.FirstOrDefault()?.Id ?? 0,
-            ViajeTitulo = context.Viajes.FirstOrDefault()?.Titulo ?? string.Empty,
+            ViajeId = viaje?.Id ?? 0,
+            ViajeTitulo = viaje?.Titulo ?? string.Empty,
+            CollageUrl = viaje?.Collages?.UrlImagen,
+            AutoGenerateCollage = generateCollage,
             PuedeEditar = canEdit,
             EsPropietario = isOwner,
             EsEnlacePublico = isPublicLink && !canEdit,
