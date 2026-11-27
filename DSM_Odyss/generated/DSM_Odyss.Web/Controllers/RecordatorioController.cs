@@ -46,6 +46,17 @@ public partial class RecordatorioController : Controller
         if (cliente is null)
             return RedirectToAction("Login", "Account");
 
+        // CU-15: los recordatorios cuya hora ya ha llegado se envían ahora
+        // (solo si el usuario tiene activado "Recibir recordatorios").
+        var avisados = await EnviarAvisosVencidosAsync(cliente);
+        if (avisados.Count > 0)
+        {
+            ViewData["AvisosEnviados"] = avisados;
+            ViewData["CanalAviso"] = cliente.CanalNotificacion == CanalNotificacion.sms ? "SMS" : "email";
+            // Volvemos a leer el cliente para que la lista salga con "Enviado" actualizado
+            cliente = await _clienteService.LeerClienteOIDAsync(clienteId) ?? cliente;
+        }
+
         var misRecordatorios = cliente.Recordatorios
             .OrderBy(r => r.Fecha.Date)
             .ThenBy(r => r.Hora.TimeOfDay)
@@ -205,7 +216,7 @@ public partial class RecordatorioController : Controller
             return View(model);
         }
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Details), new { id });
     /*PROTECTED REGION END*/
     }
 

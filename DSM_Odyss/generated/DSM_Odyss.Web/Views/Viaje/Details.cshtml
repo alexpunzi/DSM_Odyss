@@ -23,7 +23,7 @@
     };
 
     // A dónde vuelve la flecha: el autor, a su perfil o a sus viajes privados; los demás, a la Home.
-    var volverController = Model.EsPropietario ? (Model.EsPublico ? "Cliente" : "Viaje") : "Home";
+    var volverController = Model.EsPropietario ? (Model.EsPublico ? "Cliente" : "Viaje") : (Model.EsPublico ? "Home" : "Viaje");
     var volverAction = Model.EsPropietario ? (Model.EsPublico ? "Details" : "Index") : "Index";
 }
 
@@ -57,8 +57,8 @@
         <div class="flex-grow-1"></div>
         @if (Model.EsPropietario)
         {
-            <a asp-controller="Viaje" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-circle p-2" title="Editar viaje">
-                <i class="bi bi-pencil fs-5"></i>
+            <a asp-controller="Viaje" asp-action="Compartir" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-circle p-2" title="Compartir viaje">
+                <i class="bi bi-share fs-5"></i>
             </a>
             <button type="button" class="btn btn-outline-danger rounded-circle p-2" title="Borrar viaje"
                     data-bs-toggle="modal" data-bs-target="#modalBorrarViaje">

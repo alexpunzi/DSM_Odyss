@@ -1,0 +1,101 @@
+@model DSM_Odyss.Web.ViewModels.CompartirViajeViewModel
+
+@{
+    ViewData["Title"] = "Compartir viaje";
+}
+
+<div class="container py-2" style="max-width: 550px;">
+
+    @* Barra superior: volver al viaje *@
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <a asp-controller="Viaje" asp-action="Details" asp-route-id="@Model.ViajeId" class="btn btn-outline-secondary rounded-circle p-2" title="Volver al viaje">
+            <i class="bi bi-chevron-left fs-5"></i>
+        </a>
+        <div class="text-truncate">
+            <div class="small text-muted">Compartir itinerario</div>
+            <div class="fw-semibold text-truncate">@Model.Titulo</div>
+        </div>
+    </div>
+
+    @if (TempData["CompartirMsg"] is string mensaje)
+    {
+        <div class="alert alert-success py-2 small text-center">@mensaje</div>
+    }
+
+    @if (Model.EsPublico)
+    {
+        <div class="alert alert-light border py-2 small">
+            <i class="bi bi-globe me-1"></i>
+            Este viaje es público: ya lo puede ver cualquiera. Compartirlo sirve para que lo tengan en "Compartidos conmigo".
+        </div>
+    }
+
+    <section class="card border shadow-sm" style="border-radius: 14px;">
+        <div class="card-body p-3 p-sm-4">
+            <h1 class="h5 text-center mb-3">Compartir este viaje</h1>
+
+            @* Buscador de usuarios *@
+            <form asp-controller="Viaje" asp-action="Compartir" asp-route-id="@Model.ViajeId" method="get" class="mb-3">
+                <label for="userSearch" class="form-label visually-hidden">Buscar usuarios</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input id="userSearch" name="q" value="@Model.Busqueda" class="form-control" placeholder="Buscar por usuario o nombre" minlength="2" />
+                    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                </div>
+            </form>
+
+            @* Resultados de la búsqueda *@
+            @if (Model.ResultadosBusqueda.Count > 0)
+            {
+                <div class="list-group mb-3">
+                    @foreach (var usuario in Model.ResultadosBusqueda)
+                    {
+                        <form asp-controller="Viaje" asp-action="CompartirCon" method="post" class="list-group-item d-flex align-items-center gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="viajeId" value="@Model.ViajeId" />
+                            <input type="hidden" name="clienteId" value="@usuario.Id" />
+                            <i class="bi bi-person-circle fs-5"></i>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="fw-semibold text-truncate">@@@usuario.Usuario</div>
+                                <div class="small text-body-secondary text-truncate">@usuario.NombreCompleto</div>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-dark">Compartir</button>
+                        </form>
+                    }
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.Busqueda))
+            {
+                <p class="small text-body-secondary">No se encontraron usuarios para esa búsqueda.</p>
+            }
+
+            @* Personas con acceso *@
+            <h2 class="h6 mt-3">Personas con acceso</h2>
+            @if (Model.Compartidos.Count > 0)
+            {
+                <div class="list-group">
+                    @foreach (var compartido in Model.Compartidos)
+                    {
+                        <div class="list-group-item d-flex align-items-center gap-2">
+                            <i class="bi bi-person-circle"></i>
+                            <span class="flex-grow-1 text-truncate">@@@compartido.Usuario</span>
+                            <span class="badge rounded-pill text-bg-light border">Solo ver</span>
+                            <form asp-controller="Viaje" asp-action="DejarDeCompartir" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="viajeId" value="@Model.ViajeId" />
+                                <input type="hidden" name="clienteId" value="@compartido.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar a @compartido.Usuario">
+                                    <i class="bi bi-person-x"></i>
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="small text-body-secondary mb-0">Todavía no has compartido este viaje con nadie.</p>
+            }
+        </div>
+    </section>
+</div>

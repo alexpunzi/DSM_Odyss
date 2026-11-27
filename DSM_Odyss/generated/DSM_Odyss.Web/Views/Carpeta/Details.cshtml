@@ -298,7 +298,7 @@
                                 },
                                 body: new URLSearchParams({
                                     p_viaje_oid: collagePanel.dataset.viajeId,
-                                    imageDataUrl
+                                    imagenDataUrl: imageDataUrl
                                 })
                             });
                             if (!response.ok) throw new Error("El collage se creó, pero no se pudo guardar.");

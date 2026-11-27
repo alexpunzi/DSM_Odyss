@@ -1,0 +1,28 @@
+@model List<DSM_Odyss.Web.ViewModels.ViajeCompartidoItem>
+
+@* Solo se muestra si alguien te ha compartido algún viaje *@
+@if (Model.Any())
+{
+    <h2 class="h5 fw-semibold mt-4 mb-3">
+        <i class="bi bi-people me-1"></i> Compartidos conmigo
+    </h2>
+
+    <div class="row row-cols-2 g-3">
+        @foreach (var viaje in Model)
+        {
+            <div class="col">
+                <a asp-controller="Viaje" asp-action="Details" asp-route-id="@viaje.Id"
+                   class="tarjeta-enlace card border rounded-3 h-100">
+                    <div class="imagen-vacia rounded-top-3" style="height: 130px;">
+                        <i class="bi bi-image fs-1"></i>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="fw-semibold small text-truncate">@viaje.Titulo</div>
+                        <div class="text-muted" style="font-size: .75rem;">@viaje.FechaInicio.ToString("dd/MM/yyyy")</div>
+                        <div class="text-muted text-truncate" style="font-size: .75rem;">de @@@viaje.Autor</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}

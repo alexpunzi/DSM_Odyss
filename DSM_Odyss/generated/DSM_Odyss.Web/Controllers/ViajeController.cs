@@ -78,8 +78,9 @@ public partial class ViajeController : Controller
         model.AutorId = autor?.Id ?? 0;
         model.AutorUsername = autor?.User ?? "desconocido";
 
-        // Un viaje privado solo lo puede ver su autor.
-        if (!entity.EsPublico && !model.EsPropietario) return NotFound();
+        // Un viaje privado solo lo ven su autor y las personas con quienes lo ha compartido (CU-12).
+        var compartidoConmigo = usuarioId.HasValue && entity.CompartidoCon.Any(c => c.Id == usuarioId.Value);
+        if (!entity.EsPublico && !model.EsPropietario && !compartidoConmigo) return NotFound();
 
         // Reseñas del viaje, con el usuario que escribió cada una.
         model.ResenasViaje = entity.Resenas

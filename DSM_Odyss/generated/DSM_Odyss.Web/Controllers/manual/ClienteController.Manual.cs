@@ -56,9 +56,14 @@ public partial class ClienteController
     {
     /*PROTECTED REGION ID(ClienteController_ConfigurarNotificaciones_POST_body) ENABLED START*/
 
+        // Solo puedes cambiar tus propias preferencias
+        if (!int.TryParse(User.Identity?.Name, out var clienteId) || clienteId != p_oid) return Forbid();
+
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _clienteService.ConfigurarNotificacionesAsync(p_oid, p_canal, p_recibirRecordatorios);
-        return NoContent();
+
+        TempData["MensajeNotificaciones"] = "Preferencias de notificación guardadas.";
+        return RedirectToAction("Index", "Recordatorio");
     /*PROTECTED REGION END*/
     }
 }
