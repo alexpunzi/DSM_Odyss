@@ -185,7 +185,7 @@ public partial class ViajeController : Controller
                 }
                 else
                 {
-                    var ciudadNorm = itemDestino.Ciudad.Trim();
+                    var ciudadNorm = (itemDestino.Ciudad ?? string.Empty).Trim();
                     var paisNorm = string.IsNullOrWhiteSpace(itemDestino.Pais) ? "Sin especificar" : itemDestino.Pais.Trim();
 
                     var existente = catalogoDestinos.FirstOrDefault(d =>
@@ -239,7 +239,7 @@ public partial class ViajeController : Controller
                 }
 
                 await paradaActividadService.CrearParadaActividadAsync(
-                    act.Nombre.Trim(),
+                    act.Nombre!.Trim(),
                     act.Dia,
                     horarioDt,
                     false,

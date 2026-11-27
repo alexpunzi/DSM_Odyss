@@ -11,7 +11,7 @@ public sealed class ViajeViewModel : IValidatableObject
     [Key]
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "Debes indicar {0}.")]
+    [Required(ErrorMessage = "Ponle un título a tu viaje.")]
     public string Titulo { get; set; } = string.Empty;
 
     [DataType(DataType.Date)]
@@ -73,6 +73,19 @@ public sealed class ViajeViewModel : IValidatableObject
             new[] { nameof(FechaFin) });
         }
 
+        // País obligatorio cuando se escribe un destino nuevo.
+        // (Si se elige del catálogo, el destino ya tiene su país guardado).
+        for (var i = 0; i < Destinos.Count; i++)
+        {
+            var d = Destinos[i];
+            if (!d.DestinoId.HasValue && !string.IsNullOrWhiteSpace(d.Ciudad) && string.IsNullOrWhiteSpace(d.Pais))
+            {
+                yield return new ValidationResult(
+                    $"Indica el país del destino '{d.Ciudad!.Trim()}'.",
+                    new[] { $"Destinos[{i}].Pais" });
+            }
+        }
+
         // Validar que haya al menos un destino
         var destinosValidos = Destinos.Where(d => !string.IsNullOrWhiteSpace(d.Ciudad) || d.DestinoId.HasValue).ToList();
         if (!destinosValidos.Any())
@@ -110,8 +123,12 @@ public sealed class ViajeViewModel : IValidatableObject
 public class DestinoParadaItemViewModel
 {
     public int? DestinoId { get; set; }
-    public string Pais { get; set; } = string.Empty;
-    public string Ciudad { get; set; } = string.Empty;
+    // El ? le dice a ASP.NET que pueden venir vacíos. 
+    // Las comprobaciones de verdad 
+    // (que cada destino tenga ciudad o esté elegido del catálogo) 
+    // ya las hace el propio ViewModel y el controlador.
+    public string? Pais { get; set; }
+    public string? Ciudad { get; set; }
     public int Orden { get; set; } = 1;
 
     [DataType(DataType.Date)]
@@ -124,7 +141,7 @@ public class DestinoParadaItemViewModel
 public class ParadaItemViewModel
 {
     public int Id { get; set; }
-    public string Nombre { get; set; } = string.Empty;
+    public string? Nombre { get; set; }
     public int Dia { get; set; } = 1;
     public string? Horario { get; set; }
     public string? Detalles { get; set; }

@@ -28,7 +28,10 @@
 
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
-        <div asp-validation-summary="All" class="alert alert-danger py-2 small" role="alert"></div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger py-2 small" role="alert"></div>
+        }
 
         @* Contenedor principal con borde redondeado *@
         <div class="card border shadow-sm mb-3" style="border-radius: 14px; border-color: #94a3b8 !important;">
