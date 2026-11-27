@@ -6,3 +6,12 @@ obj/
 .vs/
 *.user
 *.suo
+
+# Base de datos local: cada uno la genera con InitializeDB (SeedData)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
