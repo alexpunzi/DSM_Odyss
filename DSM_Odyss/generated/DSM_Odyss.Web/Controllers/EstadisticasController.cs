@@ -39,7 +39,7 @@ public partial class EstadisticasController : Controller
 
     public async Task<IActionResult> Index(int? anyo = null)
     {
-    /*PROTECTED REGION ID(EstadisticasController_Index_GET_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Index_GET_body) ENABLED START*/
         int anyoObjetivo = anyo ?? DateTime.Now.Year;
         var (cliente, estadisticas, metricas) = await ObtenerOCrearEstadisticasClienteActualAsync(anyoObjetivo);
 
@@ -236,15 +236,14 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     }
 
-    /*PROTECTED REGION ID(EstadisticasController_custom_helpers) ENABLED START*/
+        /*PROTECTED REGION ID(EstadisticasController_custom_helpers) ENABLED START*/
     public sealed record EstadisticasMetricasCalculadas(
         string NombreUsuario,
         List<int> AnyosDisponibles,
         int TotalViajes,
         int ArchivosAlmacenados,
         List<string> TopDestinos,
-        double PuntuacionMediaResenas,
-        double KilometrosRecorridos);
+        double PuntuacionMediaResenas);
 
     private async Task<(Cliente? cliente, Estadisticas? estadisticas, EstadisticasMetricasCalculadas? metricas)>
     ObtenerOCrearEstadisticasClienteActualAsync(int anyo)
@@ -313,31 +312,15 @@ public partial class EstadisticasController : Controller
             .Select(g => g.Key)
             .ToList();
 
+        // Valoración media: solo las reseñas RECIBIDAS en mis viajes.
         var puntuaciones = viajesFiltrados
             .SelectMany(v => v.Resenas ?? Enumerable.Empty<Resena>())
-            .Concat(cliente.Resenas ?? Enumerable.Empty<Resena>())
             .Select(r => (double)r.Puntuacion)
             .ToList();
 
         double puntuacionMedia = puntuaciones.Count > 0
             ? Math.Round(puntuaciones.Average(), 1)
             : 0.0;
-
-        double totalKm = 0;
-        foreach (var viaje in viajesFiltrados)
-        {
-            var coordenadas = (viaje.Paradas ?? Enumerable.Empty<ParadaActividad>())
-                .Where(p => p.Ubicacion != null && (p.Ubicacion.Latitud != 0 || p.Ubicacion.Longitud != 0))
-                .Select(p => p.Ubicacion!)
-                .ToList();
-
-            for (int i = 0; i < coordenadas.Count - 1; i++)
-            {
-                totalKm += CalcularDistanciaHaversineKm(
-                    coordenadas[i].Latitud, coordenadas[i].Longitud,
-                    coordenadas[i + 1].Latitud, coordenadas[i + 1].Longitud);
-            }
-        }
 
         string nombreUsuario = string.IsNullOrWhiteSpace(cliente.User) ? cliente.Email : cliente.User;
 
@@ -347,22 +330,9 @@ public partial class EstadisticasController : Controller
             TotalViajes: viajesFiltrados.Count,
             ArchivosAlmacenados: archivosAlmacenados,
             TopDestinos: topDestinos,
-            PuntuacionMediaResenas: puntuacionMedia,
-            KilometrosRecorridos: Math.Round(totalKm, 1));
+            PuntuacionMediaResenas: puntuacionMedia);
 
         return (cliente, estadisticas, metricas);
-    }
-
-    private static double CalcularDistanciaHaversineKm(double lat1, double lon1, double lat2, double lon2)
-    {
-        const double R = 6371.0;
-        double dLat = (lat2 - lat1) * Math.PI / 180.0;
-        double dLon = (lon2 - lon1) * Math.PI / 180.0;
-        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                   Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0) *
-                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-        return R * c;
     }
     /*PROTECTED REGION END*/
 }

@@ -21,7 +21,6 @@ public class EstadisticasViewModel
     // --- Propiedades extendidas para RF-05, RF-11, RF-12 y Mockup M13 ---
     public string NombreUsuario { get; set; } = string.Empty;
     public int TotalViajes { get; set; }
-    public double KilometrosRecorridos { get; set; }
     public int ArchivosAlmacenados { get; set; }
     public double PuntuacionMediaResenas { get; set; }
     public List<string> TopDestinos { get; set; } = new();
