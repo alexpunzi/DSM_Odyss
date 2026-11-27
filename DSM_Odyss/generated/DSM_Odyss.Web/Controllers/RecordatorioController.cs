@@ -93,7 +93,7 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.RecordatorioViewModel model)
     {
-    /*PROTECTED REGION ID(RecordatorioController_Create_POST_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Create_POST_body) ENABLED START*/
 
 
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
@@ -114,7 +114,7 @@ public partial class RecordatorioController : Controller
         try
         {
 
-            var entity = await service.CrearRecordatorioAsync(model.Titulo, model.Detalles, model.Fecha, model.Hora, model.TipoAviso, model.Enviado);
+            var entity = await service.CrearRecordatorioAsync(model.Titulo, model.Detalles ?? string.Empty, model.Fecha, model.Hora, model.TipoAviso, model.Enviado);
             entity.Tarea = model.TareaId is int referenceTarea
                 ? await unitOfWork.TareaRepository.ReadAsync(referenceTarea) ?? throw new InvalidOperationException("El registro seleccionado de Tarea ya no existe.") : null!;
 
@@ -156,7 +156,7 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.RecordatorioViewModel model)
     {
-    /*PROTECTED REGION ID(RecordatorioController_Edit_POST_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Edit_POST_body) ENABLED START*/
 
 
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
@@ -178,7 +178,7 @@ public partial class RecordatorioController : Controller
         try
         {
 
-            await service.ModificarRecordatorioAsync(id, model.Titulo, model.Detalles, model.Fecha, model.Hora, model.TipoAviso, model.Enviado);
+            await service.ModificarRecordatorioAsync(id, model.Titulo, model.Detalles ?? string.Empty, model.Fecha, model.Hora, model.TipoAviso, model.Enviado);
             entity.Tarea = model.TareaId is int referenceTarea
                 ? await unitOfWork.TareaRepository.ReadAsync(referenceTarea) ?? throw new InvalidOperationException("El registro seleccionado de Tarea ya no existe.") : null!;
 

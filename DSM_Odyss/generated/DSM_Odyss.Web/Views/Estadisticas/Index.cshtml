@@ -42,7 +42,7 @@
 
     <!-- Tarjetas principales de métricas (Grid escritorio 4 columnas) -->
     <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-body p-4">
                     <span class="text-muted small text-uppercase fw-semibold">Países visitados</span>
@@ -52,17 +52,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
-                <div class="card-body p-4">
-                    <span class="text-muted small text-uppercase fw-semibold">Distancia recorrida</span>
-                    <h2 class="fw-bold mt-2 mb-0">@Model.KilometrosRecorridos.ToString("N1") <small class="fs-6 fw-normal">km</small></h2>
-                    <small class="text-muted">Calculado por rutas y paradas</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-body p-4">
                     <span class="text-muted small text-uppercase fw-semibold">Recuerdos subidos</span>
@@ -72,7 +62,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-sm-6 col-lg-3">
+        <div class="col-12 col-sm-6 col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-body p-4">
                     <span class="text-muted small text-uppercase fw-semibold">Valoración media</span>
@@ -160,10 +150,6 @@
                     <li class="list-group-item d-flex justify-content-between px-0">
                         <span>Países visitados</span>
                         <strong>@(Model.PaisesVisitados ?? 0)</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
-                        <span>Kilómetros recorridos</span>
-                        <strong>@Model.KilometrosRecorridos.ToString("N1") km</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between px-0">
                         <span>Destino estrella</span>

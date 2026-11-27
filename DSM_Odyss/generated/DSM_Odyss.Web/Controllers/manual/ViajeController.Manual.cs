@@ -1,77 +1,136 @@
-// HARIA-WEB MVC managed manual-controller
-/*PROTECTED REGION ID(ViajeController_manual_usings) ENABLED START*/
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using DSM_Odyss.Domain.Entities;
+// Código manual (no generado por HARIA): destinos y actividades del viaje
+// para la vista de detalle y el formulario de edición.
+using DSM_Odyss.Application.Abstractions;
 using DSM_Odyss.Application.Services;
-using DSM_Odyss.Web.Assemblers;
-
-using DSM_Odyss.Domain.Enums;
-/*PROTECTED REGION END*/
+using DSM_Odyss.Domain.Entities;
+using DSM_Odyss.Web.ViewModels;
 
 namespace DSM_Odyss.Web.Controllers;
 
-// Class-level authorization applies to both partial files.
-// [Authorize(Roles = "Admin")]
-/*PROTECTED REGION ID(ViajeController_manual_class_attributes) ENABLED START*/
-// Class-level authorization applies to both partial files.
-// [Authorize(Roles = "Admin")]
-/*PROTECTED REGION END*/
 public partial class ViajeController
 {
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    /*PROTECTED REGION ID(ViajeController_CompartirItinerario_POST_attributes) START*/
-    /*PROTECTED REGION END*/
-    public async Task<IActionResult> CompartirItinerario(int p_oid, int p_destinatario_oid)
+    // El ViajeAssembler no copia destinos ni actividades: lo hacemos aquí.
+    private static void CargarDestinosYActividades(Viaje entity, ViajeViewModel model)
     {
-    /*PROTECTED REGION ID(ViajeController_CompartirItinerario_POST_body) ENABLED START*/
+        var paradas = entity.ParadasDestino.OrderBy(p => p.Orden).ToList();
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _viajeService.CompartirItinerarioAsync(p_oid, p_destinatario_oid);
-        return NoContent();
-    /*PROTECTED REGION END*/
+        model.Destinos = paradas
+            .Select(p => new DestinoParadaItemViewModel
+            {
+                DestinoId = p.Destino?.Id,
+                Ciudad = p.Destino?.Ciudad,
+                Pais = p.Destino?.Pais,
+                Orden = p.Orden,
+                FechaLlegada = p.FechaLlegada,
+                FechaSalida = p.FechaSalida
+            })
+            .ToList();
+
+        int? IndiceDestino(ParadaActividad actividad)
+        {
+            if (actividad.ParadaDestino is null) return null;
+            var indice = paradas.FindIndex(p => p.Id == actividad.ParadaDestino.Id);
+            return indice >= 0 ? indice : null;
+        }
+
+        model.Paradas = entity.Paradas
+            .OrderBy(a => a.Dia)
+            .ThenBy(a => a.Horario)
+            .Select(a => new ParadaItemViewModel
+            {
+                Id = a.Id,
+                Nombre = a.Nombre,
+                Dia = a.Dia,
+                // Si la hora es 00:00 es que no se indicó horario.
+                Horario = a.Horario.TimeOfDay == TimeSpan.Zero ? null : a.Horario.ToString("HH:mm"),
+                Detalles = a.Detalles,
+                DestinoIndex = IndiceDestino(a)
+            })
+            .ToList();
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    /*PROTECTED REGION ID(ViajeController_PublicarItinerario_POST_attributes) START*/
-    /*PROTECTED REGION END*/
-    public async Task<IActionResult> PublicarItinerario(int p_oid, bool p_esPublico)
+    // El formulario necesita al menos una tarjeta de destino y una de actividad para pintarse bien.
+    private static void AsegurarFilasMinimas(ViajeViewModel model)
     {
-    /*PROTECTED REGION ID(ViajeController_PublicarItinerario_POST_body) ENABLED START*/
-
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _viajeService.PublicarItinerarioAsync(p_oid, p_esPublico);
-        return NoContent();
-    /*PROTECTED REGION END*/
+        if (!model.Destinos.Any())
+            model.Destinos.Add(new DestinoParadaItemViewModel { Orden = 1, FechaLlegada = model.FechaInicio, FechaSalida = model.FechaFin });
+        if (!model.Paradas.Any())
+            model.Paradas.Add(new ParadaItemViewModel { Dia = 1 });
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    /*PROTECTED REGION ID(ViajeController_DuplicarItinerario_POST_attributes) START*/
-    /*PROTECTED REGION END*/
-    public async Task<IActionResult> DuplicarItinerario(int p_oid, string p_nuevoTitulo)
+    // Al editar: borra los destinos y actividades anteriores y crea los del formulario
+    // (misma lógica que al crear el viaje). Se llama dentro de la transacción de Edit.
+    private static async Task ReemplazarDestinosYActividadesAsync(IUnitOfWork unitOfWork, Viaje entity, ViajeViewModel model)
     {
-    /*PROTECTED REGION ID(ViajeController_DuplicarItinerario_POST_body) ENABLED START*/
+        // 1. Borrar lo anterior (primero las actividades, que pueden apuntar a una parada).
+        foreach (var actividad in entity.Paradas.ToList())
+            await unitOfWork.ParadaActividadRepository.DeleteAsync(actividad);
+        foreach (var parada in entity.ParadasDestino.ToList())
+            await unitOfWork.ParadaDestinoRepository.DeleteAsync(parada);
+        entity.Paradas.Clear();
+        entity.ParadasDestino.Clear();
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _viajeService.DuplicarItinerarioAsync(p_oid, p_nuevoTitulo);
-        return Ok(result);
-    /*PROTECTED REGION END*/
-    }
+        var destinoService = new DestinoService(unitOfWork);
+        var paradaDestinoService = new ParadaDestinoService(unitOfWork);
+        var paradaActividadService = new ParadaActividadService(unitOfWork);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    /*PROTECTED REGION ID(ViajeController_CambiarEstadoViaje_POST_attributes) START*/
-    /*PROTECTED REGION END*/
-    public async Task<IActionResult> CambiarEstadoViaje(int p_oid, EstadoViaje p_nuevoEstado)
-    {
-    /*PROTECTED REGION ID(ViajeController_CambiarEstadoViaje_POST_body) ENABLED START*/
+        // 2. Crear los destinos del formulario.
+        var catalogoDestinos = await unitOfWork.DestinoRepository.ReadAllAsync();
+        var paradaPorIndice = new Dictionary<int, ParadaDestino>(); // índice de la tarjeta -> parada creada
+        int ordenActual = 1;
+        for (int i = 0; i < model.Destinos.Count; i++)
+        {
+            var itemDestino = model.Destinos[i];
+            if (string.IsNullOrWhiteSpace(itemDestino.Ciudad) && !itemDestino.DestinoId.HasValue)
+                continue; // tarjeta vacía
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _viajeService.CambiarEstadoViajeAsync(p_oid, p_nuevoEstado);
-        return NoContent();
-    /*PROTECTED REGION END*/
+            int destinoOid;
+            if (itemDestino.DestinoId is int idCatalogo && idCatalogo > 0)
+            {
+                destinoOid = idCatalogo;
+            }
+            else
+            {
+                var ciudad = (itemDestino.Ciudad ?? string.Empty).Trim();
+                var pais = string.IsNullOrWhiteSpace(itemDestino.Pais) ? "Sin especificar" : itemDestino.Pais.Trim();
+
+                var existente = catalogoDestinos.FirstOrDefault(d =>
+                    string.Equals(d.Ciudad, ciudad, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(d.Pais, pais, StringComparison.OrdinalIgnoreCase));
+
+                if (existente is not null)
+                {
+                    destinoOid = existente.Id;
+                }
+                else
+                {
+                    var nuevo = await destinoService.CrearDestinoAsync(pais);
+                    nuevo.Ciudad = ciudad;
+                    await destinoService.ModifierDestinoDefaultAsync(nuevo);
+                    destinoOid = nuevo.Id;
+                }
+            }
+
+            paradaPorIndice[i] = await paradaDestinoService.CrearParadaDestinoAsync(
+                ordenActual, itemDestino.FechaLlegada, itemDestino.FechaSalida, entity.Id, destinoOid);
+            ordenActual++;
+        }
+
+        // 3. Crear las actividades del formulario.
+        foreach (var act in model.Paradas.Where(p => !string.IsNullOrWhiteSpace(p.Nombre)))
+        {
+            var fecha = model.FechaInicio.Date.AddDays(Math.Max(0, act.Dia - 1));
+            if (!string.IsNullOrWhiteSpace(act.Horario) && TimeSpan.TryParse(act.Horario, out var hora))
+                fecha = fecha.Add(hora);
+
+            var actividad = await paradaActividadService.CrearParadaActividadAsync(
+                act.Nombre!.Trim(), act.Dia, fecha, false, entity.Id);
+
+            // Detalles y destino de la actividad (el servicio de crear no los recibe).
+            actividad.Detalles = string.IsNullOrWhiteSpace(act.Detalles) ? null : act.Detalles.Trim();
+            if (act.DestinoIndex is int indice && paradaPorIndice.TryGetValue(indice, out var paradaDeLaActividad))
+                actividad.ParadaDestino = paradaDeLaActividad;
+            await unitOfWork.ParadaActividadRepository.SaveAsync(actividad);
+        }
     }
 }

@@ -174,7 +174,16 @@ public partial class ClienteController : Controller
         if (string.IsNullOrEmpty(model.Password)) ModelState.AddModelError(nameof(model.Password), "Debes indicar una contraseña.");
         if (!model.DiaNacimiento.HasValue || !model.MesNacimiento.HasValue || !model.AnioNacimiento.HasValue)
             ModelState.AddModelError(nameof(model.FechaNacimiento), "Debes indicar tu fecha de nacimiento.");
-            
+        
+        // El nombre de usuario y el email no se pueden repetir.
+        var existentes = await _clienteService.LeerTodosClientesAsync();
+        if (!string.IsNullOrWhiteSpace(model.User) &&
+            existentes.Any(c => string.Equals(c.User, model.User.Trim(), StringComparison.OrdinalIgnoreCase)))
+            ModelState.AddModelError(nameof(model.User), "Ese nombre de usuario ya está en uso. Elige otro o inicia sesión.");
+        if (!string.IsNullOrWhiteSpace(model.Email) &&
+            existentes.Any(c => string.Equals(c.Email, model.Email.Trim(), StringComparison.OrdinalIgnoreCase)))
+            ModelState.AddModelError(nameof(model.Email), "Ya existe una cuenta con ese email. Inicia sesión.");
+
         if (!ModelState.IsValid) return View(model);
 
         if (!ModelState.IsValid) return View(model);

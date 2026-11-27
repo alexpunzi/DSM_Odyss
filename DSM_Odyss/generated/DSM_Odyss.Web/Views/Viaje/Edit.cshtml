@@ -1,80 +1,584 @@
-@* HARIA-WEB GENERATED sha256:a2a2758b076c4a0423aa25830ffa1b48bfceb8b31805f41e45f0b6542575e73b *@
 @model DSM_Odyss.Web.ViewModels.ViajeViewModel
 
 @{
-    ViewData["Title"] = "Editar";
+    ViewData["Title"] = "Editar viaje";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-body p-4">
-                <span class="badge text-bg-primary-subtle text-primary-emphasis mb-3">Editar</span>
-                <h1 class="h3 mb-1">Viaje</h1>
-                <p class="text-body-secondary mb-0">Completa los campos y guarda los cambios.</p>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="" />
+<style>
+    .destination-map-canvas { height: 260px; min-height: 220px; background: #fff; }
+    .country-map-legend-swatch { display: inline-block; width: 14px; height: 14px; background: #111; border: 1px solid #111; }
+</style>
+
+<div class="container py-2" style="max-width: 600px;">
+
+    @{ ViewData["TopBarActiva"] = "crear"; }
+    <partial name="_TopBar" />
+
+    <div class="mx-auto" style="max-width: 480px;">
+    @* Cabecera igual al mockup *@
+    <div class="mb-3">
+        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">Editar viaje</h1>
+        <p class="text-muted small mb-0">Modifica los datos de tu viaje y guarda los cambios</p>
+    </div>
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger py-2 small" role="alert"></div>
+        }
+
+        @* Contenedor principal con borde redondeado *@
+        <div class="card border shadow-sm mb-3" style="border-radius: 14px; border-color: #94a3b8 !important;">
+            <div class="card-body p-3 d-flex flex-column gap-3">
+
+                @* 1. Título del viaje *@
+                <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-white">
+                    <i class="bi bi-pencil-fill text-dark"></i>
+                    <input asp-for="Titulo" class="form-control border-0 shadow-none p-0 small fw-medium"
+                           placeholder="Título del viaje" />
+                </div>
+                <span asp-validation-for="Titulo" class="text-danger small mt-n2"></span>
+
+                @* 2. Elige las fechas globales del viaje *@
+                <div class="border rounded-3 bg-white overflow-hidden">
+                    <button type="button" class="btn w-100 d-flex align-items-center gap-2 px-3 py-2 text-start border-0 shadow-none"
+                            data-bs-toggle="collapse" data-bs-target="#collapseFechas" aria-expanded="false">
+                        <i class="bi bi-chevron-down small text-dark"></i>
+                        <i class="bi bi-calendar-event fs-5 text-dark"></i>
+                        <span id="label-fechas" class="small text-secondary fw-medium">Elige las fechas</span>
+                    </button>
+                    <div id="collapseFechas" class="collapse px-3 pb-3">
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label asp-for="FechaInicio" class="form-label small text-muted mb-1">De:</label>
+                                <input asp-for="FechaInicio" id="input-fecha-inicio" type="date" class="form-control form-control-sm" />
+                                <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="FechaFin" class="form-label small text-muted mb-1">Hasta:</label>
+                                <input asp-for="FechaFin" id="input-fecha-fin" type="date" class="form-control form-control-sm" />
+                                <span asp-validation-for="FechaFin" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="border rounded p-2 bg-light" style="border-color: #cbd5e1 !important;">
+                            <div id="cal-mes-titulo" class="text-center fw-semibold small mb-1 text-dark"></div>
+                            <div class="d-grid text-center small fw-bold text-muted mb-1" style="grid-template-columns: repeat(7, 1fr);">
+                                <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                            </div>
+                            <div id="cal-grid" class="d-grid text-center small" style="grid-template-columns: repeat(7, 1fr); gap: 2px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                @* 3. Destinos del viaje (1 o más ParadaDestino ordenadas) *@
+                <div class="border rounded-3 bg-white overflow-hidden">
+                    <button type="button" class="btn w-100 d-flex align-items-center gap-2 px-3 py-2 text-start border-0 shadow-none"
+                            data-bs-toggle="collapse" data-bs-target="#collapseDestinos" aria-expanded="true">
+                        <i class="bi bi-chevron-down small text-dark"></i>
+                        <i class="bi bi-geo-alt fs-5 text-dark"></i>
+                        <span id="label-destinos-resumen" class="small text-secondary fw-medium">Elige los destinos</span>
+                    </button>
+                    <div id="collapseDestinos" class="collapse show px-3 pb-3">
+                        <div id="destinos-container" class="d-flex flex-column gap-2">
+                            @for (int i = 0; i < Model.Destinos.Count; i++)
+                            {
+                                <div class="destino-card border rounded-3 p-2 bg-light position-relative">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <span class="badge bg-dark text-white destino-orden-badge" style="font-size: 0.7rem;">
+                                            Destino #@(i + 1)
+                                        </span>
+                                        <button type="button" class="btn btn-link text-muted p-0 btn-del-destino @(Model.Destinos.Count == 1 ? "d-none" : "")" title="Eliminar destino">
+                                            <i class="bi bi-x-lg small"></i>
+                                        </button>
+                                    </div>
+
+                                    <input type="hidden" name="Destinos[@i].Orden" value="@(i + 1)" class="input-destino-orden" />
+
+                                    @* Selector rápido de catálogo existente (opcional) *@
+                                    @if (Model.DestinosCatalogoOptions.Any())
+                                    {
+                                        <div class="mb-2">
+                                            <select name="Destinos[@i].DestinoId" class="form-select form-select-sm select-destino-catalogo">
+                                                <option value="">-- Nuevo destino o elige del catálogo --</option>
+                                                @foreach (var opt in Model.DestinosCatalogoOptions)
+                                                {
+                                                    <option value="@opt.Value" selected="@(Model.Destinos[i].DestinoId?.ToString() == opt.Value)">@opt.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+
+                                    <div class="row g-2 mb-2 campos-nuevo-destino @(Model.Destinos[i].DestinoId.HasValue ? "d-none" : "")">
+                                        <div class="col-6">
+                                            <input type="text" name="Destinos[@i].Ciudad" value="@Model.Destinos[i].Ciudad"
+                                                   class="form-control form-control-sm input-destino-ciudad"
+                                                   placeholder="Ciudad (ej. Roma)" />
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" name="Destinos[@i].Pais" value="@Model.Destinos[i].Pais"
+                                                   class="form-control form-control-sm input-destino-pais"
+                                                   placeholder="País (ej. Italia)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label mb-0 text-muted" style="font-size: 0.72rem;">Llegada:</label>
+                                            <input type="date" name="Destinos[@i].FechaLlegada"
+                                                   value="@Model.Destinos[i].FechaLlegada.ToString("yyyy-MM-dd")"
+                                                   class="form-control form-control-sm input-destino-llegada" />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label mb-0 text-muted" style="font-size: 0.72rem;">Salida:</label>
+                                            <input type="date" name="Destinos[@i].FechaSalida"
+                                                   value="@Model.Destinos[i].FechaSalida.ToString("yyyy-MM-dd")"
+                                                   class="form-control form-control-sm input-destino-salida" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="destination-map-widget mt-3" data-destination-map="trip-form" data-country-map-url="@Url.Content("~/data/world-countries.geojson")">
+                            <div class="small fw-semibold mb-2">Países del itinerario</div>
+                            <div class="destination-map-canvas rounded-3 border" role="application" aria-label="Mapa interactivo con los países del itinerario marcados"></div>
+                            <div class="d-flex align-items-center gap-2 small mt-2">
+                                <span class="country-map-legend-swatch" aria-hidden="true"></span>
+                                <span>Países seleccionados</span>
+                            </div>
+                            <p class="destination-map-status small text-muted mt-2 mb-0" aria-live="polite">Selecciona un país para marcarlo en el mapa.</p>
+                        </div>
+
+                        <div class="mt-2">
+                            <button type="button" id="btn-add-destino" class="btn btn-link text-dark text-decoration-none p-0 small fw-medium">
+                                <i class="bi bi-plus-circle me-1"></i> Añadir otro destino
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                @* 4. Presupuesto total *@
+                <div class="border rounded-3 bg-white overflow-hidden">
+                    <button type="button" class="btn w-100 d-flex align-items-center gap-2 px-3 py-2 text-start border-0 shadow-none"
+                            data-bs-toggle="collapse" data-bs-target="#collapsePresupuesto" aria-expanded="false">
+                        <i class="bi bi-chevron-down small text-dark"></i>
+                        <i class="bi bi-cash-stack fs-5 text-dark"></i>
+                        <span id="label-presupuesto" class="small text-secondary fw-medium">Presupuesto total</span>
+                    </button>
+                    <div id="collapsePresupuesto" class="collapse px-3 pb-3">
+                        <label asp-for="Presupuesto" class="form-label small text-muted mb-1">Presupuesto estimado</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input asp-for="Presupuesto" id="input-presupuesto" type="text" inputmode="decimal"
+                                   asp-format="{0:G}" data-haria-number="true"
+                                   data-haria-decimal="@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator"
+                                   class="form-control form-control-sm text-center fw-semibold" placeholder="0" />
+                            <span class="border rounded-circle d-inline-flex align-items-center justify-content-center fw-bold text-dark"
+                                  style="width: 30px; height: 30px; flex-shrink: 0;">€</span>
+                        </div>
+                        <span asp-validation-for="Presupuesto" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                @* 5. Actividades dinámicas *@
+                <div class="border rounded-3 p-3 bg-white">
+                    <div id="paradas-container" class="d-flex flex-column gap-3">
+                        @for (int i = 0; i < Model.Paradas.Count; i++)
+                        {
+                            <div class="parada-card border-bottom pb-2">
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                    <div class="d-flex align-items-center gap-2 flex-grow-1">
+                                        <i class="bi bi-bank fs-5 text-dark"></i>
+                                        <input type="text" name="Paradas[@i].Nombre" value="@Model.Paradas[i].Nombre"
+                                               class="form-control form-control-sm border-0 shadow-none px-1 fw-medium"
+                                               placeholder="Nombre de actividad o visita" />
+                                    </div>
+                                    <button type="button" class="btn btn-link text-muted p-0 btn-del-parada" title="Eliminar actividad">
+                                        <i class="bi bi-x-lg small"></i>
+                                    </button>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-1 flex-wrap">
+                                    <select name="Paradas[@i].Dia" class="form-select form-select-sm py-0 px-2 select-actividad-dia"
+                                            data-selected="@Model.Paradas[i].Dia"
+                                            style="width: auto; font-size: 0.78rem; border-radius: 6px;">
+                                        <option value="1">1º Día</option>
+                                    </select>
+
+                                    <select name="Paradas[@i].DestinoIndex" class="form-select form-select-sm py-0 px-2 select-actividad-destino"
+                                            data-selected="@Model.Paradas[i].DestinoIndex"
+                                            style="width: auto; max-width: 140px; font-size: 0.78rem; border-radius: 6px;">
+                                        <option value="">General</option>
+                                    </select>
+
+                                    <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 d-inline-flex align-items-center gap-1 btn-toggle-extra"
+                                            data-target="horario-@i" style="font-size: 0.78rem; border-radius: 6px;">
+                                        <i class="bi bi-clock"></i> Horario
+                                    </button>
+
+                                    <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 d-inline-flex align-items-center gap-1 btn-toggle-extra"
+                                            data-target="detalles-@i" style="font-size: 0.78rem; border-radius: 6px;">
+                                        <i class="bi bi-pencil-square"></i> Detalles
+                                    </button>
+                                </div>
+
+                                <div id="horario-@i" class="mt-2 @(string.IsNullOrEmpty(Model.Paradas[i].Horario) ? "d-none" : "")">
+                                    <input type="time" name="Paradas[@i].Horario" value="@Model.Paradas[i].Horario"
+                                           class="form-control form-control-sm" />
+                                </div>
+                                <div id="detalles-@i" class="mt-2 @(string.IsNullOrEmpty(Model.Paradas[i].Detalles) ? "d-none" : "")">
+                                    <input type="text" name="Paradas[@i].Detalles" value="@Model.Paradas[i].Detalles"
+                                           class="form-control form-control-sm" placeholder="Notas, dirección o precio estimado..." />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mt-2">
+                        <button type="button" id="btn-add-parada" class="btn btn-link text-muted text-decoration-none p-0 small">
+                            <i class="bi bi-plus me-1"></i> Añadir actividad
+                        </button>
+                    </div>
+                </div>
+
+                @* Opciones adicionales del modelo *@
+                <details class="small text-muted">
+                    <summary>Opciones adicionales (Tipo y Estado)</summary>
+                    <div class="pt-2 d-flex flex-column gap-2">
+                        <div>
+                            <label asp-for="TipoViaje" class="form-label mb-1">Tipo de viaje</label>
+                            <select asp-for="TipoViaje" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.TipoViaje>()" class="form-select form-select-sm"></select>
+                            <span asp-validation-for="TipoViaje" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <label asp-for="Estado" class="form-label mb-1">Estado del viaje</label>
+                            <select asp-for="Estado" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.EstadoViaje>()" class="form-select form-select-sm"></select>
+                            <span asp-validation-for="Estado" class="text-danger"></span>
+                        </div>
+                    </div>
+                </details>
+
+                @* 6. Switch Viaje público *@
+                <div class="d-flex align-items-center justify-content-between pt-1">
+                    <div>
+                        <label asp-for="EsPublico" class="fw-semibold small text-dark mb-0">Viaje público</label>
+                        <div class="text-muted" style="font-size: 0.72rem;">Tu viaje será visible para el resto de la plataforma</div>
+                    </div>
+                    <div class="form-check form-switch m-0">
+                        <input asp-for="EsPublico" class="form-check-input" type="checkbox" role="switch"
+                               style="width: 2.5em; height: 1.3em;" />
+                    </div>
+                </div>
+
             </div>
-            <form asp-action="Edit" method="post">
-                @Html.AntiForgeryToken()
-                <div class="card-body p-4">
-                    <div asp-validation-summary="All" class="alert alert-danger py-2" role="alert"></div>
-                    <input type="hidden" asp-for="Id" />
-        <div class="mb-3">
-            <label asp-for="Titulo" class="form-label"></label>
-            <input asp-for="Titulo" class="form-control" />
-            <span asp-validation-for="Titulo" class="text-danger"></span>
         </div>
-        <div class="mb-3">
-            <label asp-for="FechaInicio" class="form-label"></label>
-            <input asp-for="FechaInicio" type="date" class="form-control" />
-            <span asp-validation-for="FechaInicio" class="text-danger"></span>
+
+        @* Botones inferiores: Cancelar y Crear *@
+        <div class="d-flex justify-content-center gap-2">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-dark btn-sm px-4 py-1" style="border-radius: 6px;">Cancelar</a>
+            <button type="submit" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
+                    style="background-color: #cbd5e1; border-color: #64748b; color: #1e293b; border-radius: 6px;">
+                Guardar cambios
+            </button>
         </div>
-        <div class="mb-3">
-            <label asp-for="FechaFin" class="form-label"></label>
-            <input asp-for="FechaFin" type="date" class="form-control" />
-            <span asp-validation-for="FechaFin" class="text-danger"></span>
-        </div>
-        <div class="form-check mb-3">
-            <input asp-for="EsPublico" class="form-check-input" />
-            <label asp-for="EsPublico" class="form-check-label"></label>
-            <span asp-validation-for="EsPublico" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Presupuesto" class="form-label"></label>
-            <input asp-for="Presupuesto" type="text" inputmode="decimal" asp-format="{0:G}" data-haria-number="true" data-haria-decimal="@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator" class="form-control" />
-            <span asp-validation-for="Presupuesto" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="TipoViaje" class="form-label"></label>
-            <select asp-for="TipoViaje" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.TipoViaje>()" class="form-select"></select>
-            <span asp-validation-for="TipoViaje" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Estado" class="form-label"></label>
-            <select asp-for="Estado" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.EstadoViaje>()" class="form-select"></select>
-            <span asp-validation-for="Estado" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="CarpetasId" class="form-label"></label>
-            <select asp-for="CarpetasId" asp-items="Model.CarpetasOptions" class="form-select"><option value="">Selecciona...</option></select>
-            <span asp-validation-for="CarpetasId" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="CollagesId" class="form-label"></label>
-            <select asp-for="CollagesId" asp-items="Model.CollagesOptions" class="form-select"><option value="">Selecciona...</option></select>
-            <span asp-validation-for="CollagesId" class="text-danger"></span>
-        </div>
-                </div>
-                <div class="card-footer bg-body p-4 d-flex flex-column flex-sm-row gap-2">
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                </div>
-            </form>
-        </div>
+    </form>
     </div>
 </div>
+
+@* Plantilla oculta de opciones del catálogo para clonar nuevos destinos en JS *@
+<template id="catalogo-options-template">
+    <option value="">-- Nuevo destino o elige del catálogo --</option>
+    @foreach (var opt in Model.DestinosCatalogoOptions)
+    {
+        <option value="@opt.Value">@opt.Text</option>
+    }
+</template>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/haria-numbers.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="~/js/destination-map.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fInicio = document.getElementById("input-fecha-inicio");
+            const fFin = document.getElementById("input-fecha-fin");
+            const labelFechas = document.getElementById("label-fechas");
+            const calGrid = document.getElementById("cal-grid");
+            const calTitulo = document.getElementById("cal-mes-titulo");
 
+            const destinosContainer = document.getElementById("destinos-container");
+            const btnAddDestino = document.getElementById("btn-add-destino");
+            const labelDestinosResumen = document.getElementById("label-destinos-resumen");
+            const catalogoTemplate = document.getElementById("catalogo-options-template");
+            window.DSMDestinationMap?.initTripForm(document.querySelector('[data-destination-map="trip-form"]'));
+
+            const paradasContainer = document.getElementById("paradas-container");
+            const btnAddParada = document.getElementById("btn-add-parada");
+            // Contador independiente para los ids de Horario/Detalles (nunca se reutiliza tras borrar)
+            let paradaSeq = paradasContainer.querySelectorAll(".parada-card").length;
+
+            // 1. Presupuesto dinámico
+            const inputPresupuesto = document.getElementById("input-presupuesto");
+            const labelPresupuesto = document.getElementById("label-presupuesto");
+            inputPresupuesto?.addEventListener("input", function () {
+                const val = parseFloat(this.value.replace(",", "."));
+                labelPresupuesto.textContent = !isNaN(val) && val > 0
+                    ? `Presupuesto: ${val.toFixed(2)} €`
+                    : "Presupuesto total";
+            });
+
+            // 2. Calcular número de días del viaje y actualizar selectores de actividades
+            function actualizarSelectoresDias() {
+                let totalDias = 5;
+                if (fInicio.value && fFin.value) {
+                    const d1 = new Date(fInicio.value + "T00:00:00");
+                    const d2 = new Date(fFin.value + "T00:00:00");
+                    const diff = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+                    if (diff >= 1) totalDias = diff;
+                }
+
+                document.querySelectorAll(".select-actividad-dia").forEach(select => {
+                    const valorPrevio = select.dataset.selected || select.value || "1";
+                    delete select.dataset.selected; // el día guardado solo se usa al cargar la página
+                    select.innerHTML = "";
+                    for (let d = 1; d <= totalDias; d++) {
+                        const opt = document.createElement("option");
+                        opt.value = d;
+                        opt.textContent = `${d}º Día`;
+                        if (String(d) === String(valorPrevio)) opt.selected = true;
+                        select.appendChild(opt);
+                    }
+                });
+            }
+
+            // 3. Calendario visual y sincronización de fechas
+            function renderCalendario() {
+                if (!fInicio.value) return;
+                const d1 = new Date(fInicio.value + "T00:00:00");
+                const d2 = fFin.value ? new Date(fFin.value + "T00:00:00") : d1;
+
+                const fmt = (d) => d.toLocaleDateString("es-ES");
+                labelFechas.textContent = fFin.value
+                    ? `De: ${fmt(d1)} - Hasta: ${fmt(d2)}`
+                    : `De: ${fmt(d1)}`;
+
+                const year = d1.getFullYear();
+                const month = d1.getMonth();
+                const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                calTitulo.textContent = `${meses[month]} ${year}`;
+
+                calGrid.innerHTML = "";
+                const firstDay = new Date(year, month, 1).getDay();
+                const offset = firstDay === 0 ? 6 : firstDay - 1;
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                for (let i = 0; i < offset; i++) calGrid.appendChild(document.createElement("span"));
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const current = new Date(year, month, day);
+                    const cell = document.createElement("span");
+                    cell.textContent = day;
+                    cell.className = "py-1 rounded";
+                    if (current >= d1 && current <= d2) {
+                        cell.style.backgroundColor = "#cbd5e1";
+                        cell.classList.add("fw-bold", "text-dark");
+                    }
+                    calGrid.appendChild(cell);
+                }
+
+                actualizarSelectoresDias();
+            }
+
+            fInicio?.addEventListener("change", renderCalendario);
+            fFin?.addEventListener("change", renderCalendario);
+
+            // 4. Sincronizar lista de destinos con la cabecera y los desplegables de actividades
+            function sincronizarDestinos() {
+                const cards = destinosContainer.querySelectorAll(".destino-card");
+                const nombresResumen = [];
+
+                cards.forEach((card, idx) => {
+                    card.querySelector(".destino-orden-badge").textContent = `Destino #${idx + 1}`;
+                    card.querySelector(".input-destino-orden").value = idx + 1;
+
+                    const delBtn = card.querySelector(".btn-del-destino");
+                    if (delBtn) delBtn.classList.toggle("d-none", cards.length === 1);
+
+                    // Reindexar atributos name para MVC Model Binding
+                    const selCat = card.querySelector(".select-destino-catalogo");
+                    if (selCat) selCat.name = `Destinos[${idx}].DestinoId`;
+                    card.querySelector(".input-destino-ciudad").name = `Destinos[${idx}].Ciudad`;
+                    card.querySelector(".input-destino-pais").name = `Destinos[${idx}].Pais`;
+                    card.querySelector(".input-destino-llegada").name = `Destinos[${idx}].FechaLlegada`;
+                    card.querySelector(".input-destino-salida").name = `Destinos[${idx}].FechaSalida`;
+
+                    let nombreVisible = `Destino #${idx + 1}`;
+                    if (selCat && selCat.value) {
+                        nombreVisible = selCat.options[selCat.selectedIndex].text;
+                    } else {
+                        const ciudad = card.querySelector(".input-destino-ciudad").value.trim();
+                        if (ciudad) nombreVisible = ciudad;
+                    }
+                    nombresResumen.push(nombreVisible);
+                });
+
+                const validos = nombresResumen.filter(n => !n.startsWith("Destino #"));
+                labelDestinosResumen.textContent = validos.length > 0
+                    ? validos.join(" → ")
+                    : `Elige los destinos (${cards.length})`;
+
+                // Actualizar desplegable de destino en cada actividad
+                document.querySelectorAll(".select-actividad-destino").forEach(select => {
+                    const prev = select.value !== "" ? select.value : (select.dataset.selected ?? "");
+                    select.innerHTML = `<option value="">General</option>`;
+                    nombresResumen.forEach((nombre, idx) => {
+                        const opt = document.createElement("option");
+                        opt.value = idx;
+                        opt.textContent = nombre;
+                        if (String(idx) === String(prev)) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                    delete select.dataset.selected; // el destino guardado solo se usa al cargar la página
+                });
+            }
+
+            destinosContainer?.addEventListener("change", function (e) {
+                if (e.target.classList.contains("select-destino-catalogo")) {
+                    const card = e.target.closest(".destino-card");
+                    const camposNuevos = card.querySelector(".campos-nuevo-destino");
+                    camposNuevos.classList.toggle("d-none", e.target.value !== "");
+                }
+                sincronizarDestinos();
+            });
+
+            destinosContainer?.addEventListener("input", sincronizarDestinos);
+
+            destinosContainer?.addEventListener("click", function (e) {
+                const delBtn = e.target.closest(".btn-del-destino");
+                if (delBtn && destinosContainer.querySelectorAll(".destino-card").length > 1) {
+                    delBtn.closest(".destino-card").remove();
+                    sincronizarDestinos();
+                }
+            });
+
+            btnAddDestino?.addEventListener("click", function () {
+                const idx = destinosContainer.querySelectorAll(".destino-card").length;
+                const hasCatalogo = catalogoTemplate && catalogoTemplate.content.querySelectorAll("option").length > 1;
+                const catalogoHtml = hasCatalogo
+                    ? `<div class="mb-2"><select name="Destinos[${idx}].DestinoId" class="form-select form-select-sm select-destino-catalogo">${catalogoTemplate.innerHTML}</select></div>`
+                    : "";
+
+                const card = document.createElement("div");
+                card.className = "destino-card border rounded-3 p-2 bg-light position-relative";
+                card.innerHTML = `
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge bg-dark text-white destino-orden-badge" style="font-size: 0.7rem;">Destino #${idx + 1}</span>
+                        <button type="button" class="btn btn-link text-muted p-0 btn-del-destino" title="Eliminar destino">
+                            <i class="bi bi-x-lg small"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" name="Destinos[${idx}].Orden" value="${idx + 1}" class="input-destino-orden" />
+                    ${catalogoHtml}
+                    <div class="row g-2 mb-2 campos-nuevo-destino">
+                        <div class="col-6">
+                            <input type="text" name="Destinos[${idx}].Ciudad" class="form-control form-control-sm input-destino-ciudad" placeholder="Ciudad (ej. París)" />
+                        </div>
+                        <div class="col-6">
+                            <input type="text" name="Destinos[${idx}].Pais" class="form-control form-control-sm input-destino-pais" placeholder="País (ej. Francia)" />
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label mb-0 text-muted" style="font-size: 0.72rem;">Llegada:</label>
+                            <input type="date" name="Destinos[${idx}].FechaLlegada" value="${fInicio.value}" class="form-control form-control-sm input-destino-llegada" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label mb-0 text-muted" style="font-size: 0.72rem;">Salida:</label>
+                            <input type="date" name="Destinos[${idx}].FechaSalida" value="${fFin.value}" class="form-control form-control-sm input-destino-salida" />
+                        </div>
+                    </div>
+                `;
+                destinosContainer.appendChild(card);
+                sincronizarDestinos();
+                card.querySelector(".input-destino-ciudad").focus();
+            });
+
+            // 5. Gestión dinámica de actividades
+            paradasContainer?.addEventListener("click", function (e) {
+                const toggleBtn = e.target.closest(".btn-toggle-extra");
+                if (toggleBtn) {
+                    document.getElementById(toggleBtn.dataset.target)?.classList.toggle("d-none");
+                }
+                const delBtn = e.target.closest(".btn-del-parada");
+                if (delBtn) {
+                    delBtn.closest(".parada-card").remove();
+                    paradasContainer.querySelectorAll(".parada-card").forEach((card, idx) => {
+                        card.querySelector("input[name*='.Nombre']").name = `Paradas[${idx}].Nombre`;
+                        card.querySelector("select[name*='.Dia']").name = `Paradas[${idx}].Dia`;
+                        card.querySelector("select[name*='.DestinoIndex']").name = `Paradas[${idx}].DestinoIndex`;
+                        card.querySelector("input[name*='.Horario']").name = `Paradas[${idx}].Horario`;
+                        card.querySelector("input[name*='.Detalles']").name = `Paradas[${idx}].Detalles`;
+                    });
+                }
+            });
+
+            btnAddParada?.addEventListener("click", function () {
+                const idx = paradasContainer.querySelectorAll(".parada-card").length; // solo para name=
+                const seq = paradaSeq++;                                              // solo para id=
+                const card = document.createElement("div");
+                card.className = "parada-card border-bottom pb-2";
+                card.innerHTML = `
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <i class="bi bi-bank fs-5 text-dark"></i>
+                            <input type="text" name="Paradas[${idx}].Nombre"
+                                   class="form-control form-control-sm border-0 shadow-none px-1 fw-medium"
+                                   placeholder="Nombre de actividad o visita" />
+                        </div>
+                        <button type="button" class="btn btn-link text-muted p-0 btn-del-parada" title="Eliminar actividad">
+                            <i class="bi bi-x-lg small"></i>
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                        <select name="Paradas[${idx}].Dia" class="form-select form-select-sm py-0 px-2 select-actividad-dia"
+                                style="width: auto; font-size: 0.78rem; border-radius: 6px;"></select>
+                        <select name="Paradas[${idx}].DestinoIndex" class="form-select form-select-sm py-0 px-2 select-actividad-destino"
+                                style="width: auto; max-width: 140px; font-size: 0.78rem; border-radius: 6px;"></select>
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 d-inline-flex align-items-center gap-1 btn-toggle-extra"
+                                data-target="horario-${seq}" style="font-size: 0.78rem; border-radius: 6px;">
+                            <i class="bi bi-clock"></i> Horario
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 d-inline-flex align-items-center gap-1 btn-toggle-extra"
+                                data-target="detalles-${seq}" style="font-size: 0.78rem; border-radius: 6px;">
+                            <i class="bi bi-pencil-square"></i> Detalles
+                        </button>
+                    </div>
+                    <div id="horario-${seq}" class="mt-2 d-none">
+                        <input type="time" name="Paradas[${idx}].Horario" class="form-control form-control-sm" />
+                    </div>
+                    <div id="detalles-${seq}" class="mt-2 d-none">
+                        <input type="text" name="Paradas[${idx}].Detalles" class="form-control form-control-sm" placeholder="Notas, dirección o precio estimado..." />
+                    </div>
+                `;
+                paradasContainer.appendChild(card);
+                actualizarSelectoresDias();
+                sincronizarDestinos();
+                card.querySelector("input[name*='.Nombre']").focus();
+            });
+
+            // Inicializar estado al cargar
+            inputPresupuesto?.dispatchEvent(new Event("input")); // muestra el presupuesto guardado en la cabecera
+            renderCalendario();
+            sincronizarDestinos();
+        });
+    </script>
 }

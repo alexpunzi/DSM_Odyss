@@ -45,7 +45,7 @@ public partial class EstadisticasController : Controller
 
         if (cliente is null || estadisticas is null || metricas is null)
         {
-            return RedirectToAction("Login", "Cliente");
+            return RedirectToAction("Login", "Account");
         }
 
         // Recalcula automáticamente para que los datos estén siempre al día
@@ -80,7 +80,7 @@ public partial class EstadisticasController : Controller
 
         if (cliente is null || estadisticas is null || metricas is null)
         {
-            return RedirectToAction("Login", "Cliente");
+            return RedirectToAction("Login", "Account");
         }
 
         string resumen = await _estadisticasService.GenerarPassportRecapAsync(estadisticas.Id, anyoObjetivo);
@@ -247,33 +247,17 @@ public partial class EstadisticasController : Controller
         double KilometrosRecorridos);
 
     private async Task<(Cliente? cliente, Estadisticas? estadisticas, EstadisticasMetricasCalculadas? metricas)>
-        ObtenerOCrearEstadisticasClienteActualAsync(int anyo)
+    ObtenerOCrearEstadisticasClienteActualAsync(int anyo)
     {
         await using var uow = _useCaseUnitOfWorkFactory.Create();
         var clientes = await uow.ClienteRepository.ReadAllAsync();
 
-        string? userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                              ?? User.FindFirstValue("Id")
-                              ?? User.FindFirstValue("ClienteId");
-        string? emailOrName = User.FindFirstValue(ClaimTypes.Email)
-                              ?? User.FindFirstValue(ClaimTypes.Name)
-                              ?? User.Identity?.Name;
-
+        // Al iniciar sesión, HARIA guarda el Id del cliente en User.Identity.Name.
         Cliente? cliente = null;
-        if (int.TryParse(userIdClaim, out int clienteId))
+        if (int.TryParse(User.Identity?.Name, out int clienteId))
         {
             cliente = clientes.FirstOrDefault(c => c.Id == clienteId);
         }
-
-        if (cliente is null && !string.IsNullOrWhiteSpace(emailOrName))
-        {
-            cliente = clientes.FirstOrDefault(c =>
-                string.Equals(c.Email, emailOrName, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(c.User, emailOrName, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(c.Nombre, emailOrName, StringComparison.OrdinalIgnoreCase));
-        }
-
-        cliente ??= clientes.FirstOrDefault(c => c.Viajes.Any()) ?? clientes.FirstOrDefault();
 
         if (cliente is null)
         {

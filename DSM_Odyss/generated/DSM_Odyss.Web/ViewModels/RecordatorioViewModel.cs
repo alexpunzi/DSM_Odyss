@@ -11,8 +11,7 @@ public sealed class RecordatorioViewModel : IValidatableObject
     [Required(ErrorMessage = "Debes indicar {0}.")]
     public string Titulo { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Debes indicar {0}.")]
-    public string Detalles { get; set; } = string.Empty;
+    public string? Detalles { get; set; }
 
     [DataType(DataType.Date)]
     public DateTime Fecha { get; set; }

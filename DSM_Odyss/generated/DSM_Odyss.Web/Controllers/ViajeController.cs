@@ -61,12 +61,13 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id)
     {
-    /*PROTECTED REGION ID(ViajeController_Details_GET_body) ENABLED START*/
+        /*PROTECTED REGION ID(ViajeController_Details_GET_body) ENABLED START*/
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
         var entity = await unitOfWork.ViajeRepository.ReadAsync(id);
         if (entity is null) return NotFound();
 
         var model = ViajeAssembler.ToViewModel(entity);
+        CargarDestinosYActividades(entity, model);   // ← NUEVA: destinos y actividades para la vista
 
         // Ni Viaje ni Resena guardan su autor: lo buscamos entre los clientes.
         var clientes = await unitOfWork.ClienteRepository.ReadAllAsync();
@@ -299,7 +300,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id)
     {
-    /*PROTECTED REGION ID(ViajeController_Edit_GET_body) START*/
+    /*PROTECTED REGION ID(ViajeController_Edit_GET_body) ENABLED START*/
         if (!int.TryParse(User.Identity?.Name, out var currentClientId)) return Challenge();
         var entity = await _viajeService.LeerViajeOIDAsync(id);
         if (entity is null) return NotFound();
@@ -308,6 +309,8 @@ public partial class ViajeController : Controller
             if (!await IsOwnerOfTripAsync(unitOfWork, id, currentClientId)) return Forbid();
         }
         var model = ViajeAssembler.ToViewModel(entity);
+        CargarDestinosYActividades(entity, model);   // destinos y actividades actuales del viaje
+        AsegurarFilasMinimas(model);                 // al menos una tarjeta de cada para el formulario
         await LoadFormOptionsAsync(model);
         return View(model);
     /*PROTECTED REGION END*/
