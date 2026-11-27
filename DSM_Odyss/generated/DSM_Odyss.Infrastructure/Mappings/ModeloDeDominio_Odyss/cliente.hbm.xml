@@ -72,6 +72,18 @@
         <column name="FK_Carpeta_compartidoCon"/>
       </many-to-many>
     </bag>
+    <bag name="Checklists">
+      <key>
+        <column name="FK_Cliente_checklists"/>
+      </key>
+      <one-to-many class="Checklist"/>
+    </bag>
+    <bag name="Recordatorios">
+      <key>
+        <column name="FK_Cliente_recordatorios"/>
+      </key>
+      <one-to-many class="Recordatorio"/>
+    </bag>
   </class>
   <query name="ClienteReadAllHQL">from Cliente</query>
 </hibernate-mapping>

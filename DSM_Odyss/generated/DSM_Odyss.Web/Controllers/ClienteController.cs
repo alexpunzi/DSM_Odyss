@@ -128,9 +128,9 @@ public partial class ClienteController : Controller
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(ClienteController_Create_POST_attributes) START*/
     /*PROTECTED REGION END*/
-    public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.ClienteViewModel model, int p_checklist_oid, int p_recordatorio_oid)
+    public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.ClienteViewModel model)
     {
-    /*PROTECTED REGION ID(ClienteController_Create_POST_body) START*/
+    /*PROTECTED REGION ID(ClienteController_Create_POST_body) ENABLED START*/
 
 
         if (string.IsNullOrEmpty(model.Password)) ModelState.AddModelError(nameof(model.Password), "Debes indicar una contraseña.");
@@ -138,7 +138,7 @@ public partial class ClienteController : Controller
 
         try
         {
-            await _clienteService.CrearClienteAsync(model.User, model.Password!, model.Nombre, model.Apellidos, model.Email, model.FechaNacimiento, model.CanalNotificacion, model.RecibirRecordatorios, p_checklist_oid, p_recordatorio_oid);
+            await _clienteService.CrearClienteAsync(model.User, model.Password!, model.Nombre, model.Apellidos, model.Email, model.FechaNacimiento, model.CanalNotificacion, model.RecibirRecordatorios);
         }
         catch (Exception error) when (error is not OperationCanceledException)
         {
@@ -168,9 +168,9 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION ID(ClienteController_Register_POST_attributes) START*/
     [AllowAnonymous]
     /*PROTECTED REGION END*/
-    public async Task<IActionResult> Register(DSM_Odyss.Web.ViewModels.ClienteViewModel model, int p_checklist_oid, int p_recordatorio_oid)
+    public async Task<IActionResult> Register(DSM_Odyss.Web.ViewModels.ClienteViewModel model)
     {
-    /*PROTECTED REGION ID(ClienteController_Register_POST_body) START*/
+    /*PROTECTED REGION ID(ClienteController_Register_POST_body) ENABLED START*/
         if (string.IsNullOrEmpty(model.Password)) ModelState.AddModelError(nameof(model.Password), "Debes indicar una contraseña.");
         if (!model.DiaNacimiento.HasValue || !model.MesNacimiento.HasValue || !model.AnioNacimiento.HasValue)
             ModelState.AddModelError(nameof(model.FechaNacimiento), "Debes indicar tu fecha de nacimiento.");
@@ -190,7 +190,7 @@ public partial class ClienteController : Controller
         Cliente createdUser;
         try
         {
-            createdUser = await _clienteService.CrearClienteAsync(model.User, model.Password!, model.Nombre, model.Apellidos, model.Email, model.FechaNacimiento, model.CanalNotificacion, model.RecibirRecordatorios, p_checklist_oid, p_recordatorio_oid);
+            createdUser = await _clienteService.CrearClienteAsync(model.User, model.Password!, model.Nombre, model.Apellidos, model.Email, model.FechaNacimiento, model.CanalNotificacion, model.RecibirRecordatorios);
         }
         catch (Exception error) when (error is not OperationCanceledException)
         {
@@ -230,9 +230,9 @@ public partial class ClienteController : Controller
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(ClienteController_Edit_POST_attributes) START*/
     /*PROTECTED REGION END*/
-    public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.ClienteViewModel model, int p_checklist_oid, int p_recordatorio_oid)
+    public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.ClienteViewModel model)
     {
-    /*PROTECTED REGION ID(ClienteController_Edit_POST_body) START*/
+    /*PROTECTED REGION ID(ClienteController_Edit_POST_body) ENABLED START*/
 
 
         if (!ModelState.IsValid) return View(model);
@@ -240,7 +240,7 @@ public partial class ClienteController : Controller
         if (stored is null) return NotFound();
         try
         {
-            await _clienteService.ModificarClienteAsync(id, model.User, (string.IsNullOrEmpty(model.Password) ? stored.Password : model.Password), model.Nombre, model.Apellidos, model.Email, model.FechaNacimiento, model.CanalNotificacion, model.RecibirRecordatorios, p_checklist_oid, p_recordatorio_oid);
+            await _clienteService.ModificarClienteAsync(id, model.User, (string.IsNullOrEmpty(model.Password) ? stored.Password : model.Password), model.Nombre, model.Apellidos, model.Email, model.FechaNacimiento, model.CanalNotificacion, model.RecibirRecordatorios);
         }
         catch (Exception error) when (error is not OperationCanceledException)
         {

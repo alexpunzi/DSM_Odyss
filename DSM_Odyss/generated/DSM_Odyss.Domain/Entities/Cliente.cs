@@ -21,7 +21,8 @@ public partial class Cliente
     public virtual IList<Viaje> Viajes { get; set; } = new List<Viaje>();
     public virtual IList<Resena> Resenas { get; set; } = new List<Resena>();
     public virtual IList<Carpeta> CarpetasCompartidas { get; set; } = new List<Carpeta>();
-
+    public virtual IList<Checklist> Checklists { get; set; } = new List<Checklist>();
+    public virtual IList<Recordatorio> Recordatorios { get; set; } = new List<Recordatorio>();
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);
 
     public override bool Equals(object? obj) => ReferenceEquals(this, obj) || obj is Cliente other && !HasDefaultIdentity() && !other.HasDefaultIdentity() && EqualityComparer<int>.Default.Equals(Id, other.Id);

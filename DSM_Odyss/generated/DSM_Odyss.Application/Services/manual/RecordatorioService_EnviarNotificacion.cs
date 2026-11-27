@@ -28,12 +28,16 @@ public sealed partial class RecordatorioService
             throw new ModelException("The reminder cannot be sent before its scheduled date and time.");
         }
 
-        if (recordatorio.Recordatorios.Count == 0)
+        // Cada recordatorio pertenece a un cliente (ClienteRecordatorio): lo buscamos entre los clientes.
+        IReadOnlyList<Cliente> clientes = await _unitOfWork.ClienteRepository.ReadAllAsync();
+        Cliente? destinatario = clientes.FirstOrDefault(cliente =>
+            cliente.Recordatorios.Any(item => item.Id == recordatorio.Id));
+        if (destinatario is null)
         {
             throw new ModelException("The reminder has no recipients.");
         }
 
-        if (!recordatorio.Recordatorios.Any(cliente => cliente.RecibirRecordatorios))
+        if (!destinatario.RecibirRecordatorios)
         {
             throw new ModelException("No recipient has reminders enabled.");
         }

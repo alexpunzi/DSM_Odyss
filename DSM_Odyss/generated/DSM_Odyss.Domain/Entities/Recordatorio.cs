@@ -13,7 +13,6 @@ public partial class Recordatorio
     public virtual DateTime Hora { get; set; }
     public virtual TipoAviso TipoAviso { get; set; }
     public virtual bool Enviado { get; set; }
-    public virtual IList<Cliente> Recordatorios { get; set; } = new List<Cliente>();
     public virtual Tarea? Tarea { get; set; }
 
     private bool HasDefaultIdentity() => EqualityComparer<int>.Default.Equals(Id, default);

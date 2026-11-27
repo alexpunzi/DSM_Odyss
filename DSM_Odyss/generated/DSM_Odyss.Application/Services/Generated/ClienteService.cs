@@ -59,7 +59,7 @@ public sealed partial class ClienteService : ServiceEntity<Cliente>
         }
     }
 
-    public async Task<Cliente> CrearClienteAsync(string p_user, string p_password, string p_nombre, string p_apellidos, string p_email, DateTime p_fechaNacimiento, CanalNotificacion p_canalNotificacion, bool p_recibirRecordatorios, int p_checklist_oid, int p_recordatorio_oid)
+    public async Task<Cliente> CrearClienteAsync(string p_user, string p_password, string p_nombre, string p_apellidos, string p_email, DateTime p_fechaNacimiento, CanalNotificacion p_canalNotificacion, bool p_recibirRecordatorios)
     {
         Cliente entity = new Cliente
         {
@@ -84,7 +84,7 @@ public sealed partial class ClienteService : ServiceEntity<Cliente>
         await _repository.DeleteAsync(entity);
     }
 
-    public async Task ModificarClienteAsync(int p_oid, string p_user, string p_password, string p_nombre, string p_apellidos, string p_email, DateTime p_fechaNacimiento, CanalNotificacion p_canalNotificacion, bool p_recibirRecordatorios, int p_checklist_oid, int p_recordatorio_oid)
+    public async Task ModificarClienteAsync(int p_oid, string p_user, string p_password, string p_nombre, string p_apellidos, string p_email, DateTime p_fechaNacimiento, CanalNotificacion p_canalNotificacion, bool p_recibirRecordatorios)
     {
         Cliente entity = await _repository.ReadAsync(p_oid)
             ?? throw new ModelException("Cliente not found.");

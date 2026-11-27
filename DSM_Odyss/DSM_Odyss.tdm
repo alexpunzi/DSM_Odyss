@@ -45,9 +45,9 @@ ConceptualModel DSM_Odyss {
         operations
         {
 
-            public crearCliente::New (p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_checklist_oid : OID -> Checklist, p_recordatorio_oid : OID -> Recordatorio) : Object->Cliente;
+            public crearCliente::New (p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean) : Object->Cliente;
             public borrarCliente::Destroy (p_oid : OID -> Cliente) : Void;
-            public modificarCliente::Modifier (p_oid : OID -> Cliente, p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean, p_checklist_oid : OID -> Checklist, p_recordatorio_oid : OID -> Recordatorio) : Void;
+            public modificarCliente::Modifier (p_oid : OID -> Cliente, p_user : String, p_password : Password, p_nombre : String, p_apellidos : String, p_email : String, p_fechaNacimiento : Date, p_canalNotificacion : CanalNotificacion, p_recibirRecordatorios : Boolean) : Void;
             public leerClienteOID::ReadOID (p_oid : OID -> Cliente) : Object->Cliente;
             public leerTodosClientes::ReadAll () : List<Object->Cliente>;
             public login::Login (p_user : String, p_password : Password) : String;
@@ -373,7 +373,7 @@ ConceptualModel DSM_Odyss {
         
         operations
         {
-            public crearRecordatorio::New (p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Object->Recordatorio;
+            public crearRecordatorio::New (p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean, p_destinatario_oid : OID -> Cliente) : Object->Recordatorio;
             public borrarRecordatorio::Destroy (p_oid : OID -> Recordatorio) : Void;
             public modificarRecordatorio::Modifier (p_oid : OID -> Recordatorio, p_titulo : String, p_detalles : String, p_fecha : Date, p_hora : Time, p_tipoAviso : TipoAviso, p_enviado : Boolean) : Void;
             public leerRecordatorioOID::ReadOID (p_oid : OID -> Recordatorio) : Object->Recordatorio;
@@ -388,7 +388,7 @@ ConceptualModel DSM_Odyss {
             public enviarNotificacion::Custom (p_oid : OID -> Recordatorio) : Void; 
             public asignarTarea::Relationer -> RecordatorioTarea.tarea (p_oid : OID -> Recordatorio, p_tarea_oid : OID -> Tarea) : Void;
             public desasignarTarea::Unrelationer -> RecordatorioTarea.tarea (p_oid : OID -> Recordatorio, p_tarea_oid : OID -> Tarea) : Void;
-            public asignarCliente::Relationer -> RecordatorioCliente.recordatorios (p_oid : OID -> Recordatorio, p_clientes_oid : List<OID -> Cliente>) : Void;
+            //public asignarCliente::Relationer -> RecordatorioCliente.recordatorios (p_oid : OID -> Recordatorio, p_clientes_oid : List<OID -> Cliente>) : Void;
         }
     };
 
@@ -403,8 +403,7 @@ ConceptualModel DSM_Odyss {
         
         operations
         {
-
-            public crearChecklist::New (p_nombre : String) : Object->Checklist;
+            public crearChecklist::New (p_nombre : String, p_propietario_oid : OID -> Cliente) : Object->Checklist;
             public borrarChecklist::Destroy (p_oid : OID -> Checklist) : Void;
             public modificarChecklist::Modifier (p_oid : OID -> Checklist, p_nombre : String) : Void;
             public leerChecklistOID::ReadOID (p_oid : OID -> Checklist) : Object->Checklist;
@@ -417,7 +416,7 @@ ConceptualModel DSM_Odyss {
 
             public vaciarChecklist::CustomTransaction (p_oid : OID -> Checklist) : Void;
             public agregarTarea::Relationer -> ChecklistTarea.tareas (p_oid : OID -> Checklist, p_tareas_oid : List<OID -> Tarea>) : Void;
-            public asignarCliente::Relationer -> ChecklistCliente.propietarios (p_oid : OID -> Checklist, p_clientes_oid : List<OID -> Cliente>) : Void;
+            //public asignarCliente::Relationer -> ChecklistCliente.propietarios (p_oid : OID -> Checklist, p_clientes_oid : List<OID -> Cliente>) : Void;
         }
     };
 
@@ -567,10 +566,10 @@ ConceptualModel DSM_Odyss {
         <= carpeta (1, 1);
     };
 
-    Association ChecklistCliente (Checklist - Cliente)
+    Association ClienteChecklist (Cliente - Checklist)
     {
-        => navigable propietarios (0, *);
-        <= propietarioChecklist (1, 1);
+        => navigable checklists (0, *);
+        <= propietario (1, 1);
     };
 
     Association ChecklistTarea (Checklist - Tarea)
@@ -579,10 +578,10 @@ ConceptualModel DSM_Odyss {
         <= checklist (1, 1);
     };
 
-    Association RecordatorioCliente (Recordatorio - Cliente)
+    Association ClienteRecordatorio (Cliente - Recordatorio)
     {
         => navigable recordatorios (0, *);
-        <= destinatarioRecordatorio (1, 1);
+        <= destinatario (1, 1);
     };
 
     Association RecordatorioTarea (Recordatorio - Tarea)

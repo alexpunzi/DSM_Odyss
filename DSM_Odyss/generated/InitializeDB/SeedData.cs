@@ -60,9 +60,11 @@ public static class SeedData
             // TODO: No seed generated for Multimedia; one or more New arguments reference classes that were not seeded yet.
 
             // TODO: No seed generated for Collage; one or more New arguments reference classes that were not seeded yet.
-
+                        // Checklists y recordatorios pertenecen a un cliente: creamos uno de ejemplo.
+            var clienteService = new ClienteService(unitOfWorkFactory);
+            var sampleCliente = await clienteService.CrearClienteAsync("sample_cliente", "Sample1234!", "Sample", "Cliente", "sample@example.com", new DateTime(2000, 1, 1), CanalNotificacion.email, true);
             var recordatorioService = new RecordatorioService(unitOfWorkFactory);
-            var sampleRecordatorio = await recordatorioService.CrearRecordatorioAsync("Sample Recordatorio Titulo", "Sample Recordatorio Detalles", new DateTime(2026, 1, 11), new DateTime(2026, 1, 11, 9, 0, 0), TipoAviso.notificacion, true);
+            var sampleRecordatorio = await recordatorioService.CrearRecordatorioAsync("Sample Recordatorio Titulo", "Sample Recordatorio Detalles", new DateTime(2026, 1, 11), new DateTime(2026, 1, 11, 9, 0, 0), TipoAviso.notificacion, true, sampleCliente.Id);
             var sampleRecordatorioReadBack = await recordatorioService.LeerRecordatorioOIDAsync(sampleRecordatorio.Id);
             Ensure(sampleRecordatorioReadBack is not null, "Recordatorio read by OID returns the generated entity.");
             var sampleRecordatorioReadAll = await recordatorioService.LeerTodosRecordatoriosAsync();
@@ -73,7 +75,7 @@ public static class SeedData
             Ensure(await recordatorioService.LeerRecordatorioOIDAsync(sampleRecordatorio.Id) is not null, "Recordatorio modify keeps the entity readable.");
 
             var checklistService = new ChecklistService(unitOfWorkFactory);
-            var sampleChecklist = await checklistService.CrearChecklistAsync("Sample Checklist Nombre");
+            var sampleChecklist = await checklistService.CrearChecklistAsync("Sample Checklist Nombre", sampleCliente.Id);
             var sampleChecklistReadBack = await checklistService.LeerChecklistOIDAsync(sampleChecklist.Id);
             Ensure(sampleChecklistReadBack is not null, "Checklist read by OID returns the generated entity.");
             var sampleChecklistReadAll = await checklistService.LeerTodosChecklistsAsync();
@@ -112,7 +114,8 @@ public static class SeedData
             await recordatorioService.BorrarRecordatorioAsync(sampleRecordatorio.Id);
             await tareaService.BorrarTareaAsync(sampleTarea.Id);
             await checklistService.BorrarChecklistAsync(sampleChecklist.Id);
-
+            await clienteService.BorrarClienteAsync(sampleCliente.Id);
+            
             Ensure((await ubicacionService.LeerTodasUbicacionesAsync()).Count == 0, "Ubicacion seed cleanup completed.");
             Ensure((await destinoService.LeerTodasDestinosAsync()).Count == 0, "Destino seed cleanup completed.");
             Ensure((await recordatorioService.LeerTodosRecordatoriosAsync()).Count == 0, "Recordatorio seed cleanup completed.");

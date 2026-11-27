@@ -41,8 +41,11 @@ public sealed partial class RecordatorioService : ServiceEntity<Recordatorio>
     public Task<Recordatorio> ModifierRecordatorioDefaultAsync(Recordatorio entity) =>
         ModifierDefaultAsync(entity);
 
-    public async Task<Recordatorio> CrearRecordatorioAsync(string p_titulo, string p_detalles, DateTime p_fecha, DateTime p_hora, TipoAviso p_tipoAviso, bool p_enviado)
+        public async Task<Recordatorio> CrearRecordatorioAsync(string p_titulo, string p_detalles, DateTime p_fecha, DateTime p_hora, TipoAviso p_tipoAviso, bool p_enviado, int p_destinatario_oid)
     {
+        Cliente destinatario = await _unitOfWork.ClienteRepository.ReadAsync(p_destinatario_oid)
+            ?? throw new ModelException("Cliente not found.");
+
         Recordatorio entity = new Recordatorio
         {
             Titulo = p_titulo,
@@ -54,6 +57,13 @@ public sealed partial class RecordatorioService : ServiceEntity<Recordatorio>
         };
 
         await _repository.SaveAsync(entity);
+        destinatario.Recordatorios ??= new List<Recordatorio>();
+        if (!destinatario.Recordatorios.Contains(entity))
+        {
+            destinatario.Recordatorios.Add(entity);
+        }
+        await _unitOfWork.ClienteRepository.SaveAsync(destinatario);
+
         return entity;
     }
 
@@ -113,23 +123,6 @@ public sealed partial class RecordatorioService : ServiceEntity<Recordatorio>
             throw new ModelException("Tarea is not related to Recordatorio.Tarea.");
         }
         entity.Tarea = null!;
-        await _repository.SaveAsync(entity);
-    }
-
-    public async Task AsignarClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
-    {
-        Recordatorio entity = await _repository.ReadAsync(p_oid)
-            ?? throw new ModelException("Recordatorio not found.");
-        entity.Recordatorios ??= new List<Cliente>();
-        foreach (var relatedId in p_clientes_oid)
-        {
-            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
-                ?? throw new ModelException("Cliente not found for Recordatorio.Recordatorios.");
-            if (!entity.Recordatorios.Contains(relatedEntity))
-            {
-                entity.Recordatorios.Add(relatedEntity);
-            }
-        }
         await _repository.SaveAsync(entity);
     }
 

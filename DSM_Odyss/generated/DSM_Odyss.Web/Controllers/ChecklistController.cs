@@ -16,15 +16,17 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class ChecklistController : Controller
 {
-    /*PROTECTED REGION ID(ChecklistController_dependencies) START*/
+    /*PROTECTED REGION ID(ChecklistController_dependencies) ENABLED START*/
     private readonly ChecklistService _checklistService;
     private readonly TareaService _tareaService;
+    private readonly ClienteService _clienteService;
     private readonly ILogger<ChecklistController> _logger;
 
-    public ChecklistController(ChecklistService checklistService, TareaService tareaService, ILogger<ChecklistController>? logger = null)
+    public ChecklistController(ChecklistService checklistService, TareaService tareaService, ClienteService clienteService, ILogger<ChecklistController>? logger = null)
     {
         _checklistService = checklistService;
         _tareaService = tareaService;
+        _clienteService = clienteService;
         _logger = logger ?? global::Microsoft.Extensions.Logging.Abstractions.NullLogger<ChecklistController>.Instance;
     }
     /*PROTECTED REGION END*/
@@ -34,9 +36,11 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Index()
     {
-    /*PROTECTED REGION ID(ChecklistController_Index_GET_body) START*/
-        var entities = await _checklistService.LeerTodosChecklistsAsync();
-        return View(entities.Select(ChecklistAssembler.ToViewModel).ToList());
+    /*PROTECTED REGION ID(ChecklistController_Index_GET_body) ENABLED START*/
+        // Solo los checklists del usuario conectado.
+        var cliente = await ClienteConectadoAsync();
+        if (cliente is null) return RedirectToAction("Login", "Account");
+        return View(cliente.Checklists.Select(ChecklistAssembler.ToViewModel).ToList());
     /*PROTECTED REGION END*/
     }
 
@@ -45,7 +49,8 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id)
     {
-    /*PROTECTED REGION ID(ChecklistController_Details_GET_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_Details_GET_body) ENABLED START*/
+        if (!await EsMiChecklistAsync(id)) return NotFound();
         var entity = await _checklistService.LeerChecklistOIDAsync(id);
         if (entity is null) return NotFound();
 
@@ -81,12 +86,14 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create(ChecklistViewModel model)
     {
-    /*PROTECTED REGION ID(ChecklistController_Create_POST_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_Create_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return View(model);
+        if (!int.TryParse(User.Identity?.Name, out var clienteId)) return RedirectToAction("Login", "Account");
 
         try
         {
-            var creada = await _checklistService.CrearChecklistAsync(model.Nombre);
+            // El checklist pertenece al usuario que lo crea.
+            var creada = await _checklistService.CrearChecklistAsync(model.Nombre, clienteId);
             int checklistId = creada.Id;
 
             if (model.Tareas != null)
@@ -113,7 +120,8 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id)
     {
-    /*PROTECTED REGION ID(ChecklistController_Edit_GET_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_Edit_GET_body) ENABLED START*/
+        if (!await EsMiChecklistAsync(id)) return NotFound();
         var entity = await _checklistService.LeerChecklistOIDAsync(id);
         if (entity is null) return NotFound();
 
@@ -139,7 +147,8 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id, ChecklistViewModel model)
     {
-    /*PROTECTED REGION ID(ChecklistController_Edit_POST_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_Edit_POST_body) ENABLED START*/
+        if (!await EsMiChecklistAsync(id)) return NotFound();
         if (!ModelState.IsValid) return View(model);
 
         try
@@ -188,7 +197,8 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Delete(int id)
     {
-    /*PROTECTED REGION ID(ChecklistController_Delete_GET_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_Delete_GET_body) ENABLED START*/
+        if (!await EsMiChecklistAsync(id)) return NotFound();
         var entity = await _checklistService.LeerChecklistOIDAsync(id);
         if (entity is null) return NotFound();
 
@@ -215,7 +225,8 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-    /*PROTECTED REGION ID(ChecklistController_DeleteConfirmed_POST_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_DeleteConfirmed_POST_body) ENABLED START*/
+        if (!await EsMiChecklistAsync(id)) return NotFound();
         if (!ModelState.IsValid) return View("Delete", new ChecklistViewModel());
 
         var conTareas = (await _checklistService.ConTareasAsync()).FirstOrDefault(c => c.Id == id);
@@ -252,19 +263,6 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION ID(ChecklistController_AgregarTarea_POST_body) START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _checklistService.AgregarTareaAsync(p_oid, p_tareas_oid);
-        return NoContent();
-    /*PROTECTED REGION END*/
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    /*PROTECTED REGION ID(ChecklistController_AsignarCliente_POST_attributes) START*/
-    /*PROTECTED REGION END*/
-    public async Task<IActionResult> AsignarCliente(int p_oid, IReadOnlyList<int> p_clientes_oid)
-    {
-    /*PROTECTED REGION ID(ChecklistController_AsignarCliente_POST_body) START*/
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _checklistService.AsignarClienteAsync(p_oid, p_clientes_oid);
         return NoContent();
     /*PROTECTED REGION END*/
     }

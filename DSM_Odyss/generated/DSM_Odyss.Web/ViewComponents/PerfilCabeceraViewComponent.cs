@@ -9,12 +9,10 @@ namespace DSM_Odyss.Web.ViewComponents;
 public class PerfilCabeceraViewComponent : ViewComponent
 {
     private readonly ClienteService _clienteService;
-    private readonly RecordatorioService _recordatorioService;
 
-    public PerfilCabeceraViewComponent(ClienteService clienteService, RecordatorioService recordatorioService)
+    public PerfilCabeceraViewComponent(ClienteService clienteService)
     {
         _clienteService = clienteService;
-        _recordatorioService = recordatorioService;
     }
 
     public async Task<IViewComponentResult> InvokeAsync(string? pestana = null, bool compacta = false)
@@ -27,10 +25,8 @@ public class PerfilCabeceraViewComponent : ViewComponent
         if (cliente is null)
             return Content(string.Empty);
 
-        // Recordatorios no enviados que pertenecen a este usuario.
-        // (En el modelo, la lista de clientes de un recordatorio se llama "Recordatorios").
-        var pendientes = await _recordatorioService.PendientesAsync();
-        var misPendientes = pendientes.Count(r => r.Recordatorios.Any(c => c.Id == cliente.Id));
+        // Recordatorios del usuario que todavía no se han enviado.
+        var misPendientes = cliente.Recordatorios.Count(r => !r.Enviado);
 
         var model = new PerfilCabeceraViewModel
         {

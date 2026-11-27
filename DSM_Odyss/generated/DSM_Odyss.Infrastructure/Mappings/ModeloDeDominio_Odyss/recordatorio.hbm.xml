@@ -24,12 +24,6 @@
     <property name="Enviado" type="Boolean">
       <column name="enviado" not-null="true"/>
     </property>
-    <bag name="Recordatorios">
-      <key>
-        <column name="FK_Recordatorio_recordatorios"/>
-      </key>
-      <one-to-many class="Cliente"/>
-    </bag>
     <many-to-one name="Tarea" class="Tarea">
       <column name="FK_Tarea_tarea"/>
     </many-to-one>

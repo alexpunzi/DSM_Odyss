@@ -100,6 +100,7 @@ static void EnsureDatabaseSchema(string? connectionString, string contentRootPat
         if (tablesCount > 0)
         {
             EnsureCarpetaFeatureSchema(connection);
+            EnsureClienteOwnershipSchema(connection);
             return;
         }
     }
@@ -120,6 +121,7 @@ static void EnsureDatabaseSchema(string? connectionString, string contentRootPat
         using var connection = new SQLiteConnection(connectionString);
         connection.Open();
         EnsureCarpetaFeatureSchema(connection);
+        EnsureClienteOwnershipSchema(connection);
     }
 }
 
@@ -139,6 +141,53 @@ static void EnsureCarpetaFeatureSchema(SQLiteConnection connection)
         );
         """;
     command.ExecuteNonQuery();
+}
+// Cada checklist y cada recordatorio pertenecen a un cliente (asociaciones ClienteChecklist y
+// ClienteRecordatorio). En bases de datos antiguas la relación estaba al revés (en la tabla Cliente):
+// se añaden las columnas nuevas y se copian los enlaces que ya existían.
+static void EnsureClienteOwnershipSchema(SQLiteConnection connection)
+{
+    MigrarPropietario(connection, "Checklist", "FK_Cliente_checklists", "FK_Checklist_propietarios");
+    MigrarPropietario(connection, "Recordatorio", "FK_Cliente_recordatorios", "FK_Recordatorio_recordatorios");
+}
+
+static void MigrarPropietario(SQLiteConnection connection, string tabla, string columnaNueva, string columnaAntiguaEnCliente)
+{
+    if (ColumnExists(connection, tabla, columnaNueva)) return;
+
+    using (var alter = connection.CreateCommand())
+    {
+        alter.CommandText = $"ALTER TABLE \"{tabla}\" ADD COLUMN \"{columnaNueva}\" INTEGER NULL;";
+        alter.ExecuteNonQuery();
+    }
+
+    if (!ColumnExists(connection, "Cliente", columnaAntiguaEnCliente)) return;
+
+    using var copiar = connection.CreateCommand();
+    copiar.CommandText = $"""
+        UPDATE "{tabla}"
+        SET "{columnaNueva}" = (
+            SELECT c.id FROM Cliente c
+            WHERE c."{columnaAntiguaEnCliente}" = "{tabla}".id
+            ORDER BY c.id LIMIT 1)
+        WHERE "{columnaNueva}" IS NULL;
+        """;
+    copiar.ExecuteNonQuery();
+}
+
+static bool ColumnExists(SQLiteConnection connection, string tableName, string columnName)
+{
+    using var inspect = connection.CreateCommand();
+    inspect.CommandText = $"PRAGMA table_info(\"{tableName}\");";
+    using var reader = inspect.ExecuteReader();
+    while (reader.Read())
+    {
+        if (string.Equals(reader["name"]?.ToString(), columnName, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 static void EnsureColumnExists(SQLiteConnection connection, string tableName, string columnName, string definition)

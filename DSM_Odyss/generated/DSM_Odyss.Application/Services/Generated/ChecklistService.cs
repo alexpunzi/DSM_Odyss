@@ -41,14 +41,24 @@ public sealed partial class ChecklistService : ServiceEntity<Checklist>
     public Task<Checklist> ModifierChecklistDefaultAsync(Checklist entity) =>
         ModifierDefaultAsync(entity);
 
-    public async Task<Checklist> CrearChecklistAsync(string p_nombre)
+        public async Task<Checklist> CrearChecklistAsync(string p_nombre, int p_propietario_oid)
     {
+        Cliente propietario = await _unitOfWork.ClienteRepository.ReadAsync(p_propietario_oid)
+            ?? throw new ModelException("Cliente not found.");
+
         Checklist entity = new Checklist
         {
             Nombre = p_nombre,
         };
 
         await _repository.SaveAsync(entity);
+        propietario.Checklists ??= new List<Checklist>();
+        if (!propietario.Checklists.Contains(entity))
+        {
+            propietario.Checklists.Add(entity);
+        }
+        await _unitOfWork.ClienteRepository.SaveAsync(propietario);
+
         return entity;
     }
 
@@ -99,21 +109,5 @@ public sealed partial class ChecklistService : ServiceEntity<Checklist>
         await _repository.SaveAsync(entity);
     }
 
-    public async Task AsignarClienteAsync(int p_oid, IReadOnlyList<int> p_clientes_oid)
-    {
-        Checklist entity = await _repository.ReadAsync(p_oid)
-            ?? throw new ModelException("Checklist not found.");
-        entity.Propietarios ??= new List<Cliente>();
-        foreach (var relatedId in p_clientes_oid)
-        {
-            Cliente relatedEntity = await _unitOfWork.ClienteRepository.ReadAsync(relatedId)
-                ?? throw new ModelException("Cliente not found for Checklist.Propietarios.");
-            if (!entity.Propietarios.Contains(relatedEntity))
-            {
-                entity.Propietarios.Add(relatedEntity);
-            }
-        }
-        await _repository.SaveAsync(entity);
-    }
 
 }

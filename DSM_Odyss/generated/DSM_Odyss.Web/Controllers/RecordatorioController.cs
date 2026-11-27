@@ -16,13 +16,15 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class RecordatorioController : Controller
 {
-    /*PROTECTED REGION ID(RecordatorioController_dependencies) START*/
+    /*PROTECTED REGION ID(RecordatorioController_dependencies) ENABLED START*/
     private readonly RecordatorioService _recordatorioService;
+    private readonly ClienteService _clienteService;
     private readonly ILogger<RecordatorioController> _logger;
     private readonly DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory _formUnitOfWorkFactory;
-    public RecordatorioController(RecordatorioService recordatorioService, DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory formUnitOfWorkFactory, ILogger<RecordatorioController>? logger = null)
+    public RecordatorioController(RecordatorioService recordatorioService, ClienteService clienteService, DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory formUnitOfWorkFactory, ILogger<RecordatorioController>? logger = null)
     {
         _recordatorioService = recordatorioService;
+        _clienteService = clienteService;
 
         _formUnitOfWorkFactory = formUnitOfWorkFactory;
 
@@ -40,9 +42,11 @@ public partial class RecordatorioController : Controller
         if (!int.TryParse(User.Identity?.Name, out var clienteId))
             return RedirectToAction("Login", "Account");
 
-        var entities = await _recordatorioService.LeerTodosRecordatoriosAsync();
-        var misRecordatorios = entities
-            .Where(r => r.Recordatorios.Any(c => c.Id == clienteId))
+        var cliente = await _clienteService.LeerClienteOIDAsync(clienteId);
+        if (cliente is null)
+            return RedirectToAction("Login", "Account");
+
+        var misRecordatorios = cliente.Recordatorios
             .OrderBy(r => r.Fecha.Date)
             .ThenBy(r => r.Hora.TimeOfDay)
             .Select(RecordatorioAssembler.ToViewModel)
@@ -57,7 +61,8 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id)
     {
-    /*PROTECTED REGION ID(RecordatorioController_Details_GET_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Details_GET_body) ENABLED START*/
+        if (!await EsMiRecordatorioAsync(id)) return NotFound();
 
         var entity = await _recordatorioService.LeerRecordatorioOIDAsync(id);
         if (entity is null) return NotFound();
@@ -94,6 +99,8 @@ public partial class RecordatorioController : Controller
     public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.RecordatorioViewModel model)
     {
     /*PROTECTED REGION ID(RecordatorioController_Create_POST_body) ENABLED START*/
+        if (!int.TryParse(User.Identity?.Name, out var clienteId))
+            return RedirectToAction("Login", "Account");
 
 
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
@@ -114,7 +121,8 @@ public partial class RecordatorioController : Controller
         try
         {
 
-            var entity = await service.CrearRecordatorioAsync(model.Titulo, model.Detalles ?? string.Empty, model.Fecha, model.Hora, model.TipoAviso, model.Enviado);
+            // El recordatorio pertenece al usuario que lo crea.
+            var entity = await service.CrearRecordatorioAsync(model.Titulo, model.Detalles ?? string.Empty, model.Fecha, model.Hora, model.TipoAviso, model.Enviado, clienteId);
             entity.Tarea = model.TareaId is int referenceTarea
                 ? await unitOfWork.TareaRepository.ReadAsync(referenceTarea) ?? throw new InvalidOperationException("El registro seleccionado de Tarea ya no existe.") : null!;
 
@@ -140,7 +148,8 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id)
     {
-    /*PROTECTED REGION ID(RecordatorioController_Edit_GET_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Edit_GET_body) ENABLED START*/
+        if (!await EsMiRecordatorioAsync(id)) return NotFound();
 
         var entity = await _recordatorioService.LeerRecordatorioOIDAsync(id);
         if (entity is null) return NotFound();
@@ -157,6 +166,7 @@ public partial class RecordatorioController : Controller
     public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.RecordatorioViewModel model)
     {
     /*PROTECTED REGION ID(RecordatorioController_Edit_POST_body) ENABLED START*/
+        if (!await EsMiRecordatorioAsync(id)) return NotFound();
 
 
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
@@ -204,7 +214,8 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Delete(int id)
     {
-    /*PROTECTED REGION ID(RecordatorioController_Delete_GET_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Delete_GET_body) ENABLED START*/
+        if (!await EsMiRecordatorioAsync(id)) return NotFound();
 
         var entity = await _recordatorioService.LeerRecordatorioOIDAsync(id);
         if (entity is null) return NotFound();
@@ -219,7 +230,8 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-    /*PROTECTED REGION ID(RecordatorioController_DeleteConfirmed_POST_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_DeleteConfirmed_POST_body) ENABLED START*/
+        if (!await EsMiRecordatorioAsync(id)) return NotFound();
 
         if (!ModelState.IsValid) return View("Delete", new DSM_Odyss.Web.ViewModels.RecordatorioViewModel());
         await _recordatorioService.BorrarRecordatorioAsync(id);
@@ -263,20 +275,6 @@ public partial class RecordatorioController : Controller
 
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _recordatorioService.DesasignarTareaAsync(p_oid, p_tarea_oid);
-        return NoContent();
-    /*PROTECTED REGION END*/
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    /*PROTECTED REGION ID(RecordatorioController_AsignarCliente_POST_attributes) START*/
-    /*PROTECTED REGION END*/
-    public async Task<IActionResult> AsignarCliente(int p_oid, IReadOnlyList<int> p_clientes_oid)
-    {
-    /*PROTECTED REGION ID(RecordatorioController_AsignarCliente_POST_body) START*/
-
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _recordatorioService.AsignarClienteAsync(p_oid, p_clientes_oid);
         return NoContent();
     /*PROTECTED REGION END*/
     }
