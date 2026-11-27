@@ -53,9 +53,21 @@
 
     @if (!Model.Compacta)
     {
+        @* Ajustes de la cuenta *@
+        <div class="dropdown ms-auto align-self-start">
+            <button type="button" class="btn btn-outline-secondary rounded-circle p-2" data-bs-toggle="dropdown" aria-expanded="false" title="Ajustes">
+                <i class="bi bi-gear fs-5"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item small" asp-controller="Cliente" asp-action="ConfigurarNotificaciones"><i class="bi bi-bell me-2"></i>Configurar notificaciones</a></li>
+                <li><a class="dropdown-item small" asp-controller="Cliente" asp-action="CambiarPassword"><i class="bi bi-key me-2"></i>Cambiar contraseña</a></li>
+                <li><a class="dropdown-item small" asp-controller="Home" asp-action="Consultas"><i class="bi bi-funnel me-2"></i>Consultas y filtros</a></li>
+            </ul>
+        </div>
+
         @* Campana → Notificaciones y recordatorios (M12) *@
         <a asp-controller="Recordatorio" asp-action="Index"
-           class="perfil-campana btn btn-outline-secondary rounded-circle p-2 ms-auto align-self-start"
+           class="perfil-campana btn btn-outline-secondary rounded-circle p-2 align-self-start"
            title="Notificaciones y recordatorios">
             <i class="bi bi-bell fs-5"></i>
             @if (Model.NotificacionesPendientes > 0)

@@ -26,6 +26,15 @@ public sealed partial class ViajeUseCase
 
             result = await viajeService.DuplicarItinerarioAsync(p_oid, p_nuevoTitulo);
 
+            // La copia pertenece al mismo autor que el viaje original (dentro de la misma transacción).
+            IReadOnlyList<Cliente> clientes = await _unitOfWork.ClienteRepository.ReadAllAsync();
+            Cliente? autor = clientes.FirstOrDefault(cliente => cliente.Viajes.Any(viaje => viaje.Id == p_oid));
+            if (autor is not null)
+            {
+                autor.Viajes.Add(result);
+                await _unitOfWork.ClienteRepository.SaveAsync(autor);
+            }
+
             await _unitOfWork.CommitAsync();
         }
         catch (Exception ex)

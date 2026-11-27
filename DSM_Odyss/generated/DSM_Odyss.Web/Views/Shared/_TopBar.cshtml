@@ -3,9 +3,22 @@
 }
 
 <div class="d-flex align-items-center gap-2 mb-3">
-    <button class="btn btn-outline-secondary rounded-circle p-2" type="button" title="Menú">
-        <i class="bi bi-list fs-5"></i>
-    </button>
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary rounded-circle p-2" type="button" title="Menú" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-list fs-5"></i>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item small" asp-controller="Home" asp-action="Index"><i class="bi bi-house me-2"></i>Inicio</a></li>
+            <li><a class="dropdown-item small" asp-controller="Home" asp-action="Consultas"><i class="bi bi-funnel me-2"></i>Consultas y filtros</a></li>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item small" asp-controller="Cliente" asp-action="Details"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
+                <li><a class="dropdown-item small" asp-controller="Checklist" asp-action="Index"><i class="bi bi-list-check me-2"></i>Mis checklists</a></li>
+                <li><a class="dropdown-item small" asp-controller="Recordatorio" asp-action="Index"><i class="bi bi-bell me-2"></i>Notificaciones</a></li>
+            }
+        </ul>
+    </div>
     <form asp-controller="Home" asp-action="Index" method="get" class="flex-grow-1">
         <div class="input-group">
             <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>

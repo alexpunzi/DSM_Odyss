@@ -187,7 +187,7 @@ public partial class ResenaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ConPuntuacionMinima(int p_puntuacion)
     {
-    /*PROTECTED REGION ID(ResenaController_ConPuntuacionMinima_GET_body) START*/
+    /*PROTECTED REGION ID(ResenaController_ConPuntuacionMinima_GET_body) ENABLED START*/
 
         var puntuacion = p_puntuacion > 0 ? p_puntuacion : 1;
         var result = await _resenaService.ConPuntuacionMinimaAsync(puntuacion);

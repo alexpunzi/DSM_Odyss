@@ -5,7 +5,7 @@ namespace DSM_Odyss.Web.Assemblers;
 
 public static class ViajeAssembler
 {
-    /*PROTECTED REGION ID(ViajeAssembler_method_ToViewModel) START*/
+    /*PROTECTED REGION ID(ViajeAssembler_method_ToViewModel) ENABLED START*/
     public static DSM_Odyss.Web.ViewModels.ViajeViewModel ToViewModel(Viaje entity) =>
         new()
         {

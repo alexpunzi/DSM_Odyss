@@ -65,19 +65,16 @@ public partial class CarpetaController
                 await archivo.CopyToAsync(fileStream, HttpContext.RequestAborted);
             }
 
-            var media = new Multimedia
-            {
-                Tipo = tipo,
-                Nombre = Path.GetFileName(archivo.FileName),
-                FechaSubida = DateTime.Today,
-                Descripcion = string.Empty,
-                RutaArchivo = fileName
-            };
-
             await unitOfWork.BeginTransactionAsync("MVC.Carpeta.Upload");
-            context.Carpeta.Multimedia.Add(media);
+
+            // Operación custom subirContenidoMultimedia: crea el Multimedia y lo añade a la carpeta.
+            var multimediaService = new DSM_Odyss.Application.Services.MultimediaService(unitOfWork);
+            var media = await multimediaService.SubirContenidoMultimediaAsync(carpetaId, tipo, Path.GetFileName(archivo.FileName));
+
+            // La imagen se guarda físicamente en App_Data/uploads y en el objeto solo su ruta.
+            media.RutaArchivo = fileName;
+            media.FechaSubida = DateTime.Today;
             await unitOfWork.MultimediaRepository.SaveAsync(media);
-            await unitOfWork.CarpetaRepository.SaveAsync(context.Carpeta);
             await unitOfWork.CommitAsync();
             if (tipo == TipoMultimedia.foto)
                 TempData["GenerarCollage"] = true;
@@ -142,7 +139,9 @@ public partial class CarpetaController
 
         context.Carpeta.CompartidoCon ??= new List<Cliente>();
         context.Carpeta.CompartidoConEdicion ??= new List<Cliente>();
-        AddIfMissing(context.Carpeta.CompartidoCon, target);
+
+        // Operación custom compartirCarpeta: da acceso de lectura al usuario.
+        await new DSM_Odyss.Application.Services.CarpetaService(unitOfWork).CompartirCarpetaAsync(carpetaId, clienteId);
         AddIfMissing(target.CarpetasCompartidas, context.Carpeta);
 
         if (puedeEditar)

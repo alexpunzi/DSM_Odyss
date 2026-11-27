@@ -255,7 +255,7 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Pendientes()
     {
-    /*PROTECTED REGION ID(RecordatorioController_Pendientes_GET_body) START*/
+    /*PROTECTED REGION ID(RecordatorioController_Pendientes_GET_body) ENABLED START*/
 
         var result = await _recordatorioService.PendientesAsync();
         var items = result.Select(RecordatorioAssembler.ToViewModel).ToList();

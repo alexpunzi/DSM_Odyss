@@ -4,7 +4,7 @@ namespace DSM_Odyss.Web.ViewModels;
 
 public sealed class ChecklistViewModel : IValidatableObject
 {
-    /*PROTECTED REGION ID(ChecklistViewModel_generated) START*/
+    /*PROTECTED REGION ID(ChecklistViewModel_generated) ENABLED START*/
     [Key]
     public int Id { get; set; }
 

@@ -1,5 +1,5 @@
 // HARIA-WEB MVC managed controller
-/*PROTECTED REGION ID(ChecklistController_usings) START*/
+/*PROTECTED REGION ID(ChecklistController_usings) ENABLED START*/
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DSM_Odyss.Domain.Entities;
@@ -75,7 +75,7 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public IActionResult Create()
     {
-    /*PROTECTED REGION ID(ChecklistController_Create_GET_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_Create_GET_body) ENABLED START*/
         return View(new ChecklistViewModel());
     /*PROTECTED REGION END*/
     }
@@ -248,7 +248,7 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ConTareas()
     {
-    /*PROTECTED REGION ID(ChecklistController_ConTareas_GET_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_ConTareas_GET_body) ENABLED START*/
         var result = await _checklistService.ConTareasAsync();
         var items = result.Select(ChecklistAssembler.ToViewModel).ToList();
         if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
@@ -262,7 +262,7 @@ public partial class ChecklistController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AgregarTarea(int p_oid, IReadOnlyList<int> p_tareas_oid)
     {
-    /*PROTECTED REGION ID(ChecklistController_AgregarTarea_POST_body) START*/
+    /*PROTECTED REGION ID(ChecklistController_AgregarTarea_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _checklistService.AgregarTareaAsync(p_oid, p_tareas_oid);
         return NoContent();

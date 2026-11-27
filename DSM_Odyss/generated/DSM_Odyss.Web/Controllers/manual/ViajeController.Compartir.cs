@@ -53,7 +53,7 @@ public partial class ViajeController
         return View(model);
     }
 
-    // POST: da acceso a un usuario (operación custom CompartirConCliente)
+    // POST: da acceso a un usuario (operación custom compartirItinerario)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CompartirCon(int viajeId, int clienteId)
@@ -62,7 +62,7 @@ public partial class ViajeController
         if (int.TryParse(User.Identity?.Name, out var yo) && yo == clienteId)
             return BadRequest("No puedes compartir un viaje contigo.");
 
-        await _viajeService.CompartirConClienteAsync(viajeId, new[] { clienteId });
+        await _viajeService.CompartirItinerarioAsync(viajeId, clienteId);
         TempData["CompartirMsg"] = "Viaje compartido.";
         return RedirectToAction(nameof(Compartir), new { id = viajeId });
     }

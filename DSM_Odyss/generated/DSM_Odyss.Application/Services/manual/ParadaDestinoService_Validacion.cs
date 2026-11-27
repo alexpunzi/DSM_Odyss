@@ -14,20 +14,20 @@ public sealed partial class ParadaDestinoService
     {
         if (orden < 1)
         {
-            throw new ModelException("Destination stop order must be a positive number.");
+            throw new ModelException("El orden de los destinos debe ser un número positivo.");
         }
 
         if (fechaLlegada.Date > fechaSalida.Date
             || fechaLlegada.Date < viaje.FechaInicio.Date
             || fechaSalida.Date > viaje.FechaFin.Date)
         {
-            throw new ModelException("Destination stop dates must fit within the trip dates.");
+            throw new ModelException("Las fechas de cada destino deben estar dentro de las fechas del viaje (y la llegada no puede ser posterior a la salida).");
         }
 
         IReadOnlyList<ParadaDestino> paradas = await _repository.PorViajeAsync(viaje.Id);
         if (paradas.Any(parada => parada.Id != paradaDestinoId && parada.Orden == orden))
         {
-            throw new ModelException("Destination stop order must be unique within a trip.");
+            throw new ModelException("Dos destinos del mismo viaje no pueden tener el mismo orden.");
         }
     }
 }

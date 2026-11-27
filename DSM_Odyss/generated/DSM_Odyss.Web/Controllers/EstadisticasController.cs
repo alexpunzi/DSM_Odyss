@@ -1,5 +1,5 @@
 // HARIA-WEB MVC managed controller
-/*PROTECTED REGION ID(EstadisticasController_usings) START*/
+/*PROTECTED REGION ID(EstadisticasController_usings) ENABLED START*/
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +17,7 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class EstadisticasController : Controller
 {
-    /*PROTECTED REGION ID(EstadisticasController_dependencies) START*/
+    /*PROTECTED REGION ID(EstadisticasController_dependencies) ENABLED START*/
     private readonly IUnitOfWorkFactory _useCaseUnitOfWorkFactory;
     private readonly EstadisticasService _estadisticasService;
     private readonly ILogger<EstadisticasController> _logger;
@@ -113,7 +113,7 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id)
     {
-    /*PROTECTED REGION ID(EstadisticasController_Details_GET_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Details_GET_body) ENABLED START*/
         var entity = await _estadisticasService.LeerEstadisticasOIDAsync(id);
         if (entity is null) return NotFound();
         return View(EstadisticasAssembler.ToViewModel(entity));
@@ -125,7 +125,7 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     public IActionResult Create()
     {
-    /*PROTECTED REGION ID(EstadisticasController_Create_GET_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Create_GET_body) ENABLED START*/
         return View(new DSM_Odyss.Web.ViewModels.EstadisticasViewModel());
     /*PROTECTED REGION END*/
     }
@@ -137,7 +137,7 @@ public partial class EstadisticasController : Controller
 
     public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.EstadisticasViewModel model, int p_cliente_oid)
     {
-    /*PROTECTED REGION ID(EstadisticasController_Create_POST_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Create_POST_body) ENABLED START*/
         ModelState.Remove(nameof(model.Anyo));
         ModelState.Remove(nameof(model.PaisesVisitados));
         ModelState.Remove(nameof(model.FotosSubidas));
@@ -165,7 +165,7 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id)
     {
-    /*PROTECTED REGION ID(EstadisticasController_Edit_GET_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Edit_GET_body) ENABLED START*/
         var entity = await _estadisticasService.LeerEstadisticasOIDAsync(id);
         if (entity is null) return NotFound();
         return View(EstadisticasAssembler.ToViewModel(entity));
@@ -179,7 +179,7 @@ public partial class EstadisticasController : Controller
 
     public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.EstadisticasViewModel model, int p_cliente_oid)
     {
-    /*PROTECTED REGION ID(EstadisticasController_Edit_POST_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Edit_POST_body) ENABLED START*/
         ModelState.Remove(nameof(model.Anyo));
         ModelState.Remove(nameof(model.PaisesVisitados));
         ModelState.Remove(nameof(model.FotosSubidas));
@@ -205,7 +205,7 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Delete(int id)
     {
-    /*PROTECTED REGION ID(EstadisticasController_Delete_GET_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_Delete_GET_body) ENABLED START*/
         var entity = await _estadisticasService.LeerEstadisticasOIDAsync(id);
         if (entity is null) return NotFound();
         return View(EstadisticasAssembler.ToViewModel(entity));
@@ -219,7 +219,7 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-    /*PROTECTED REGION ID(EstadisticasController_DeleteConfirmed_POST_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_DeleteConfirmed_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return View("Delete", new DSM_Odyss.Web.ViewModels.EstadisticasViewModel());
         await _estadisticasService.BorrarEstadisticasAsync(id);
         return RedirectToAction(nameof(Index));
@@ -231,7 +231,7 @@ public partial class EstadisticasController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DelAnyo(int p_anyo)
     {
-    /*PROTECTED REGION ID(EstadisticasController_DelAnyo_GET_body) START*/
+    /*PROTECTED REGION ID(EstadisticasController_DelAnyo_GET_body) ENABLED START*/
         var anyo = p_anyo > 0 ? p_anyo : DateTime.Now.Year;
         var result = await _estadisticasService.DelAnyoAsync(anyo);
         var items = result.Select(EstadisticasAssembler.ToViewModel).ToList();

@@ -16,7 +16,7 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class DestinoController : Controller
 {
-    /*PROTECTED REGION ID(DestinoController_dependencies) START*/
+    /*PROTECTED REGION ID(DestinoController_dependencies) ENABLED START*/
     private readonly DestinoService _destinoService;
     private readonly DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<DestinoController> _logger;
@@ -35,7 +35,7 @@ public partial class DestinoController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Index()
     {
-    /*PROTECTED REGION ID(DestinoController_Index_GET_body) START*/
+    /*PROTECTED REGION ID(DestinoController_Index_GET_body) ENABLED START*/
 
         if (!int.TryParse(User.Identity?.Name, out var clienteId))
             return Challenge();
@@ -178,7 +178,7 @@ public partial class DestinoController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> PorPais(string p_pais)
     {
-    /*PROTECTED REGION ID(DestinoController_PorPais_GET_body) START*/
+    /*PROTECTED REGION ID(DestinoController_PorPais_GET_body) ENABLED START*/
 
         var pais = p_pais?.Trim() ?? string.Empty;
         var result = string.IsNullOrEmpty(pais)

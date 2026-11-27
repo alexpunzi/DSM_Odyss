@@ -1,5 +1,5 @@
 // HARIA-WEB MVC managed controller
-/*PROTECTED REGION ID(CollageController_usings) START*/
+/*PROTECTED REGION ID(CollageController_usings) ENABLED START*/
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DSM_Odyss.Domain.Entities;
@@ -17,7 +17,7 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class CollageController : Controller
 {
-    /*PROTECTED REGION ID(CollageController_dependencies) START*/
+    /*PROTECTED REGION ID(CollageController_dependencies) ENABLED START*/
     private readonly CollageService _collageService;
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
     private readonly ILogger<CollageController> _logger;
@@ -165,7 +165,7 @@ public partial class CollageController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DelAnyo(int p_anyo)
     {
-    /*PROTECTED REGION ID(CollageController_DelAnyo_GET_body) START*/
+    /*PROTECTED REGION ID(CollageController_DelAnyo_GET_body) ENABLED START*/
 
         var anyo = p_anyo > 0 ? p_anyo : DateTime.Now.Year;
         var result = await _collageService.DelAnyoAsync(anyo);

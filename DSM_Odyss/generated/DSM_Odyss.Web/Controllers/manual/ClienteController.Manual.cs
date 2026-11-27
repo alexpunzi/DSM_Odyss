@@ -42,9 +42,37 @@ public partial class ClienteController
     {
     /*PROTECTED REGION ID(ClienteController_CambiarPassword_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _clienteService.CambiarPasswordAsync(p_oid, p_oldPass, p_newPass);
-        return Ok(result);
+        // Vista: formulario de Views/Cliente/CambiarPassword.cshtml (solo tu propia contraseña).
+        if (!int.TryParse(User.Identity?.Name, out var clienteId) || clienteId != p_oid) return Forbid();
+
+        if (!ModelState.IsValid)
+        {
+            TempData["PasswordError"] = "Rellena todos los campos.";
+            return RedirectToAction(nameof(CambiarPassword));
+        }
+        if (p_newPass != Request.Form["p_confirmPass"].ToString())
+        {
+            TempData["PasswordError"] = "Las dos contraseñas nuevas no coinciden.";
+            return RedirectToAction(nameof(CambiarPassword));
+        }
+
+        try
+        {
+            var cambiada = await _clienteService.CambiarPasswordAsync(p_oid, p_oldPass, p_newPass);
+            if (!cambiada)
+            {
+                TempData["PasswordError"] = "La contraseña actual no es correcta, o la nueva es igual que la anterior.";
+                return RedirectToAction(nameof(CambiarPassword));
+            }
+        }
+        catch (DSM_Odyss.Application.Exceptions.ModelException)
+        {
+            TempData["PasswordError"] = "La nueva contraseña debe tener al menos 8 caracteres, un número y un carácter especial.";
+            return RedirectToAction(nameof(CambiarPassword));
+        }
+
+        TempData["PasswordOk"] = "Contraseña cambiada correctamente.";
+        return RedirectToAction(nameof(CambiarPassword));
     /*PROTECTED REGION END*/
     }
 

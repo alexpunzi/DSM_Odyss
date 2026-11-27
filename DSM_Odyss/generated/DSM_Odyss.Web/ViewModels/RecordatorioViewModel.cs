@@ -4,7 +4,7 @@ namespace DSM_Odyss.Web.ViewModels;
 
 public sealed class RecordatorioViewModel : IValidatableObject
 {
-    /*PROTECTED REGION ID(RecordatorioViewModel_generated) START*/
+    /*PROTECTED REGION ID(RecordatorioViewModel_generated) ENABLED START*/
     [Key]
     public int Id { get; set; }
 

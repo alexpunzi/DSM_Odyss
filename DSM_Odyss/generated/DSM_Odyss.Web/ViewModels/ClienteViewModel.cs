@@ -5,7 +5,7 @@ namespace DSM_Odyss.Web.ViewModels;
 
 public sealed class ClienteViewModel : IValidatableObject
 {
-    /*PROTECTED REGION ID(ClienteViewModel_generated) START*/
+    /*PROTECTED REGION ID(ClienteViewModel_generated) ENABLED START*/
     [Key]
     public int Id { get; set; }
 

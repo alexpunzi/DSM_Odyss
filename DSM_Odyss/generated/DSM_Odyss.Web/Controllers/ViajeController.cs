@@ -1,5 +1,5 @@
 // HARIA-WEB MVC managed controller
-/*PROTECTED REGION ID(ViajeController_usings) START*/
+/*PROTECTED REGION ID(ViajeController_usings) ENABLED START*/
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -17,7 +17,7 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class ViajeController : Controller
 {
-    /*PROTECTED REGION ID(ViajeController_dependencies) START*/
+    /*PROTECTED REGION ID(ViajeController_dependencies) ENABLED START*/
     private readonly ViajeService _viajeService;
     private readonly ILogger<ViajeController> _logger;
     private readonly DSM_Odyss.Application.Abstractions.IUnitOfWorkFactory _formUnitOfWorkFactory;
@@ -122,7 +122,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create()
     {
-    /*PROTECTED REGION ID(ViajeController_Create_GET_body) START*/
+    /*PROTECTED REGION ID(ViajeController_Create_GET_body) ENABLED START*/
         var hoy = DateTime.Today;
         var fin = hoy.AddDays(3);
 
@@ -151,7 +151,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create(ViajeViewModel model)
     {
-    /*PROTECTED REGION ID(ViajeController_Create_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_Create_POST_body) ENABLED START*/
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
         var service = new ViajeService(unitOfWork);
         var destinoService = new DestinoService(unitOfWork);
@@ -289,7 +289,10 @@ public partial class ViajeController : Controller
             await unitOfWork.RollbackAsync();
             if (error is OperationCanceledException) throw;
             _logger.LogError(error, "No se pudo guardar el viaje con sus destinos y actividades.");
-            ModelState.AddModelError(string.Empty, "No se han podido guardar el viaje y sus destinos.");
+            // Si es un error de validación del modelo (p. ej. fechas de un destino fuera del viaje), se muestra tal cual.
+            ModelState.AddModelError(string.Empty, error is DSM_Odyss.Application.Exceptions.ModelException
+                ? error.Message
+                : "No se han podido guardar el viaje y sus destinos.");
             return View(model);
         }
 
@@ -326,7 +329,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id, ViajeViewModel model, int p_autor_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_Edit_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_Edit_POST_body) ENABLED START*/
         if (!int.TryParse(User.Identity?.Name, out var currentClientId)) return Challenge();
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
         var service = new ViajeService(unitOfWork);
@@ -377,7 +380,9 @@ public partial class ViajeController : Controller
             await unitOfWork.RollbackAsync();
             if (error is OperationCanceledException) throw;
             _logger.LogError(error, "Could not save the record and its lines.");
-            ModelState.AddModelError(string.Empty, "No se han podido guardar el registro y sus líneas.");
+            ModelState.AddModelError(string.Empty, error is DSM_Odyss.Application.Exceptions.ModelException
+                ? error.Message
+                : "No se han podido guardar el viaje y sus destinos.");
             return View(model);
         }
 
@@ -390,7 +395,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Delete(int id)
     {
-    /*PROTECTED REGION ID(ViajeController_Delete_GET_body) START*/
+    /*PROTECTED REGION ID(ViajeController_Delete_GET_body) ENABLED START*/
         var entity = await _viajeService.LeerViajeOIDAsync(id);
         if (entity is null) return NotFound();
         return View(ViajeAssembler.ToViewModel(entity));
@@ -404,7 +409,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-    /*PROTECTED REGION ID(ViajeController_DeleteConfirmed_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_DeleteConfirmed_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return View("Delete", new ViajeViewModel());
         await _viajeService.BorrarViajeAsync(id);
         return RedirectToAction(nameof(Index));
@@ -416,7 +421,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ViajesPublicos()
     {
-    /*PROTECTED REGION ID(ViajeController_ViajesPublicos_GET_body) START*/
+    /*PROTECTED REGION ID(ViajeController_ViajesPublicos_GET_body) ENABLED START*/
         var result = await _viajeService.ViajesPublicosAsync();
         var items = result.Select(ViajeAssembler.ToViewModel).ToList();
         if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
@@ -429,7 +434,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ViajesPorEstado(EstadoViaje p_estado)
     {
-    /*PROTECTED REGION ID(ViajeController_ViajesPorEstado_GET_body) START*/
+    /*PROTECTED REGION ID(ViajeController_ViajesPorEstado_GET_body) ENABLED START*/
         var result = await _viajeService.ViajesPorEstadoAsync(p_estado);
         var items = result.Select(ViajeAssembler.ToViewModel).ToList();
         if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
@@ -447,7 +452,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AgregarParada(int p_oid, IReadOnlyList<int> p_paradas_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_AgregarParada_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_AgregarParada_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.AgregarParadaAsync(p_oid, p_paradas_oid);
         return NoContent();
@@ -460,7 +465,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AgregarParadaDestino(int p_oid, IReadOnlyList<int> p_paradasDestino_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_AgregarParadaDestino_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_AgregarParadaDestino_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.AgregarParadaDestinoAsync(p_oid, p_paradasDestino_oid);
         return NoContent();
@@ -473,7 +478,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> CompartirConCliente(int p_oid, IReadOnlyList<int> p_clientes_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_CompartirConCliente_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_CompartirConCliente_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.CompartirConClienteAsync(p_oid, p_clientes_oid);
         return NoContent();
@@ -486,7 +491,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DejarDeCompartirConCliente(int p_oid, IReadOnlyList<int> p_clientes_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_DejarDeCompartirConCliente_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_DejarDeCompartirConCliente_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.DejarDeCompartirConClienteAsync(p_oid, p_clientes_oid);
         return NoContent();
@@ -499,7 +504,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AgregarResena(int p_oid, IReadOnlyList<int> p_resenas_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_AgregarResena_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_AgregarResena_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.AgregarResenaAsync(p_oid, p_resenas_oid);
         return NoContent();
@@ -512,7 +517,7 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AsignarCarpeta(int p_oid, int p_carpeta_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_AsignarCarpeta_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_AsignarCarpeta_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.AsignarCarpetaAsync(p_oid, p_carpeta_oid);
         return NoContent();
@@ -525,14 +530,14 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AsignarCollage(int p_oid, int p_collage_oid)
     {
-    /*PROTECTED REGION ID(ViajeController_AsignarCollage_POST_body) START*/
+    /*PROTECTED REGION ID(ViajeController_AsignarCollage_POST_body) ENABLED START*/
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _viajeService.AsignarCollageAsync(p_oid, p_collage_oid);
         return NoContent();
     /*PROTECTED REGION END*/
     }
 
-    /*PROTECTED REGION ID(ViajeController_method_LoadFormOptionsAsync_DSMOdyssWebViewModelsViajeViewModel) START*/
+    /*PROTECTED REGION ID(ViajeController_method_LoadFormOptionsAsync_DSMOdyssWebViewModelsViajeViewModel) ENABLED START*/
     private async Task LoadFormOptionsAsync(ViajeViewModel model)
     {
         await using var unitOfWork = _formUnitOfWorkFactory.Create();
@@ -540,7 +545,7 @@ public partial class ViajeController : Controller
     }
     /*PROTECTED REGION END*/
 
-    /*PROTECTED REGION ID(ViajeController_method_LoadFormOptionsAsync_DSMOdyssWebViewModelsViajeViewModel_DSMOdyssApplicationAbstractionsIUnitOfWork) START*/
+    /*PROTECTED REGION ID(ViajeController_method_LoadFormOptionsAsync_DSMOdyssWebViewModelsViajeViewModel_DSMOdyssApplicationAbstractionsIUnitOfWork) ENABLED START*/
     private async Task LoadFormOptionsAsync(ViajeViewModel model, DSM_Odyss.Application.Abstractions.IUnitOfWork unitOfWork)
     {
         var clientId = int.TryParse(User.Identity?.Name, out var currentClientId) ? currentClientId : 0;

@@ -162,7 +162,7 @@ public partial class MultimediaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DelTipo(TipoMultimedia p_tipo)
     {
-    /*PROTECTED REGION ID(MultimediaController_DelTipo_GET_body) START*/
+    /*PROTECTED REGION ID(MultimediaController_DelTipo_GET_body) ENABLED START*/
 
         var result = await _multimediaService.DelTipoAsync(p_tipo);
         var items = result.Select(MultimediaAssembler.ToViewModel).ToList();

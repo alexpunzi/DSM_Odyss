@@ -21,6 +21,11 @@
         </a>
     </div>
 
+    @if (TempData["ChecklistMensaje"] is string mensajeChecklist)
+    {
+        <div class="alert alert-success py-2 small">@mensajeChecklist</div>
+    }
+
     @* Caja principal de la checklist *@
     <div class="card border shadow-sm mb-3" style="border-radius: 12px; border-color: #94a3b8 !important; min-height: 360px;">
         <div class="card-body p-3 d-flex flex-column">
@@ -31,20 +36,23 @@
                 <span class="fw-medium px-1" style="font-size: 1rem; color: #1e293b;">@Model.Nombre</span>
             </div>
 
-            @* Listado de tareas en modo solo lectura *@
+            @* Listado de tareas: la casilla usa la operación custom cambiarEstadoTarea *@
             <div class="d-flex flex-column gap-3 ps-2">
                 @if (Model.Tareas != null && Model.Tareas.Any())
                 {
                     @foreach (var tarea in Model.Tareas)
                     {
-                        <div class="d-flex align-items-center gap-2">
+                        <form asp-controller="Tarea" asp-action="CambiarEstadoTarea" method="post" class="d-flex align-items-center gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="p_oid" value="@tarea.Id" />
+                            <input type="hidden" name="p_completada" value="@(tarea.Completada ? "false" : "true")" />
                             <input type="checkbox" class="form-check-input mt-0 border-dark" 
-                                   style="width: 1.15em; height: 1.15em;" 
-                                   @(tarea.Completada ? "checked" : "") disabled />
+                                   style="width: 1.15em; height: 1.15em;" title="Marcar como hecha"
+                                   @(tarea.Completada ? "checked" : "") onchange="this.form.submit()" />
                             <span class="small @(tarea.Completada ? "text-decoration-line-through text-muted" : "text-dark")">
                                 @tarea.Descripcion
                             </span>
-                        </div>
+                        </form>
                     }
                 }
                 else
@@ -58,7 +66,36 @@
 
     @* Botones inferiores alineados a la derecha *@
     <div class="d-flex justify-content-end gap-2">
+        @if (Model.Tareas != null && Model.Tareas.Any())
+        {
+            @* customTransaction vaciarChecklist *@
+            <button type="button" class="btn btn-outline-danger btn-sm px-3 py-1 me-auto" style="border-radius: 6px;"
+                    data-bs-toggle="modal" data-bs-target="#modalVaciarChecklist">
+                <i class="bi bi-trash3 me-1"></i>Vaciar lista
+            </button>
+        }
         <a asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver</a>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-dark btn-sm px-4 py-1 fw-medium" style="border-radius: 6px;">Editar</a>
+    </div>
+</div>
+
+@* ===== Confirmación para vaciar la lista (customTransaction vaciarChecklist) ===== *@
+<div class="modal fade" id="modalVaciarChecklist" tabindex="-1" aria-labelledby="modalVaciarChecklistTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 14px;">
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2.5rem;"></i>
+                <h2 class="h5 fw-semibold mt-2" id="modalVaciarChecklistTitulo">¿Vaciar "@Model.Nombre"?</h2>
+                <p class="small text-muted mb-0">Se borrarán todas las tareas de la lista. La lista se conserva.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pt-0 pb-4">
+                <button type="button" class="btn btn-outline-dark btn-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                <form asp-controller="Checklist" asp-action="VaciarChecklist" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="p_oid" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm px-4">Vaciar</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

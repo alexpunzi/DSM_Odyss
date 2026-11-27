@@ -237,7 +237,7 @@ public partial class ParadaActividadController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Pendientes()
     {
-    /*PROTECTED REGION ID(ParadaActividadController_Pendientes_GET_body) START*/
+    /*PROTECTED REGION ID(ParadaActividadController_Pendientes_GET_body) ENABLED START*/
 
         var result = await _paradaActividadService.PendientesAsync();
         var items = result.Select(ParadaActividadAssembler.ToViewModel).ToList();

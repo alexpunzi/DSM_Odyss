@@ -27,9 +27,17 @@ public partial class UbicacionController
     {
     /*PROTECTED REGION ID(UbicacionController_ConsultarUbicacionEnMapa_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await _ubicacionService.ConsultarUbicacionEnMapaAsync(p_oid);
-        return Ok(result);
+        // Vista: botón "Ver en el mapa" en el detalle de la ubicación y en la consulta ConNombre.
+        try
+        {
+            var urlMapa = await _ubicacionService.ConsultarUbicacionEnMapaAsync(p_oid);
+            return Redirect(urlMapa);   // abre la ubicación en Google Maps
+        }
+        catch (DSM_Odyss.Application.Exceptions.ModelException)
+        {
+            TempData["UbicacionError"] = "Esta ubicación no tiene coordenadas válidas.";
+            return RedirectToAction(nameof(Details), new { id = p_oid });
+        }
     /*PROTECTED REGION END*/
     }
 }

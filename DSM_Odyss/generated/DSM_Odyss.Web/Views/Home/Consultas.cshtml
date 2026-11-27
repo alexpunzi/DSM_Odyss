@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Consultas y filtros";
+    var anyoActual = DateTime.Now.Year;
+
+    Dictionary<string, string> P(params (string Clave, string Valor)[] pares) => pares.ToDictionary(x => x.Clave, x => x.Valor);
+
+    // (Título, descripción, controlador, acción, parámetros por defecto)
+    var consultas = new (string Titulo, string Descripcion, string Controlador, string Accion, Dictionary<string, string> Parametros)[]
+    {
+        ("Viajes públicos", "Todos los viajes publicados por los usuarios.", "Viaje", "ViajesPublicos", P()),
+        ("Viajes por estado", "Planificados, en curso o finalizados.", "Viaje", "ViajesPorEstado", P(("p_estado", "planificado"))),
+        ("Destinos por país", "Destinos registrados de un país.", "Destino", "PorPais", P(("p_pais", "España"))),
+        ("Paradas de un viaje", "Destinos de un viaje en orden.", "ParadaDestino", "PorViaje", P()),
+        ("Actividades pendientes", "Actividades que aún no se han completado.", "ParadaActividad", "Pendientes", P()),
+        ("Ubicaciones por nombre", "Busca ubicaciones y ábrelas en el mapa.", "Ubicacion", "ConNombre", P()),
+        ("Reseñas con puntuación mínima", "Reseñas con al menos N estrellas.", "Resena", "ConPuntuacionMinima", P(("p_puntuacion", "4"))),
+        ("Clientes con viajes públicos", "Usuarios que han publicado algún viaje.", "Cliente", "ConViajesPublicos", P()),
+        ("Clientes con recordatorios activos", "Usuarios con recordatorios pendientes.", "Cliente", "ConRecordatoriosActivos", P()),
+        ("Recordatorios pendientes", "Recordatorios que todavía no se han enviado.", "Recordatorio", "Pendientes", P()),
+        ("Checklists con tareas", "Listas que tienen alguna tarea.", "Checklist", "ConTareas", P()),
+        ("Tareas por estado", "Tareas hechas o por hacer.", "Tarea", "PorEstado", P(("p_completada", "false"))),
+        ("Carpetas con archivos", "Carpetas de viaje que tienen fotos o vídeos.", "Carpeta", "ConMultimedia", P()),
+        ("Multimedia por tipo", "Fotos o vídeos subidos.", "Multimedia", "DelTipo", P(("p_tipo", "foto"))),
+        ("Collages de un año", "Collages generados en un año.", "Collage", "DelAnyo", P(("p_anyo", anyoActual.ToString()))),
+        ("Estadísticas de un año", "Estadísticas calculadas para un año.", "Estadisticas", "DelAnyo", P(("p_anyo", anyoActual.ToString()))),
+        ("Países visitados", "Países que se colorean en tu mapa.", "Estadisticas", "PaisesColoreados", P())
+    };
+}
+
+<div class="container py-2" style="max-width: 700px;">
+    <partial name="_TopBar" />
+
+    <h1 class="h4 fw-semibold mb-1"><i class="bi bi-funnel me-2"></i>Consultas y filtros</h1>
+    <p class="text-muted small mb-3">Accesos a las consultas (operaciones readFilter) de Odyss. Dentro de cada una puedes cambiar el filtro.</p>
+
+    <div class="list-group">
+        @foreach (var c in consultas)
+        {
+            <a asp-controller="@c.Controlador" asp-action="@c.Accion" asp-all-route-data="c.Parametros"
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold small">@c.Titulo</div>
+                    <div class="text-muted" style="font-size: .8rem;">@c.Descripcion</div>
+                </div>
+                <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+        }
+    </div>
+</div>

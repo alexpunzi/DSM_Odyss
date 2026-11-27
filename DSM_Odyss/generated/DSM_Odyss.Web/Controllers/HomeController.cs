@@ -93,6 +93,10 @@ public sealed class HomeController : Controller
 
     public IActionResult Privacy() => View();
 
+    // Página con enlaces a todas las consultas (operaciones readFilter) de la aplicación.
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public IActionResult Consultas() => View();
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error() =>
         View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

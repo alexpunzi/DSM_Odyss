@@ -26,11 +26,25 @@
                 </select>
             </form>
 
+            @* customTransaction recalcularEstadisticas *@
+            <form asp-action="RecalcularEstadisticas" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="p_oid" value="@Model.Id" />
+                <button type="submit" class="btn btn-outline-dark rounded-pill px-3" title="Vuelve a calcular las estadísticas con tus viajes actuales">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Recalcular
+                </button>
+            </form>
+
             <button type="button" class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#passportRecapModal">
                 Passport Recap @(Model.Anyo ?? DateTime.Now.Year)
             </button>
         </div>
     </div>
+
+    @if (TempData["EstadisticasMensaje"] is string mensajeEstadisticas)
+    {
+        <div class="alert alert-success py-2 small rounded-3">@mensajeEstadisticas</div>
+    }
 
     @if (!string.IsNullOrWhiteSpace(Model.MensajePassportRecap))
     {

@@ -285,7 +285,7 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ConRecordatoriosActivos()
     {
-    /*PROTECTED REGION ID(ClienteController_ConRecordatoriosActivos_GET_body) START*/
+    /*PROTECTED REGION ID(ClienteController_ConRecordatoriosActivos_GET_body) ENABLED START*/
 
         var result = await _clienteService.ConRecordatoriosActivosAsync();
         var items = result.Select(ClienteAssembler.ToViewModel).ToList();
@@ -299,7 +299,7 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ConViajesPublicos()
     {
-    /*PROTECTED REGION ID(ClienteController_ConViajesPublicos_GET_body) START*/
+    /*PROTECTED REGION ID(ClienteController_ConViajesPublicos_GET_body) ENABLED START*/
 
         var result = await _clienteService.ConViajesPublicosAsync();
         var items = result.Select(ClienteAssembler.ToViewModel).ToList();

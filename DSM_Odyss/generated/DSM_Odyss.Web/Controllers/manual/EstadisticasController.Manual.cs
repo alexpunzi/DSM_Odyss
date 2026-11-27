@@ -27,11 +27,20 @@ public partial class EstadisticasController
     {
     /*PROTECTED REGION ID(EstadisticasController_RecalcularEstadisticas_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        // Vista: botón "Recalcular" en la página de estadísticas (solo sus propias estadísticas).
+        if (!int.TryParse(User.Identity?.Name, out var clienteId)) return Challenge();
         await using var unitOfWork = _useCaseUnitOfWorkFactory.Create();
+        var cliente = await unitOfWork.ClienteRepository.ReadAsync(clienteId);
+        var estadisticas = cliente?.Estadisticas.FirstOrDefault(e => e.Id == p_oid);
+        if (estadisticas is null) return Forbid();
+        var anyo = estadisticas.Anyo;
+
+        // customTransaction: se ejecuta con el caso de uso, dentro de una transacción.
         var useCase = new DSM_Odyss.Application.UseCases.Estadisticas.EstadisticasUseCase(unitOfWork);
         await useCase.RecalcularEstadisticasAsync(p_oid);
-        return NoContent();
+
+        TempData["EstadisticasMensaje"] = "Estadísticas recalculadas con tus viajes actuales.";
+        return RedirectToAction(nameof(Index), new { anyo });
     /*PROTECTED REGION END*/
     }
 

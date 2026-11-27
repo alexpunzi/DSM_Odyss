@@ -225,7 +225,7 @@ public partial class ParadaDestinoController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> PorViaje(int p_viaje_oid)
     {
-    /*PROTECTED REGION ID(ParadaDestinoController_PorViaje_GET_body) START*/
+    /*PROTECTED REGION ID(ParadaDestinoController_PorViaje_GET_body) ENABLED START*/
 
         var result = p_viaje_oid > 0
             ? await _paradaDestinoService.PorViajeAsync(p_viaje_oid)

@@ -7,6 +7,9 @@ using DSM_Odyss.Application.Services;
 using DSM_Odyss.Web.Assemblers;
 
 using DSM_Odyss.Domain.Enums;
+using Microsoft.Extensions.DependencyInjection;
+using DSM_Odyss.Application.Abstractions;
+using DSM_Odyss.Application.UseCases.Checklist;
 /*PROTECTED REGION END*/
 
 namespace DSM_Odyss.Web.Controllers;
@@ -27,9 +30,16 @@ public partial class ChecklistController
     {
     /*PROTECTED REGION ID(ChecklistController_VaciarChecklist_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _checklistService.VaciarChecklistAsync(p_oid);
-        return NoContent();
+        // Vista: botón "Vaciar lista" en el detalle del checklist (solo el propietario).
+        if (!await EsMiChecklistAsync(p_oid)) return NotFound();
+
+        // customTransaction: se ejecuta con el caso de uso, dentro de una transacción.
+        var unitOfWorkFactory = HttpContext.RequestServices.GetRequiredService<IUnitOfWorkFactory>();
+        await using var unitOfWork = unitOfWorkFactory.Create();
+        await new ChecklistUseCase(unitOfWork).VaciarChecklistAsync(p_oid);
+
+        TempData["ChecklistMensaje"] = "Se han eliminado todas las tareas de la lista.";
+        return RedirectToAction(nameof(Details), new { id = p_oid });
     /*PROTECTED REGION END*/
     }
 }

@@ -162,7 +162,7 @@ public partial class UbicacionController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ConNombre(string p_nombre)
     {
-    /*PROTECTED REGION ID(UbicacionController_ConNombre_GET_body) START*/
+    /*PROTECTED REGION ID(UbicacionController_ConNombre_GET_body) ENABLED START*/
 
         var nombre = p_nombre?.Trim() ?? string.Empty;
         var result = string.IsNullOrEmpty(nombre)

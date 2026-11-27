@@ -7,7 +7,7 @@ namespace DSM_Odyss.Web.ViewModels;
 
 public sealed class ViajeViewModel : IValidatableObject
 {
-    /*PROTECTED REGION ID(ViajeViewModel_generated) START*/
+    /*PROTECTED REGION ID(ViajeViewModel_generated) ENABLED START*/
     [Key]
     public int Id { get; set; }
 

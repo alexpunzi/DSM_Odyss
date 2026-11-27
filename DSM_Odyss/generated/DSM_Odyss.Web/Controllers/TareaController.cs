@@ -162,7 +162,7 @@ public partial class TareaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> PorEstado(bool p_completada)
     {
-    /*PROTECTED REGION ID(TareaController_PorEstado_GET_body) START*/
+    /*PROTECTED REGION ID(TareaController_PorEstado_GET_body) ENABLED START*/
 
         var result = await _tareaService.PorEstadoAsync(p_completada);
         var items = result.Select(TareaAssembler.ToViewModel).ToList();

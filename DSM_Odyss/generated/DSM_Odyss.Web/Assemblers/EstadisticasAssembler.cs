@@ -5,7 +5,7 @@ namespace DSM_Odyss.Web.Assemblers;
 
 public static class EstadisticasAssembler
 {
-    /*PROTECTED REGION ID(EstadisticasAssembler_method_ToViewModel) START*/
+    /*PROTECTED REGION ID(EstadisticasAssembler_method_ToViewModel) ENABLED START*/
     public static DSM_Odyss.Web.ViewModels.EstadisticasViewModel ToViewModel(Estadisticas entity) =>
         new()
         {
@@ -17,7 +17,7 @@ public static class EstadisticasAssembler
         };
     /*PROTECTED REGION END*/
 
-    /*PROTECTED REGION ID(EstadisticasAssembler_method_ApplyToEntity) START*/
+    /*PROTECTED REGION ID(EstadisticasAssembler_method_ApplyToEntity) ENABLED START*/
     public static void ApplyToEntity(DSM_Odyss.Web.ViewModels.EstadisticasViewModel model, Estadisticas entity)
     {
         ArgumentNullException.ThrowIfNull(model);

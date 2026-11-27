@@ -49,6 +49,11 @@
                             <td>@item.Latitud.ToString("F4")</td>
                             <td>@item.Longitud.ToString("F4")</td>
                             <td class="text-end">
+                                <form asp-action="ConsultarUbicacionEnMapa" method="post" target="_blank" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="p_oid" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-map me-1"></i>Mapa</button>
+                                </form>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-pill">Ver</a>
                             </td>
                         </tr>

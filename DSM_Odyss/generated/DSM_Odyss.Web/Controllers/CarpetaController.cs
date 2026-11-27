@@ -1,5 +1,5 @@
 // HARIA-WEB MVC managed controller
-/*PROTECTED REGION ID(CarpetaController_usings) START*/
+/*PROTECTED REGION ID(CarpetaController_usings) ENABLED START*/
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
@@ -19,7 +19,7 @@ namespace DSM_Odyss.Web.Controllers;
 /*PROTECTED REGION END*/
 public partial class CarpetaController : Controller
 {
-    /*PROTECTED REGION ID(CarpetaController_dependencies) START*/
+    /*PROTECTED REGION ID(CarpetaController_dependencies) ENABLED START*/
     private readonly CarpetaService _carpetaService;
     private readonly ILogger<CarpetaController> _logger;
     private readonly IUnitOfWorkFactory _unitOfWorkFactory;
@@ -41,7 +41,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Index()
     {
-    /*PROTECTED REGION ID(CarpetaController_Index_GET_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Index_GET_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
 
         await using var unitOfWork = _unitOfWorkFactory.Create();
@@ -89,7 +89,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id, string? token, string? q)
     {
-    /*PROTECTED REGION ID(CarpetaController_Details_GET_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Details_GET_body) ENABLED START*/
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var context = await LoadCarpetaContextAsync(unitOfWork, id);
         if (context is null) return NotFound();
@@ -204,7 +204,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create(int viajeId)
     {
-    /*PROTECTED REGION ID(CarpetaController_Create_GET_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Create_GET_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var viaje = await unitOfWork.ViajeRepository.ReadAsync(viajeId);
@@ -228,7 +228,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Create(DSM_Odyss.Web.ViewModels.CarpetaViewModel model)
     {
-    /*PROTECTED REGION ID(CarpetaController_Create_POST_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Create_POST_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         if (!ModelState.IsValid) return View(model);
 
@@ -259,7 +259,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id)
     {
-    /*PROTECTED REGION ID(CarpetaController_Edit_GET_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Edit_GET_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var context = await LoadCarpetaContextAsync(unitOfWork, id);
@@ -275,7 +275,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Edit(int id, DSM_Odyss.Web.ViewModels.CarpetaViewModel model)
     {
-    /*PROTECTED REGION ID(CarpetaController_Edit_POST_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Edit_POST_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var context = await LoadCarpetaContextAsync(unitOfWork, id);
@@ -304,7 +304,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Delete(int id)
     {
-    /*PROTECTED REGION ID(CarpetaController_Delete_GET_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_Delete_GET_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var context = await LoadCarpetaContextAsync(unitOfWork, id);
@@ -321,7 +321,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-    /*PROTECTED REGION ID(CarpetaController_DeleteConfirmed_POST_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_DeleteConfirmed_POST_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var context = await LoadCarpetaContextAsync(unitOfWork, id);
@@ -359,7 +359,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> ConMultimedia()
     {
-    /*PROTECTED REGION ID(CarpetaController_ConMultimedia_GET_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_ConMultimedia_GET_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var allowedIds = await GetAccessibleFolderIdsAsync(unitOfWork, clientId);
@@ -379,7 +379,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> AgregarMultimedia(int p_oid, IReadOnlyList<int> p_multimedia_oid)
     {
-    /*PROTECTED REGION ID(CarpetaController_AgregarMultimedia_POST_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_AgregarMultimedia_POST_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await using var unitOfWork = _unitOfWorkFactory.Create();
@@ -397,7 +397,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> CompartirConCliente(int p_oid, IReadOnlyList<int> p_clientes_oid)
     {
-    /*PROTECTED REGION ID(CarpetaController_CompartirConCliente_POST_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_CompartirConCliente_POST_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await using var unitOfWork = _unitOfWorkFactory.Create();
@@ -423,7 +423,7 @@ public partial class CarpetaController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> DejarDeCompartirConCliente(int p_oid, IReadOnlyList<int> p_clientes_oid)
     {
-    /*PROTECTED REGION ID(CarpetaController_DejarDeCompartirConCliente_POST_body) START*/
+    /*PROTECTED REGION ID(CarpetaController_DejarDeCompartirConCliente_POST_body) ENABLED START*/
         if (!TryGetCurrentClientId(out var clientId)) return Challenge();
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await using var unitOfWork = _unitOfWorkFactory.Create();

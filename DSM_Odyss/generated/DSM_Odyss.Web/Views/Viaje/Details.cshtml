@@ -63,6 +63,9 @@
             <a asp-controller="Viaje" asp-action="Compartir" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-circle p-2" title="Compartir viaje">
                 <i class="bi bi-share fs-5"></i>
             </a>
+            <a asp-controller="Viaje" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-circle p-2" title="Editar viaje">
+                <i class="bi bi-pencil fs-5"></i>
+            </a>
             <button type="button" class="btn btn-outline-danger rounded-circle p-2" title="Borrar viaje"
                     data-bs-toggle="modal" data-bs-target="#modalBorrarViaje">
                 <i class="bi bi-trash fs-5"></i>
@@ -73,6 +76,10 @@
     @if (TempData["ViajeError"] is string errorViaje)
     {
         <div class="alert alert-danger py-2 small">@errorViaje</div>
+    }
+    @if (TempData["ViajeOk"] is string okViaje)
+    {
+        <div class="alert alert-success py-2 small">@okViaje</div>
     }
 
     @* ===== Portada: collage si existe (solo el autor), si no, imagen genérica ===== *@
@@ -126,6 +133,42 @@
         </div>
     </div>
 
+    @* ===== Gestionar viaje (solo el autor): operaciones custom y customTransaction ===== *@
+    @if (Model.EsPropietario)
+    {
+        <section class="viaje-seccion p-3 mb-3">
+            <h2 class="h6 fw-semibold mb-3"><i class="bi bi-sliders me-1"></i> Gestionar viaje</h2>
+
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                @* publicarItinerario *@
+                <form asp-controller="Viaje" asp-action="PublicarItinerario" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="esPublico" value="@(Model.EsPublico ? "false" : "true")" />
+                    <button type="submit" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                        <i class="bi @(Model.EsPublico ? "bi-lock" : "bi-globe") me-1"></i>@(Model.EsPublico ? "Hacer privado" : "Hacer público")
+                    </button>
+                </form>
+
+                @* cambiarEstadoViaje *@
+                <form asp-controller="Viaje" asp-action="CambiarEstadoViaje" asp-route-id="@Model.Id" method="post" class="d-flex align-items-center gap-1">
+                    @Html.AntiForgeryToken()
+                    <label for="nuevoEstado" class="visually-hidden">Estado del viaje</label>
+                    <select id="nuevoEstado" name="nuevoEstado" class="form-select form-select-sm rounded-pill" style="width: auto;" onchange="this.form.submit()">
+                        @foreach (var estado in Enum.GetValues<EstadoViaje>())
+                        {
+                            <option value="@estado" selected="@(Model.Estado == estado)">@TextoEstado(estado)</option>
+                        }
+                    </select>
+                </form>
+
+                @* duplicarItinerario (customTransaction) *@
+                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDuplicarViaje">
+                    <i class="bi bi-copy me-1"></i>Duplicar viaje
+                </button>
+            </div>
+        </section>
+    }
+
     @* ===== Destinos ===== *@
     @if (Model.Destinos.Any())
     {
@@ -162,9 +205,23 @@
                     @foreach (var act in dia)
                     {
                         <li class="d-flex gap-2 mb-1">
-                            <i class="bi bi-dot"></i>
-                            <div class="small">
-                                <span class="fw-medium">@act.Nombre</span>
+                            @if (Model.EsPropietario)
+                            {
+                                @* marcarActividadCompletada *@
+                                <form asp-controller="ParadaActividad" asp-action="MarcarActividadCompletada" method="post" class="pt-1">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="p_oid" value="@act.Id" />
+                                    <input type="hidden" name="p_completada" value="@(act.Completada ? "false" : "true")" />
+                                    <input type="checkbox" class="form-check-input mt-0" title="Marcar como hecha"
+                                           @(act.Completada ? "checked" : "") onchange="this.form.submit()" />
+                                </form>
+                            }
+                            else
+                            {
+                                <i class="bi bi-dot"></i>
+                            }
+                            <div class="small flex-grow-1">
+                                <span class="fw-medium @(act.Completada ? "text-decoration-line-through text-muted" : "")">@act.Nombre</span>
                                 @if (!string.IsNullOrWhiteSpace(act.Horario))
                                 {
                                     <span class="text-muted ms-1"><i class="bi bi-clock me-1"></i>@act.Horario</span>
@@ -172,6 +229,23 @@
                                 @if (!string.IsNullOrWhiteSpace(act.Detalles))
                                 {
                                     <div class="text-muted">@act.Detalles</div>
+                                }
+                                @if (Model.EsPropietario)
+                                {
+                                    @* reordenarHorario *@
+                                    <a class="text-muted" style="font-size: .75rem;" data-bs-toggle="collapse" href="#mover-@act.Id" role="button" aria-expanded="false">
+                                        <i class="bi bi-arrow-left-right me-1"></i>Cambiar día y hora
+                                    </a>
+                                    <form id="mover-@act.Id" asp-controller="ParadaActividad" asp-action="ReordenarHorario" method="post" class="collapse mt-1">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="p_oid" value="@act.Id" />
+                                        <div class="d-flex gap-1 align-items-center">
+                                            <span class="text-muted">Día</span>
+                                            <input type="number" name="p_nuevoDia" value="@act.Dia" min="1" max="@dias" class="form-control form-control-sm" style="width: 4.5rem;" required />
+                                            <input type="time" name="p_nuevoHorario" value="@(act.Horario ?? "09:00")" class="form-control form-control-sm" style="width: 7rem;" required />
+                                            <button type="submit" class="btn btn-dark btn-sm">Mover</button>
+                                        </div>
+                                    </form>
                                 }
                             </div>
                         </li>
@@ -321,6 +395,31 @@
         }
     </section>
 </div>
+
+@if (Model.EsPropietario)
+{
+    @* ===== Ventana para duplicar el viaje (customTransaction duplicarItinerario) ===== *@
+    <div class="modal fade" id="modalDuplicarViaje" tabindex="-1" aria-labelledby="modalDuplicarViajeTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form asp-controller="Viaje" asp-action="DuplicarItinerario" asp-route-id="@Model.Id" method="post" class="modal-content" style="border-radius: 14px;">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h2 class="h5 modal-title fw-semibold" id="modalDuplicarViajeTitulo"><i class="bi bi-copy me-2"></i>Duplicar viaje</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted">Se creará una copia <strong>privada</strong> y <strong>planificada</strong> con los mismos destinos y actividades (sin reseñas, fotos ni personas compartidas).</p>
+                    <label for="nuevoTitulo" class="form-label small fw-semibold">Título de la copia</label>
+                    <input type="text" id="nuevoTitulo" name="nuevoTitulo" class="form-control" value="@Model.Titulo (copia)" maxlength="100" required />
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-dark btn-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark btn-sm px-4">Duplicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
 
 <div class="modal fade" id="modalResumenViaje" tabindex="-1" aria-labelledby="modalResumenViajeTitulo" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

@@ -4,7 +4,7 @@ namespace DSM_Odyss.Web.ViewModels;
 
 public sealed class CarpetaViewModel : IValidatableObject
 {
-    /*PROTECTED REGION ID(CarpetaViewModel_generated) START*/
+    /*PROTECTED REGION ID(CarpetaViewModel_generated) ENABLED START*/
     [Key]
     public int Id { get; set; }
 

@@ -27,9 +27,12 @@ public partial class ParadaActividadController
     {
     /*PROTECTED REGION ID(ParadaActividadController_MarcarActividadCompletada_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        // Vista: casilla de cada actividad en el detalle del viaje (solo el autor).
+        var viaje = await ViajeDeActividadPropiaAsync(p_oid);
+        if (viaje is null) return Forbid();
+
         await _paradaActividadService.MarcarActividadCompletadaAsync(p_oid, p_completada);
-        return NoContent();
+        return RedirectToAction("Details", "Viaje", new { id = viaje.Id });
     /*PROTECTED REGION END*/
     }
 
@@ -41,9 +44,22 @@ public partial class ParadaActividadController
     {
     /*PROTECTED REGION ID(ParadaActividadController_ReordenarHorario_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _paradaActividadService.ReordenarHorarioAsync(p_oid, p_nuevoDia, p_nuevoHorario);
-        return NoContent();
+        // Vista: formulario "Cambiar día y hora" de cada actividad en el detalle del viaje (solo el autor).
+        var viaje = await ViajeDeActividadPropiaAsync(p_oid);
+        if (viaje is null) return Forbid();
+
+        var totalDias = (viaje.FechaFin.Date - viaje.FechaInicio.Date).Days + 1;
+        if (!ModelState.IsValid || p_nuevoDia < 1 || p_nuevoDia > totalDias)
+        {
+            TempData["ViajeError"] = $"Elige un día entre 1 y {totalDias} y una hora válida.";
+            return RedirectToAction("Details", "Viaje", new { id = viaje.Id });
+        }
+
+        // La fecha de la actividad es la del día elegido; del formulario solo nos interesa la hora.
+        var nuevoHorario = viaje.FechaInicio.Date.AddDays(p_nuevoDia - 1).Add(p_nuevoHorario.TimeOfDay);
+        await _paradaActividadService.ReordenarHorarioAsync(p_oid, p_nuevoDia, nuevoHorario);
+        TempData["ViajeOk"] = "Actividad movida.";
+        return RedirectToAction("Details", "Viaje", new { id = viaje.Id });
     /*PROTECTED REGION END*/
     }
 }

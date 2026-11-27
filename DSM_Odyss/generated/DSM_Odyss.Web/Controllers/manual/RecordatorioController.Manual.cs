@@ -27,9 +27,19 @@ public partial class RecordatorioController
     {
     /*PROTECTED REGION ID(RecordatorioController_ProgramarAviso_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        await _recordatorioService.ProgramarAvisoAsync(p_oid, p_fecha, p_hora, p_tipo);
-        return NoContent();
+        // Vista: formulario "Reprogramar aviso" en el detalle del recordatorio (solo el propietario).
+        if (!await EsMiRecordatorioAsync(p_oid)) return NotFound();
+        if (!ModelState.IsValid)
+        {
+            TempData["RecordatorioError"] = "Indica una fecha y una hora válidas.";
+            return RedirectToAction(nameof(Details), new { id = p_oid });
+        }
+
+        // La hora se guarda sobre la fecha elegida (del campo hora solo nos interesa la hora).
+        var hora = p_fecha.Date.Add(p_hora.TimeOfDay);
+        await _recordatorioService.ProgramarAvisoAsync(p_oid, p_fecha, hora, p_tipo);
+        TempData["RecordatorioOk"] = "Aviso reprogramado. Volverá a avisarte en la nueva fecha.";
+        return RedirectToAction(nameof(Details), new { id = p_oid });
     /*PROTECTED REGION END*/
     }
 

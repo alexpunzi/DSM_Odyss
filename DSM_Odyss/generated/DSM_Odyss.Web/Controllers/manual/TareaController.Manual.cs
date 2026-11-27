@@ -7,6 +7,7 @@ using DSM_Odyss.Application.Services;
 using DSM_Odyss.Web.Assemblers;
 
 using DSM_Odyss.Domain.Enums;
+using Microsoft.Extensions.DependencyInjection;
 /*PROTECTED REGION END*/
 
 namespace DSM_Odyss.Web.Controllers;
@@ -27,9 +28,16 @@ public partial class TareaController
     {
     /*PROTECTED REGION ID(TareaController_CambiarEstadoTarea_POST_body) ENABLED START*/
 
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        // Vista: casilla de cada tarea en el detalle del checklist (solo el propietario).
+        if (!int.TryParse(User.Identity?.Name, out var clienteId)) return Challenge();
+        var clienteService = HttpContext.RequestServices.GetRequiredService<ClienteService>();
+        var cliente = await clienteService.LeerClienteOIDAsync(clienteId);
+        var checklistId = cliente?.Checklists
+            .FirstOrDefault(c => c.Tareas.Any(t => t.Id == p_oid))?.Id;
+        if (checklistId is null) return Forbid();
+
         await _tareaService.CambiarEstadoTareaAsync(p_oid, p_completada);
-        return NoContent();
+        return RedirectToAction("Details", "Checklist", new { id = checklistId });
     /*PROTECTED REGION END*/
     }
 }
