@@ -1,168 +1,346 @@
 @model DSM_Odyss.Web.ViewModels.ViajeViewModel
+@using DSM_Odyss.Domain.Enums
 
 @{
-    ViewData["Title"] = "Detalles del viaje";
+    ViewData["Title"] = Model.Titulo;
+
+    var dias = (Model.FechaFin.Date - Model.FechaInicio.Date).Days + 1;
+
+    string TextoEstado(EstadoViaje e) => e switch
+    {
+        EstadoViaje.planificado => "Planificado",
+        EstadoViaje.enCurso => "En curso",
+        EstadoViaje.finalizado => "Finalizado",
+        _ => "Sin estado"
+    };
+    string TextoTipo(TipoViaje t) => t switch
+    {
+        TipoViaje.ocio => "Ocio",
+        TipoViaje.trabajo => "Trabajo",
+        TipoViaje.familiar => "Familiar",
+        TipoViaje.otro => "Otro",
+        _ => "Sin tipo"
+    };
+
+    // A dónde vuelve la flecha: el autor, a su perfil o a sus viajes privados; los demás, a la Home.
+    var volverController = Model.EsPropietario ? (Model.EsPublico ? "Cliente" : "Viaje") : "Home";
+    var volverAction = Model.EsPropietario ? (Model.EsPublico ? "Details" : "Index") : "Index";
 }
 
-<div class="container py-3" style="max-width: 480px;">
-    @* Cabecera igual al mockup *@
-    <div class="mb-2">
-        <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">@(Model?.Titulo ?? string.Empty)</h1>
-        <p class="text-muted small mb-2">Consulta los detalles de tu viaje</p>
-    </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    @* Flecha atrás (<) *@
-    <div class="mb-3">
-        <a asp-controller="@(User.Identity?.IsAuthenticated == true ? "Viaje" : "Home")"
-           asp-action="Index" class="text-dark text-decoration-none fs-4 d-inline-flex align-items-center" title="Volver">
-            <i class="bi bi-chevron-left"></i>
+<style>
+    .viaje-hero {
+        height: 190px; border-radius: 14px; overflow: hidden;
+        background: #f1f3f5; color: #adb5bd;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .viaje-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .viaje-seccion { border: 1px solid #dee2e6; border-radius: 14px; background: #fff; }
+    .viaje-dato { background: #f8f9fa; border-radius: 10px; }
+    .linea-destino { border-left: 2px solid #dee2e6; margin-left: .55rem; padding-left: 1rem; }
+    .estrellas-input { display: inline-flex; flex-direction: row-reverse; gap: .15rem; }
+    .estrellas-input input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .estrellas-input label { font-size: 1.7rem; color: #dee2e6; cursor: pointer; line-height: 1; }
+    .estrellas-input input:checked ~ label,
+    .estrellas-input label:hover,
+    .estrellas-input label:hover ~ label { color: #ffc107; }
+</style>
+
+<div class="container py-2" style="max-width: 550px;">
+
+    @* ===== Barra superior: volver · (editar · borrar si es tuyo) ===== *@
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <a asp-controller="@volverController" asp-action="@volverAction" class="btn btn-outline-secondary rounded-circle p-2" title="Volver">
+            <i class="bi bi-chevron-left fs-5"></i>
         </a>
-    </div>
-
-    @* Tarjeta principal con estética del mockup *@
-    <div class="card border shadow-sm mb-3" style="border-radius: 14px; border-color: #94a3b8 !important;">
-        <div class="card-body p-3 d-flex flex-column gap-3">
-
-            @* Título *@
-            <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
-                <i class="bi bi-pencil-fill text-dark"></i>
-                <span class="small fw-semibold text-dark">@(Model?.Titulo ?? string.Empty)</span>
-            </div>
-
-            @* Destinos del viaje (si existen) *@
-            @if (Model?.Destinos != null && Model.Destinos.Any())
-            {
-                <div class="border rounded-3 p-3 bg-white d-flex flex-column gap-2">
-                    <div class="small fw-semibold text-muted mb-1">Destinos</div>
-                    @foreach (var dest in Model.Destinos)
-                    {
-                        <div class="border-bottom pb-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-geo-alt text-dark"></i>
-                                    <span class="small fw-medium text-dark">
-                                        @(!string.IsNullOrWhiteSpace(dest.Ciudad) ? dest.Ciudad : $"Destino #{dest.Orden}")
-                                        @if (!string.IsNullOrWhiteSpace(dest.Pais))
-                                        {
-                                            <span class="text-muted">(@dest.Pais)</span>
-                                        }
-                                    </span>
-                                </div>
-                                <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">#@dest.Orden</span>
-                            </div>
-                            <div class="mt-1 ps-4 small text-muted">
-                                @dest.FechaLlegada.ToString("dd/MM/yyyy") — @dest.FechaSalida.ToString("dd/MM/yyyy")
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
-
-            @* Fechas *@
-            <div class="border rounded-3 px-3 py-2 d-flex align-items-center gap-2 bg-light">
-                <i class="bi bi-calendar-event text-dark"></i>
-                <span class="small text-dark">De: @(Model?.FechaInicio.ToString("dd/MM/yyyy")) — Hasta: @(Model?.FechaFin.ToString("dd/MM/yyyy"))</span>
-            </div>
-
-            @* Presupuesto *@
-            <div class="border rounded-3 px-3 py-2 d-flex align-items-center justify-content-between bg-light">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-cash-stack text-dark"></i>
-                    <span class="small text-dark">Presupuesto total</span>
-                </div>
-                <span class="small fw-semibold text-dark">@((Model?.Presupuesto ?? 0f).ToString("0.##")) €</span>
-            </div>
-
-            @* Paradas / Actividades (si existen) *@
-            @if (Model?.Paradas != null && Model.Paradas.Any())
-            {
-                <div class="border rounded-3 p-3 bg-white d-flex flex-column gap-2">
-                    <div class="small fw-semibold text-muted mb-1">Paradas / Actividades</div>
-                    @foreach (var parada in Model.Paradas)
-                    {
-                        <div class="border-bottom pb-2 last-child-no-border">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-bank text-dark"></i>
-                                    <span class="small fw-medium text-dark">@parada.Nombre</span>
-                                </div>
-                                <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">@parada.Dia Día</span>
-                            </div>
-                            @if (!string.IsNullOrWhiteSpace(parada.Horario) || !string.IsNullOrWhiteSpace(parada.Detalles))
-                            {
-                                <div class="mt-1 ps-4 small text-muted">
-                                    @if (!string.IsNullOrWhiteSpace(parada.Horario))
-                                    {
-                                        <span class="me-2"><i class="bi bi-clock me-1"></i>@parada.Horario</span>
-                                    }
-                                    @if (!string.IsNullOrWhiteSpace(parada.Detalles))
-                                    {
-                                        <span>@parada.Detalles</span>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-
-            @* Metadatos del viaje *@
-            <div class="px-1 small text-muted d-flex flex-column gap-1">
-                <div class="d-flex justify-content-between">
-                    <span>Tipo de viaje:</span>
-                    <span class="fw-medium text-dark">@Html.DisplayFor(model => model.TipoViaje)</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Estado:</span>
-                    <span class="fw-medium text-dark">@Html.DisplayFor(model => model.Estado)</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Visibilidad:</span>
-                    <span class="fw-medium text-dark">@((Model?.EsPublico ?? false) ? "Viaje público" : "Privado")</span>
-                </div>
-                @if (Model?.EsPropietario == true && Model.CarpetasId is int carpetaId)
-                {
-                    <div class="d-flex justify-content-between">
-                        <span>Carpeta:</span>
-                        <a asp-controller="Carpeta" asp-action="Details" asp-route-id="@carpetaId" class="fw-medium">
-                            @(Model.CarpetasLabel ?? "Abrir carpeta de viaje")
-                        </a>
-                    </div>
-                }
-                else if (Model?.EsPropietario == true)
-                {
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>Carpeta de recuerdos:</span>
-                        <a asp-controller="Carpeta" asp-action="Create" asp-route-viajeId="@Model.Id" class="btn btn-sm btn-outline-primary">
-                            Crear carpeta
-                        </a>
-                    </div>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model?.CollagesLabel))
-                {
-                    <div class="d-flex justify-content-between">
-                        <span>Collage:</span>
-                        <span class="fw-medium text-dark">@Model.CollagesLabel</span>
-                    </div>
-                }
-            </div>
-
-        </div>
-    </div>
-
-    @* Botones inferiores *@
-    <div class="d-flex justify-content-end gap-2">
-        @if (User.Identity?.IsAuthenticated == true)
+        <div class="flex-grow-1"></div>
+        @if (Model.EsPropietario)
         {
-            <a asp-controller="Viaje" asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver</a>
-            <a asp-controller="Viaje" asp-action="Edit" asp-route-id="@(Model?.Id ?? 0)" class="btn btn-secondary btn-sm px-4 py-1 fw-medium"
-               style="background-color: #cbd5e1; border-color: #64748b; color: #1e293b; border-radius: 6px;">
-                Editar
+            <a asp-controller="Viaje" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-circle p-2" title="Editar viaje">
+                <i class="bi bi-pencil fs-5"></i>
             </a>
+            <button type="button" class="btn btn-outline-danger rounded-circle p-2" title="Borrar viaje"
+                    data-bs-toggle="modal" data-bs-target="#modalBorrarViaje">
+                <i class="bi bi-trash fs-5"></i>
+            </button>
+        }
+    </div>
+
+    @if (TempData["ViajeError"] is string errorViaje)
+    {
+        <div class="alert alert-danger py-2 small">@errorViaje</div>
+    }
+
+    @* ===== Portada: collage si existe (solo el autor), si no, imagen genérica ===== *@
+    <div class="viaje-hero mb-3">
+        @if (Model.EsPropietario && !string.IsNullOrWhiteSpace(Model.CollageUrl))
+        {
+            <img src="@Model.CollageUrl" alt="Collage de @Model.Titulo" />
         }
         else
         {
-            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark btn-sm px-3 py-1" style="border-radius: 6px;">Volver al inicio</a>
+            <i class="bi bi-image" style="font-size: 3.5rem;"></i>
         }
     </div>
+
+    @* ===== Título, autor y etiquetas ===== *@
+    <h1 class="h3 fw-bold mb-1" style="color: #1e293b;">@Model.Titulo</h1>
+    @if (!Model.EsPropietario)
+    {
+        <div class="text-muted small mb-2">por <span class="fw-semibold">@@@Model.AutorUsername</span></div>
+    }
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        @if (Model.EsPropietario)
+        {
+            <span class="badge rounded-pill text-bg-light border">
+                <i class="bi @(Model.EsPublico ? "bi-globe" : "bi-lock") me-1"></i>@(Model.EsPublico ? "Público" : "Privado")
+            </span>
+        }
+        <span class="badge rounded-pill text-bg-light border"><i class="bi bi-flag me-1"></i>@TextoEstado(Model.Estado)</span>
+        <span class="badge rounded-pill text-bg-light border"><i class="bi bi-tag me-1"></i>@TextoTipo(Model.TipoViaje)</span>
+    </div>
+
+    @* ===== Datos rápidos: fechas · duración · presupuesto ===== *@
+    <div class="row g-2 mb-3 text-center">
+        <div class="col-5">
+            <div class="viaje-dato p-2 h-100">
+                <i class="bi bi-calendar-event"></i>
+                <div class="small fw-semibold">@Model.FechaInicio.ToString("dd/MM/yy") – @Model.FechaFin.ToString("dd/MM/yy")</div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="viaje-dato p-2 h-100">
+                <i class="bi bi-hourglass-split"></i>
+                <div class="small fw-semibold">@dias @(dias == 1 ? "día" : "días")</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="viaje-dato p-2 h-100">
+                <i class="bi bi-cash-stack"></i>
+                <div class="small fw-semibold">@Model.Presupuesto.ToString("0.##") €</div>
+            </div>
+        </div>
+    </div>
+
+    @* ===== Destinos ===== *@
+    @if (Model.Destinos.Any())
+    {
+        <section class="viaje-seccion p-3 mb-3">
+            <h2 class="h6 fw-semibold mb-3"><i class="bi bi-geo-alt me-1"></i> Destinos</h2>
+            @foreach (var dest in Model.Destinos.OrderBy(d => d.Orden))
+            {
+                <div class="d-flex gap-2">
+                    <span class="badge rounded-circle bg-dark d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 1.3rem; height: 1.3rem; font-size: .7rem;">@dest.Orden</span>
+                    <div class="small fw-semibold">
+                        @(!string.IsNullOrWhiteSpace(dest.Ciudad) ? dest.Ciudad : "Destino")
+                        @if (!string.IsNullOrWhiteSpace(dest.Pais))
+                        {
+                            <span class="text-muted fw-normal">· @dest.Pais</span>
+                        }
+                    </div>
+                </div>
+                <div class="linea-destino small text-muted pb-3">
+                    @dest.FechaLlegada.ToString("dd/MM") – @dest.FechaSalida.ToString("dd/MM")
+                </div>
+            }
+        </section>
+    }
+
+    @* ===== Actividades agrupadas por día ===== *@
+    @if (Model.Paradas.Any(p => !string.IsNullOrWhiteSpace(p.Nombre)))
+    {
+        <section class="viaje-seccion p-3 mb-3">
+            <h2 class="h6 fw-semibold mb-3"><i class="bi bi-list-check me-1"></i> Actividades</h2>
+            @foreach (var dia in Model.Paradas.Where(p => !string.IsNullOrWhiteSpace(p.Nombre)).GroupBy(p => p.Dia).OrderBy(g => g.Key))
+            {
+                <div class="small fw-semibold text-muted text-uppercase mb-1" style="font-size: .7rem;">Día @dia.Key</div>
+                <ul class="list-unstyled mb-3">
+                    @foreach (var act in dia)
+                    {
+                        <li class="d-flex gap-2 mb-1">
+                            <i class="bi bi-dot"></i>
+                            <div class="small">
+                                <span class="fw-medium">@act.Nombre</span>
+                                @if (!string.IsNullOrWhiteSpace(act.Horario))
+                                {
+                                    <span class="text-muted ms-1"><i class="bi bi-clock me-1"></i>@act.Horario</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(act.Detalles))
+                                {
+                                    <div class="text-muted">@act.Detalles</div>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    }
+
+    @* ===== Recuerdos (solo el autor): carpeta y collage ===== *@
+    @if (Model.EsPropietario)
+    {
+        <section class="viaje-seccion p-3 mb-3">
+            <h2 class="h6 fw-semibold mb-3"><i class="bi bi-images me-1"></i> Recuerdos</h2>
+
+            @* Carpeta *@
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <i class="bi bi-folder-fill text-warning" style="font-size: 2.2rem;"></i>
+                <div class="flex-grow-1">
+                    <div class="small fw-semibold">Carpeta de viaje</div>
+                    <div class="text-muted" style="font-size: .75rem;">
+                        @(Model.CarpetasId is null ? "Aún no has creado la carpeta de este viaje." : $"{Model.TotalArchivosCarpeta} archivos")
+                    </div>
+                </div>
+                @if (Model.CarpetasId is int carpetaId)
+                {
+                    <a asp-controller="Carpeta" asp-action="Details" asp-route-id="@carpetaId" class="btn btn-outline-dark btn-sm rounded-pill px-3">Abrir</a>
+                }
+                else
+                {
+                    <a asp-controller="Carpeta" asp-action="Create" asp-route-viajeId="@Model.Id" class="btn btn-dark btn-sm rounded-pill px-3">
+                        <i class="bi bi-plus-lg me-1"></i>Crear
+                    </a>
+                }
+            </div>
+
+            @* Collage: se genera automáticamente con las fotos de la carpeta *@
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-grid-3x2-gap-fill text-secondary" style="font-size: 2.2rem;"></i>
+                <div class="flex-grow-1">
+                    <div class="small fw-semibold">Collage del viaje</div>
+                    <div class="text-muted" style="font-size: .75rem;">
+                        @if (!string.IsNullOrWhiteSpace(Model.CollageUrl))
+                        {
+                            <text>Ya tienes collage: es la portada de este viaje.</text>
+                        }
+                        else if (Model.CarpetasId is null)
+                        {
+                            <text>Crea la carpeta y sube fotos para generarlo.</text>
+                        }
+                        else
+                        {
+                            <text>Se genera solo al abrir la carpeta cuando tiene fotos.</text>
+                        }
+                    </div>
+                </div>
+                @if (Model.CarpetasId is int carpetaCollageId)
+                {
+                    <a asp-controller="Carpeta" asp-action="Details" asp-route-id="@carpetaCollageId" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                        @(string.IsNullOrWhiteSpace(Model.CollageUrl) ? "Generar" : "Ver")
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    @* ===== Reseñas ===== *@
+    <section class="viaje-seccion p-3 mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="h6 fw-semibold mb-0"><i class="bi bi-star me-1"></i> Reseñas</h2>
+            @if (Model.PuntuacionMedia is double mediaPuntos)
+            {
+                <span class="small"><i class="bi bi-star-fill text-warning me-1"></i><span class="fw-semibold">@mediaPuntos.ToString("0.0")</span> <span class="text-muted">(@Model.ResenasViaje.Count)</span></span>
+            }
+        </div>
+
+        @if (TempData["ResenaError"] is string errorResena)
+        {
+            <div class="alert alert-danger py-2 small">@errorResena</div>
+        }
+        @if (TempData["ResenaOk"] is string okResena)
+        {
+            <div class="alert alert-success py-2 small">@okResena</div>
+        }
+
+        @* Formulario: solo usuarios con sesión, que no son el autor y que aún no han reseñado *@
+        @if (Model.PuedeResenar)
+        {
+            <form asp-controller="Viaje" asp-action="Resenar" asp-route-id="@Model.Id" method="post" class="border rounded-3 p-3 mb-3 bg-light">
+                @Html.AntiForgeryToken()
+                <div class="small fw-semibold mb-1">¿Qué te parece este viaje?</div>
+                <div class="estrellas-input mb-2" role="radiogroup" aria-label="Puntuación">
+                    @for (var i = 5; i >= 1; i--)
+                    {
+                        <input type="radio" name="puntuacion" id="estrella-@i" value="@i" required />
+                        <label for="estrella-@i" title="@i @(i == 1 ? "estrella" : "estrellas")"><i class="bi bi-star-fill"></i></label>
+                    }
+                </div>
+                <textarea name="comentario" rows="2" maxlength="500" class="form-control form-control-sm mb-2"
+                          placeholder="Cuéntales a los demás qué te ha parecido (opcional)"></textarea>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3">Publicar reseña</button>
+                </div>
+            </form>
+        }
+        else if (Model.YaResenado)
+        {
+            <p class="small text-muted"><i class="bi bi-check2-circle me-1"></i>Ya has reseñado este viaje.</p>
+        }
+        else if (User.Identity?.IsAuthenticated != true)
+        {
+            <p class="small text-muted">
+                <a asp-controller="Account" asp-action="Login">Inicia sesión</a> para dejar una reseña.
+            </p>
+        }
+
+        @if (!Model.ResenasViaje.Any())
+        {
+            <p class="small text-muted mb-0">Este viaje todavía no tiene reseñas.</p>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var r in Model.ResenasViaje)
+                {
+                    <div class="d-flex gap-2">
+                        <i class="bi bi-person-circle fs-4 text-secondary"></i>
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <div class="d-flex justify-content-between">
+                                <span class="small fw-semibold">@@@r.Autor</span>
+                                <span class="text-muted" style="font-size: .75rem;">@r.Fecha.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="text-warning small">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi @(i <= r.Puntuacion ? "bi-star-fill" : "bi-star")"></i>
+                                }
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(r.Comentario))
+                            {
+                                <div class="small">@r.Comentario</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
 </div>
+
+@* ===== Ventana de confirmación para borrar (solo el autor) ===== *@
+@if (Model.EsPropietario)
+{
+    <div class="modal fade" id="modalBorrarViaje" tabindex="-1" aria-labelledby="modalBorrarViajeTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 14px;">
+                <div class="modal-body p-4 text-center">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2.5rem;"></i>
+                    <h2 class="h5 fw-semibold mt-2" id="modalBorrarViajeTitulo">¿Borrar "@Model.Titulo"?</h2>
+                    <p class="small text-muted mb-0">
+                        Se borrarán también sus destinos, actividades, reseñas, la carpeta con sus fotos y el collage.
+                        Esta acción no se puede deshacer.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pt-0 pb-4">
+                    <button type="button" class="btn btn-outline-dark btn-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <form asp-controller="Viaje" asp-action="Borrar" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger btn-sm px-4">Borrar viaje</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

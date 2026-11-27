@@ -57,29 +57,37 @@
 
         @if (!Model.Resenas.Any())
         {
-            <p class="text-muted small mb-0">Todavía no has escrito ninguna reseña.</p>
+            <p class="text-muted small mb-0">Tus viajes todavía no han recibido reseñas.</p>
         }
         else
         {
             <div class="d-flex flex-column gap-2">
                 @foreach (var resena in Model.Resenas)
                 {
-                    <a asp-controller="Resena" asp-action="Details" asp-route-id="@resena.Id"
-                       class="tarjeta-enlace d-flex align-items-center gap-3 border rounded-3 p-2">
+                    <div class="d-flex align-items-center gap-3 border rounded-3 p-2">
                         <div class="imagen-vacia rounded-circle flex-shrink-0" style="width: 48px; height: 48px;">
                             <i class="bi bi-airplane fs-5"></i>
                         </div>
-                        <div style="min-width: 0;">
-                            <div class="fw-semibold small text-truncate">@resena.TituloViaje</div>
-                            <div class="text-warning small" title="@resena.Puntuacion de 5">
-                                @for (var i = 1; i <= 5; i++)
-                                {
-                                    <i class="bi @(i <= resena.Puntuacion ? "bi-star-fill" : "bi-star")"></i>
-                                }
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <div class="d-flex justify-content-between gap-2">
+                                <div class="fw-semibold small text-truncate">@resena.TituloViaje</div>
+                                <div class="text-muted text-nowrap" style="font-size: .75rem;">@resena.FechaViaje.ToString("dd/MM/yyyy")</div>
                             </div>
-                            <div class="text-muted" style="font-size: .75rem;">@resena.FechaViaje.ToString("dd/MM/yyyy")</div>
+                            <div class="small">
+                                <span class="text-warning" title="@resena.Puntuacion de 5">
+                                    @for (var i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= resena.Puntuacion ? "bi-star-fill" : "bi-star")"></i>
+                                    }
+                                </span>
+                                <span class="text-muted ms-1" style="font-size: .75rem;">por @@@resena.Autor</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(resena.Comentario))
+                            {
+                                <div class="text-muted small text-truncate">@resena.Comentario</div>
+                            }
                         </div>
-                    </a>
+                    </div>
                 }
             </div>
         }

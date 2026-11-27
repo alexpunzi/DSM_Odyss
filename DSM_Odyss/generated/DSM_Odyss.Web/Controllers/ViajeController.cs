@@ -61,23 +61,55 @@ public partial class ViajeController : Controller
     /*PROTECTED REGION END*/
     public async Task<IActionResult> Details(int id)
     {
-    /*PROTECTED REGION ID(ViajeController_Details_GET_body) START*/
-        var entity = await _viajeService.LeerViajeOIDAsync(id);
+    /*PROTECTED REGION ID(ViajeController_Details_GET_body) ENABLED START*/
+        await using var unitOfWork = _formUnitOfWorkFactory.Create();
+        var entity = await unitOfWork.ViajeRepository.ReadAsync(id);
         if (entity is null) return NotFound();
-        if (User.Identity?.IsAuthenticated != true && !entity.EsPublico) return NotFound();
 
         var model = ViajeAssembler.ToViewModel(entity);
-        if (int.TryParse(User.Identity?.Name, out var currentClientId))
+
+        // Ni Viaje ni Resena guardan su autor: lo buscamos entre los clientes.
+        var clientes = await unitOfWork.ClienteRepository.ReadAllAsync();
+        var autor = clientes.FirstOrDefault(c => c.Viajes.Any(v => v.Id == id));
+        int? usuarioId = int.TryParse(User.Identity?.Name, out var idConectado) ? idConectado : null;
+
+        model.EsPropietario = autor is not null && autor.Id == usuarioId;
+        model.AutorId = autor?.Id ?? 0;
+        model.AutorUsername = autor?.User ?? "desconocido";
+
+        // Un viaje privado solo lo puede ver su autor.
+        if (!entity.EsPublico && !model.EsPropietario) return NotFound();
+
+        // Reseñas del viaje, con el usuario que escribió cada una.
+        model.ResenasViaje = entity.Resenas
+            .OrderByDescending(r => r.Fecha)
+            .Select(r => new ResenaDeViajeItem
+            {
+                Id = r.Id,
+                Autor = clientes.FirstOrDefault(c => c.Resenas.Any(x => x.Id == r.Id))?.User ?? "anónimo",
+                Puntuacion = r.Puntuacion,
+                Comentario = r.Comentario,
+                Fecha = r.Fecha
+            })
+            .ToList();
+
+        var conectado = clientes.FirstOrDefault(c => c.Id == usuarioId);
+        model.YaResenado = conectado is not null &&
+                           conectado.Resenas.Any(r => entity.Resenas.Any(x => x.Id == r.Id));
+        model.PuedeResenar = conectado is not null && !model.EsPropietario && !model.YaResenado;
+
+        // Carpeta y collage solo para el autor.
+        if (model.EsPropietario)
         {
-            await using var unitOfWork = _formUnitOfWorkFactory.Create();
-            var client = await unitOfWork.ClienteRepository.ReadAsync(currentClientId);
-            model.EsPropietario = client?.Viajes.Any(viaje => viaje.Id == id) == true;
+            model.CollageUrl = entity.Collages?.UrlImagen;
+            model.TotalArchivosCarpeta = entity.Carpetas?.Multimedia.Count ?? 0;
         }
-        if (!model.EsPropietario)
+        else
         {
             model.CarpetasId = null;
             model.CarpetasLabel = null;
         }
+
         return View(model);
     /*PROTECTED REGION END*/
     }

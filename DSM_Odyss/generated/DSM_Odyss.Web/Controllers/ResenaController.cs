@@ -36,7 +36,7 @@ public partial class ResenaController : Controller
     {
     /*PROTECTED REGION ID(ResenaController_Index_GET_body) ENABLED START*/
 
-        // Mis reseñas: todas las del usuario conectado, de la más reciente a la más antigua.
+        // Reseñas RECIBIDAS: todas las que otros usuarios han dejado en mis viajes.
         if (!int.TryParse(User.Identity?.Name, out var clienteId))
             return RedirectToAction("Login", "Account");
 
@@ -44,26 +44,20 @@ public partial class ResenaController : Controller
         if (cliente is null)
             return RedirectToAction("Login", "Account");
 
-        // Una Resena no sabe de qué Viaje es: lo buscamos recorriendo los viajes.
-        var todosLosViajes = await _viajeService.LeerTodosViajesAsync();
-        var viajePorResena = new Dictionary<int, DSM_Odyss.Domain.Entities.Viaje>();
-        foreach (var v in todosLosViajes)
-            foreach (var r in v.Resenas)
-                viajePorResena[r.Id] = v;
+        // Para saber quién escribió cada reseña.
+        var clientes = await _clienteService.LeerTodosClientesAsync();
 
-        var model = cliente.Resenas
-            .OrderByDescending(r => r.Fecha)
-            .Select(r =>
+        var model = cliente.Viajes
+            .SelectMany(v => v.Resenas.Select(r => new { Viaje = v, Resena = r }))
+            .OrderByDescending(x => x.Resena.Fecha)
+            .Select(x => new DSM_Odyss.Web.ViewModels.PerfilResenaItem
             {
-                viajePorResena.TryGetValue(r.Id, out var viaje);
-                return new DSM_Odyss.Web.ViewModels.PerfilResenaItem
-                {
-                    Id = r.Id,
-                    TituloViaje = viaje?.Titulo ?? "Viaje desconocido",
-                    Puntuacion = r.Puntuacion,
-                    FechaViaje = viaje?.FechaInicio ?? r.Fecha,
-                    Comentario = r.Comentario
-                };
+                Id = x.Resena.Id,
+                TituloViaje = x.Viaje.Titulo,
+                Autor = clientes.FirstOrDefault(c => c.Resenas.Any(r => r.Id == x.Resena.Id))?.User ?? "anónimo",
+                Puntuacion = x.Resena.Puntuacion,
+                Comentario = x.Resena.Comentario,
+                FechaViaje = x.Viaje.FechaInicio
             })
             .ToList();
 

@@ -65,6 +65,16 @@ public sealed class ViajeViewModel : IValidatableObject
     [BindNever, ValidateNever]
     public List<SelectListItem> DestinosCatalogoOptions { get; set; } = new();
 
+        // ----- Datos extra para la vista de detalle -----
+    [BindNever, ValidateNever] public int AutorId { get; set; }
+    [BindNever, ValidateNever] public string AutorUsername { get; set; } = string.Empty;
+    [BindNever, ValidateNever] public string? CollageUrl { get; set; }
+    [BindNever, ValidateNever] public int TotalArchivosCarpeta { get; set; }
+    [BindNever, ValidateNever] public List<ResenaDeViajeItem> ResenasViaje { get; set; } = new();
+    [BindNever, ValidateNever] public bool PuedeResenar { get; set; }
+    [BindNever, ValidateNever] public bool YaResenado { get; set; }
+    public double? PuntuacionMedia => ResenasViaje.Count == 0 ? null : ResenasViaje.Average(r => r.Puntuacion);
+
     private IEnumerable<ValidationResult> ValidateAdditional(ValidationContext validationContext)
     {
         if (FechaFin < FechaInicio)
@@ -149,4 +159,13 @@ public class ParadaItemViewModel
 
     // Índice (0, 1, 2...) del destino al que pertenece la parada
     public int? DestinoIndex { get; set; }
+}
+
+public class ResenaDeViajeItem
+{
+    public int Id { get; set; }
+    public string Autor { get; set; } = string.Empty;
+    public int Puntuacion { get; set; }
+    public string Comentario { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; }
 }

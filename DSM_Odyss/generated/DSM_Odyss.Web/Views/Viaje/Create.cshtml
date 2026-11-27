@@ -249,7 +249,7 @@
 
                 @* Opciones adicionales del modelo *@
                 <details class="small text-muted">
-                    <summary>Opciones adicionales (Tipo, Estado, Carpetas, Collages)</summary>
+                    <summary>Opciones adicionales (Tipo y Estado)</summary>
                     <div class="pt-2 d-flex flex-column gap-2">
                         <div>
                             <label asp-for="TipoViaje" class="form-label mb-1">Tipo de viaje</label>
@@ -260,16 +260,6 @@
                             <label asp-for="Estado" class="form-label mb-1">Estado del viaje</label>
                             <select asp-for="Estado" asp-items="Html.GetEnumSelectList<DSM_Odyss.Domain.Enums.EstadoViaje>()" class="form-select form-select-sm"></select>
                             <span asp-validation-for="Estado" class="text-danger"></span>
-                        </div>
-                        <div>
-                            <label asp-for="CarpetasId" class="form-label mb-1"></label>
-                            <select asp-for="CarpetasId" asp-items="Model.CarpetasOptions" class="form-select form-select-sm"><option value="">Selecciona...</option></select>
-                            <span asp-validation-for="CarpetasId" class="text-danger"></span>
-                        </div>
-                        <div>
-                            <label asp-for="CollagesId" class="form-label mb-1"></label>
-                            <select asp-for="CollagesId" asp-items="Model.CollagesOptions" class="form-select form-select-sm"><option value="">Selecciona...</option></select>
-                            <span asp-validation-for="CollagesId" class="text-danger"></span>
                         </div>
                     </div>
                 </details>

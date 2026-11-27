@@ -54,12 +54,8 @@ public partial class ClienteController : Controller
         var entity = await _clienteService.LeerClienteOIDAsync(id);
         if (entity is null) return NotFound();
 
-        // Una Resena no sabe de qué Viaje es: lo buscamos recorriendo los viajes.
-        var todosLosViajes = await _viajeService.LeerTodosViajesAsync();
-        var viajePorResena = new Dictionary<int, Viaje>();
-        foreach (var v in todosLosViajes)
-            foreach (var r in v.Resenas)
-                viajePorResena[r.Id] = v;
+        // Para saber quién escribió cada reseña (una Resena no guarda su autor).
+        var clientes = await _clienteService.LeerTodosClientesAsync();
 
         var model = new DSM_Odyss.Web.ViewModels.PerfilUsuarioViewModel
         {
@@ -81,20 +77,19 @@ public partial class ClienteController : Controller
                 })
                 .ToList(),
 
-            // Reseñas recientes: las 3 últimas, con el título de su viaje.
-            Resenas = entity.Resenas
-                .OrderByDescending(r => r.Fecha)
+                        // Reseñas RECIBIDAS: las que otros usuarios han dejado en mis viajes (las 3 últimas).
+            Resenas = entity.Viajes
+                .SelectMany(v => v.Resenas.Select(r => new { Viaje = v, Resena = r }))
+                .OrderByDescending(x => x.Resena.Fecha)
                 .Take(3)
-                .Select(r =>
+                .Select(x => new DSM_Odyss.Web.ViewModels.PerfilResenaItem
                 {
-                    viajePorResena.TryGetValue(r.Id, out var viaje);
-                    return new DSM_Odyss.Web.ViewModels.PerfilResenaItem
-                    {
-                        Id = r.Id,
-                        TituloViaje = viaje?.Titulo ?? "Viaje desconocido",
-                        Puntuacion = r.Puntuacion,
-                        FechaViaje = viaje?.FechaInicio ?? r.Fecha
-                    };
+                    Id = x.Resena.Id,
+                    TituloViaje = x.Viaje.Titulo,
+                    Autor = clientes.FirstOrDefault(c => c.Resenas.Any(r => r.Id == x.Resena.Id))?.User ?? "anónimo",
+                    Puntuacion = x.Resena.Puntuacion,
+                    Comentario = x.Resena.Comentario,
+                    FechaViaje = x.Viaje.FechaInicio
                 })
                 .ToList(),
 

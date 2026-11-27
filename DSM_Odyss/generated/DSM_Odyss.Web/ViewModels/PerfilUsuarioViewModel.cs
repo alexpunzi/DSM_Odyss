@@ -25,9 +25,10 @@ public class PerfilResenaItem
 {
     public int Id { get; set; }
     public string TituloViaje { get; set; } = string.Empty;
-    public int Puntuacion { get; set; }        // de 0 a 5
-    public DateTime FechaViaje { get; set; }
+    public string Autor { get; set; } = string.Empty;        // quién escribió la reseña
+    public int Puntuacion { get; set; }                       // de 0 a 5
     public string Comentario { get; set; } = string.Empty;
+    public DateTime FechaViaje { get; set; }
 }
 
 public class PerfilCarpetaItem
