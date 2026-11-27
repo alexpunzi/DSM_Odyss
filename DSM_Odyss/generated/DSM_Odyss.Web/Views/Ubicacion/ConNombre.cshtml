@@ -1,0 +1,60 @@
+@model DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<string, DSM_Odyss.Web.ViewModels.UbicacionViewModel>
+
+@{
+    ViewData["Title"] = "Ubicaciones por nombre";
+}
+
+<div class="container py-2" style="max-width: 550px;">
+    <h2 class="h4 fw-semibold mb-3"><i class="bi bi-pin-map me-2"></i>Ubicaciones por nombre</h2>
+
+    <form asp-action="ConNombre" method="get" class="card card-body border-0 shadow-sm rounded-3 mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col">
+                <label for="p_nombre" class="form-label small fw-semibold mb-1">Nombre</label>
+                <input id="p_nombre" name="p_nombre" type="text" class="form-control form-control-sm" value="@Model.Parametro" placeholder="Buscar ubicación..." />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3">
+                    <i class="bi bi-search me-1"></i>Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (string.IsNullOrWhiteSpace(Model.Parametro))
+    {
+        <div class="alert alert-light border text-muted text-center">Introduce un nombre para buscar ubicaciones.</div>
+    }
+    else if (!Model.Resultados.Any())
+    {
+        <div class="alert alert-light border text-muted text-center">No hay ubicaciones con el nombre "@Model.Parametro".</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Latitud</th>
+                        <th>Longitud</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Resultados)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@item.Nombre</td>
+                            <td>@item.Latitud.ToString("F4")</td>
+                            <td>@item.Longitud.ToString("F4")</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-pill">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

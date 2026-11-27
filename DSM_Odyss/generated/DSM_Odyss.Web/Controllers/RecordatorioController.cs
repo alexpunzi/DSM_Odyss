@@ -258,7 +258,9 @@ public partial class RecordatorioController : Controller
     /*PROTECTED REGION ID(RecordatorioController_Pendientes_GET_body) START*/
 
         var result = await _recordatorioService.PendientesAsync();
-        return Ok(result.Select(RecordatorioAssembler.ToViewModel).ToList());
+        var items = result.Select(RecordatorioAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 

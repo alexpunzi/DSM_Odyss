@@ -49,6 +49,8 @@ public sealed partial class ParadaDestinoService : ServiceEntity<ParadaDestino>
         Destino destinoEntity = await _unitOfWork.DestinoRepository.ReadAsync(p_destino_oid)
             ?? throw new ModelException("Destino not found for ParadaDestino.Destino.");
 
+        await ValidarParadaAsync(viajeEntity, p_orden, p_fechaLlegada, p_fechaSalida);
+
         ParadaDestino entity = new ParadaDestino
         {
             Orden = p_orden,
@@ -73,6 +75,10 @@ public sealed partial class ParadaDestinoService : ServiceEntity<ParadaDestino>
     {
         ParadaDestino entity = await _repository.ReadAsync(p_oid)
             ?? throw new ModelException("ParadaDestino not found.");
+        if (entity.Viaje is not null)
+        {
+            await ValidarParadaAsync(entity.Viaje, p_orden, p_fechaLlegada, p_fechaSalida, p_oid);
+        }
         entity.Orden = p_orden;
         entity.FechaLlegada = p_fechaLlegada;
         entity.FechaSalida = p_fechaSalida;

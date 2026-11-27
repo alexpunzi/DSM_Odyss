@@ -2,6 +2,7 @@ namespace DSM_Odyss.Web.ViewModels;
 
 public sealed class HomeIndexViewModel
 {
+    public string? Busqueda { get; set; }
     public List<ViajePopularItemViewModel> ViajesPopulares { get; set; } = new();
     public List<DestinoPopularItemViewModel> TopDestinosPopulares { get; set; } = new();
 }

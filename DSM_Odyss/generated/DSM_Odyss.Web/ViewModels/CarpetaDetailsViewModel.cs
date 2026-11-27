@@ -16,6 +16,7 @@ public sealed class CarpetaDetailsViewModel
     public List<CarpetaMultimediaItemViewModel> Archivos { get; set; } = new();
     public List<CarpetaCompartidoItemViewModel> Compartidos { get; set; } = new();
     public List<CarpetaUsuarioItemViewModel> ResultadosBusqueda { get; set; } = new();
+    public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> CarpetasDestino { get; set; } = new();
 }
 
 public sealed class CarpetaMultimediaItemViewModel

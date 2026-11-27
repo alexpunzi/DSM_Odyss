@@ -240,7 +240,9 @@ public partial class ParadaActividadController : Controller
     /*PROTECTED REGION ID(ParadaActividadController_Pendientes_GET_body) START*/
 
         var result = await _paradaActividadService.PendientesAsync();
-        return Ok(result.Select(ParadaActividadAssembler.ToViewModel).ToList());
+        var items = result.Select(ParadaActividadAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 

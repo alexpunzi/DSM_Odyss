@@ -44,6 +44,7 @@ public partial class ViajeController
                 // Si la hora es 00:00 es que no se indicó horario.
                 Horario = a.Horario.TimeOfDay == TimeSpan.Zero ? null : a.Horario.ToString("HH:mm"),
                 Detalles = a.Detalles,
+                Completada = a.Completada,
                 DestinoIndex = IndiceDestino(a)
             })
             .ToList();

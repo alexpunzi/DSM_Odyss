@@ -165,7 +165,13 @@ public partial class TareaController : Controller
     /*PROTECTED REGION ID(TareaController_PorEstado_GET_body) START*/
 
         var result = await _tareaService.PorEstadoAsync(p_completada);
-        return Ok(result.Select(TareaAssembler.ToViewModel).ToList());
+        var items = result.Select(TareaAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<bool, DSM_Odyss.Web.ViewModels.TareaViewModel>
+        {
+            Parametro = p_completada,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 }

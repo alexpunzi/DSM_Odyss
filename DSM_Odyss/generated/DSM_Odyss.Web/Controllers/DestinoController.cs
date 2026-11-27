@@ -180,8 +180,17 @@ public partial class DestinoController : Controller
     {
     /*PROTECTED REGION ID(DestinoController_PorPais_GET_body) START*/
 
-        var result = await _destinoService.PorPaisAsync(p_pais);
-        return Ok(result.Select(DestinoAssembler.ToViewModel).ToList());
+        var pais = p_pais?.Trim() ?? string.Empty;
+        var result = string.IsNullOrEmpty(pais)
+            ? Array.Empty<DSM_Odyss.Domain.Entities.Destino>()
+            : await _destinoService.PorPaisAsync(pais);
+        var items = result.Select(DestinoAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<string, DSM_Odyss.Web.ViewModels.DestinoViewModel>
+        {
+            Parametro = pais,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 }

@@ -164,8 +164,17 @@ public partial class UbicacionController : Controller
     {
     /*PROTECTED REGION ID(UbicacionController_ConNombre_GET_body) START*/
 
-        var result = await _ubicacionService.ConNombreAsync(p_nombre);
-        return Ok(result.Select(UbicacionAssembler.ToViewModel).ToList());
+        var nombre = p_nombre?.Trim() ?? string.Empty;
+        var result = string.IsNullOrEmpty(nombre)
+            ? Array.Empty<DSM_Odyss.Domain.Entities.Ubicacion>()
+            : await _ubicacionService.ConNombreAsync(nombre);
+        var items = result.Select(UbicacionAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<string, DSM_Odyss.Web.ViewModels.UbicacionViewModel>
+        {
+            Parametro = nombre,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 }

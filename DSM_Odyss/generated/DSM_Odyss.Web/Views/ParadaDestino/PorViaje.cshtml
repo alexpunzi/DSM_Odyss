@@ -1,0 +1,62 @@
+@model DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<int, DSM_Odyss.Web.ViewModels.ParadaDestinoViewModel>
+
+@{
+    ViewData["Title"] = "Paradas por viaje";
+}
+
+<div class="container py-2" style="max-width: 550px;">
+    <h2 class="h4 fw-semibold mb-3"><i class="bi bi-signpost-split me-2"></i>Paradas de destino por viaje</h2>
+
+    <form asp-action="PorViaje" method="get" class="card card-body border-0 shadow-sm rounded-3 mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col">
+                <label for="p_viaje_oid" class="form-label small fw-semibold mb-1">ID del viaje</label>
+                <input id="p_viaje_oid" name="p_viaje_oid" type="number" class="form-control form-control-sm" value="@(Model.Parametro > 0 ? Model.Parametro : "")" min="1" placeholder="Ej. 1" />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3">
+                    <i class="bi bi-search me-1"></i>Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Parametro <= 0)
+    {
+        <div class="alert alert-light border text-muted text-center">Indica el ID de un viaje para consultar sus paradas.</div>
+    }
+    else if (!Model.Resultados.Any())
+    {
+        <div class="alert alert-light border text-muted text-center">No hay paradas registradas para el viaje @Model.Parametro.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Orden</th>
+                        <th>Destino</th>
+                        <th>Llegada</th>
+                        <th>Salida</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Resultados)
+                    {
+                        <tr>
+                            <td>@item.Orden</td>
+                            <td class="fw-semibold">@(item.DestinoLabel ?? $"Destino #{item.DestinoId}")</td>
+                            <td>@item.FechaLlegada.ToString("dd/MM/yyyy")</td>
+                            <td>@item.FechaSalida.ToString("dd/MM/yyyy")</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-pill">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

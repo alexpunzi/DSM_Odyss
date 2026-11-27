@@ -101,6 +101,7 @@ public partial class ViajeController : Controller
         model.PuedeResenar = conectado is not null && !model.EsPropietario && !model.YaResenado;
 
         // Carpeta y collage solo para el autor.
+        model.TotalFotosCarpeta = entity.Carpetas?.Multimedia.Count(m => m.Tipo == DSM_Odyss.Domain.Enums.TipoMultimedia.foto) ?? 0;
         if (model.EsPropietario)
         {
             model.CollageUrl = entity.Collages?.UrlImagen;
@@ -292,7 +293,9 @@ public partial class ViajeController : Controller
             return View(model);
         }
 
-        return RedirectToAction("Index", "Destino");
+        return model.EsPublico
+            ? RedirectToAction("Details", "Cliente")
+            : RedirectToAction(nameof(Index));
     /*PROTECTED REGION END*/
     }
 
@@ -415,7 +418,9 @@ public partial class ViajeController : Controller
     {
     /*PROTECTED REGION ID(ViajeController_ViajesPublicos_GET_body) START*/
         var result = await _viajeService.ViajesPublicosAsync();
-        return Ok(result.Select(ViajeAssembler.ToViewModel).ToList());
+        var items = result.Select(ViajeAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 
@@ -426,7 +431,13 @@ public partial class ViajeController : Controller
     {
     /*PROTECTED REGION ID(ViajeController_ViajesPorEstado_GET_body) START*/
         var result = await _viajeService.ViajesPorEstadoAsync(p_estado);
-        return Ok(result.Select(ViajeAssembler.ToViewModel).ToList());
+        var items = result.Select(ViajeAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<EstadoViaje, ViajeViewModel>
+        {
+            Parametro = p_estado,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 

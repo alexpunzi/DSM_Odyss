@@ -1,0 +1,56 @@
+@model DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<int, DSM_Odyss.Web.ViewModels.ResenaViewModel>
+
+@{
+    ViewData["Title"] = "Reseñas por puntuación mínima";
+}
+
+<div class="container py-2" style="max-width: 550px;">
+    <h2 class="h4 fw-semibold mb-3"><i class="bi bi-star-fill me-2"></i>Reseñas por puntuación mínima</h2>
+
+    <form asp-action="ConPuntuacionMinima" method="get" class="card card-body border-0 shadow-sm rounded-3 mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col">
+                <label for="p_puntuacion" class="form-label small fw-semibold mb-1">Puntuación mínima (1-5)</label>
+                <input id="p_puntuacion" name="p_puntuacion" type="number" class="form-control form-control-sm" value="@Model.Parametro" min="1" max="5" />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3">
+                    <i class="bi bi-search me-1"></i>Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (!Model.Resultados.Any())
+    {
+        <div class="alert alert-light border text-muted text-center">No hay reseñas con puntuación igual o superior a @Model.Parametro.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Puntuación</th>
+                        <th>Comentario</th>
+                        <th>Fecha</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Resultados)
+                    {
+                        <tr>
+                            <td><span class="badge text-bg-warning text-dark">@item.Puntuacion ★</span></td>
+                            <td>@item.Comentario</td>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-pill">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

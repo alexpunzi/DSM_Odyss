@@ -167,8 +167,15 @@ public partial class CollageController : Controller
     {
     /*PROTECTED REGION ID(CollageController_DelAnyo_GET_body) START*/
 
-        var result = await _collageService.DelAnyoAsync(p_anyo);
-        return Ok(result.Select(CollageAssembler.ToViewModel).ToList());
+        var anyo = p_anyo > 0 ? p_anyo : DateTime.Now.Year;
+        var result = await _collageService.DelAnyoAsync(anyo);
+        var items = result.Select(CollageAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<int, DSM_Odyss.Web.ViewModels.CollageViewModel>
+        {
+            Parametro = anyo,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 }

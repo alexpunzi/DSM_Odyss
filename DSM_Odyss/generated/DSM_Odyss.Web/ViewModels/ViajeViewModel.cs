@@ -70,6 +70,7 @@ public sealed class ViajeViewModel : IValidatableObject
     [BindNever, ValidateNever] public string AutorUsername { get; set; } = string.Empty;
     [BindNever, ValidateNever] public string? CollageUrl { get; set; }
     [BindNever, ValidateNever] public int TotalArchivosCarpeta { get; set; }
+    [BindNever, ValidateNever] public int TotalFotosCarpeta { get; set; }
     [BindNever, ValidateNever] public List<ResenaDeViajeItem> ResenasViaje { get; set; } = new();
     [BindNever, ValidateNever] public bool PuedeResenar { get; set; }
     [BindNever, ValidateNever] public bool YaResenado { get; set; }
@@ -156,6 +157,7 @@ public class ParadaItemViewModel
     public string? Horario { get; set; }
     public string? Detalles { get; set; }
     public float Coste { get; set; }
+    public bool Completada { get; set; }
 
     // Índice (0, 1, 2...) del destino al que pertenece la parada
     public int? DestinoIndex { get; set; }

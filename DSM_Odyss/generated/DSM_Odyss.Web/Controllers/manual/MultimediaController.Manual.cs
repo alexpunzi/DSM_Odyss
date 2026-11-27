@@ -37,12 +37,17 @@ public partial class MultimediaController
     [ValidateAntiForgeryToken]
     /*PROTECTED REGION ID(MultimediaController_MoverDeCarpeta_POST_attributes) START*/
     /*PROTECTED REGION END*/
-    public async Task<IActionResult> MoverDeCarpeta(int p_oid, int p_nuevaCarpeta_oid)
+    public async Task<IActionResult> MoverDeCarpeta(int p_oid, int p_nuevaCarpeta_oid, int? carpetaOrigenId = null)
     {
     /*PROTECTED REGION ID(MultimediaController_MoverDeCarpeta_POST_body) ENABLED START*/
 
         if (!ModelState.IsValid) return BadRequest(ModelState);
         await _multimediaService.MoverDeCarpetaAsync(p_oid, p_nuevaCarpeta_oid);
+        if (carpetaOrigenId.HasValue)
+        {
+            TempData["CarpetaMensaje"] = "Archivo movido a la carpeta seleccionada.";
+            return RedirectToAction("Details", "Carpeta", new { id = carpetaOrigenId.Value });
+        }
         return NoContent();
     /*PROTECTED REGION END*/
     }

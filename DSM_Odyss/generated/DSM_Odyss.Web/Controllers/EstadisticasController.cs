@@ -103,7 +103,8 @@ public partial class EstadisticasController : Controller
         }
 
         var paises = await _estadisticasService.ObtenerPaisesColoreadosAsync(estadisticas.Id);
-        return Ok(paises);
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(paises);
+        return View(paises.ToList());
     /*PROTECTED REGION END*/
     }
 
@@ -231,8 +232,15 @@ public partial class EstadisticasController : Controller
     public async Task<IActionResult> DelAnyo(int p_anyo)
     {
     /*PROTECTED REGION ID(EstadisticasController_DelAnyo_GET_body) START*/
-        var result = await _estadisticasService.DelAnyoAsync(p_anyo);
-        return Ok(result.Select(EstadisticasAssembler.ToViewModel).ToList());
+        var anyo = p_anyo > 0 ? p_anyo : DateTime.Now.Year;
+        var result = await _estadisticasService.DelAnyoAsync(anyo);
+        var items = result.Select(EstadisticasAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<int, DSM_Odyss.Web.ViewModels.EstadisticasViewModel>
+        {
+            Parametro = anyo,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 

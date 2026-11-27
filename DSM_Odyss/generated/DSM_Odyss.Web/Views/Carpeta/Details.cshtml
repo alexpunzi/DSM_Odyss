@@ -60,6 +60,10 @@
     {
         <div class="alert alert-danger" role="alert">@error</div>
     }
+    @if (TempData["CarpetaMensaje"] is string mensaje)
+    {
+        <div class="alert alert-success py-2 small" role="status">@mensaje</div>
+    }
 
     @if (!string.IsNullOrWhiteSpace(Model.CollageUrl) || Model.AutoGenerateCollage)
     {
@@ -111,12 +115,31 @@
                             }
                             else
                             {
-                                <a href="@archivo.Url" target="_blank" rel="noopener" aria-label="Abrir @archivo.Nombre">
+                                <button type="button" class="btn p-0 border-0 w-100 h-100 js-gallery-item"
+                                        data-url="@archivo.Url" data-nombre="@archivo.Nombre"
+                                        aria-label="Abrir @archivo.Nombre">
                                     <img src="@archivo.Url" alt="@archivo.Nombre" class="w-100 h-100 object-fit-cover" loading="lazy" data-collage-source="true" />
-                                </a>
+                                </button>
                             }
                         </div>
                         <div class="small text-truncate mt-1" title="@archivo.Nombre">@archivo.Nombre</div>
+                        @if (Model.PuedeEditar && Model.CarpetasDestino.Count > 0)
+                        {
+                            <form asp-controller="Multimedia" asp-action="MoverDeCarpeta" method="post" class="d-flex gap-1 mt-1">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="p_oid" value="@archivo.Id" />
+                                <input type="hidden" name="carpetaOrigenId" value="@Model.Id" />
+                                <select name="p_nuevaCarpeta_oid" class="form-select form-select-sm" aria-label="Mover @archivo.Nombre a otra carpeta">
+                                    @foreach (var carpeta in Model.CarpetasDestino)
+                                    {
+                                        <option value="@carpeta.Value">@carpeta.Text</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Mover a carpeta">
+                                    <i class="bi bi-folder-symlink"></i>
+                                </button>
+                            </form>
+                        }
                     </div>
                 }
             </div>
@@ -237,6 +260,29 @@
     }
 </div>
 
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h5 class="modal-title h6 text-truncate" id="galleryModalTitle">Foto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center bg-dark p-2">
+                <img id="galleryModalImg" src="" alt="" class="img-fluid rounded-2" style="max-height: 70vh; object-fit: contain;" />
+            </div>
+            <div class="modal-footer justify-content-between py-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" id="galleryPrev">
+                    <i class="bi bi-chevron-left me-1"></i>Anterior
+                </button>
+                <span class="small text-muted" id="galleryCounter"></span>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" id="galleryNext">
+                    Siguiente<i class="bi bi-chevron-right ms-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         (() => {
@@ -346,6 +392,44 @@
                     } else if (copyButton) {
                         copyButton.click();
                     }
+                });
+            }
+
+            const galleryItems = Array.from(document.querySelectorAll(".js-gallery-item"));
+            const galleryModalEl = document.getElementById("galleryModal");
+            if (galleryItems.length > 0 && galleryModalEl) {
+                const modalImg = document.getElementById("galleryModalImg");
+                const modalTitle = document.getElementById("galleryModalTitle");
+                const modalCounter = document.getElementById("galleryCounter");
+                const prevBtn = document.getElementById("galleryPrev");
+                const nextBtn = document.getElementById("galleryNext");
+                let currentIndex = 0;
+
+                const showPhoto = (index) => {
+                    currentIndex = (index + galleryItems.length) % galleryItems.length;
+                    const item = galleryItems[currentIndex];
+                    modalImg.src = item.dataset.url || "";
+                    modalImg.alt = item.dataset.nombre || "";
+                    modalTitle.textContent = item.dataset.nombre || "Foto";
+                    modalCounter.textContent = `${currentIndex + 1} / ${galleryItems.length}`;
+                    const single = galleryItems.length <= 1;
+                    prevBtn.disabled = single;
+                    nextBtn.disabled = single;
+                };
+
+                galleryItems.forEach((btn, idx) => {
+                    btn.addEventListener("click", () => {
+                        showPhoto(idx);
+                        bootstrap.Modal.getOrCreateInstance(galleryModalEl).show();
+                    });
+                });
+
+                prevBtn.addEventListener("click", () => showPhoto(currentIndex - 1));
+                nextBtn.addEventListener("click", () => showPhoto(currentIndex + 1));
+
+                galleryModalEl.addEventListener("keydown", (e) => {
+                    if (e.key === "ArrowLeft") showPhoto(currentIndex - 1);
+                    else if (e.key === "ArrowRight") showPhoto(currentIndex + 1);
                 });
             }
         })();

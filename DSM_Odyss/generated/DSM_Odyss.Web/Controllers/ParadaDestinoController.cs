@@ -227,8 +227,16 @@ public partial class ParadaDestinoController : Controller
     {
     /*PROTECTED REGION ID(ParadaDestinoController_PorViaje_GET_body) START*/
 
-        var result = await _paradaDestinoService.PorViajeAsync(p_viaje_oid);
-        return Ok(result.Select(ParadaDestinoAssembler.ToViewModel).ToList());
+        var result = p_viaje_oid > 0
+            ? await _paradaDestinoService.PorViajeAsync(p_viaje_oid)
+            : Array.Empty<DSM_Odyss.Domain.Entities.ParadaDestino>();
+        var items = result.Select(ParadaDestinoAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<int, DSM_Odyss.Web.ViewModels.ParadaDestinoViewModel>
+        {
+            Parametro = p_viaje_oid,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 

@@ -78,6 +78,7 @@ public partial class CarpetaController : Controller
                 };
             })
             .ToList();
+
         return View(model);
     /*PROTECTED REGION END*/
     }
@@ -177,6 +178,21 @@ public partial class CarpetaController : Controller
                     NombreCompleto = $"{cliente.Nombre} {cliente.Apellidos}".Trim()
                 })
                 .ToList();
+        }
+
+        if (canEdit && clientId.HasValue)
+        {
+            var accessibleIds = await GetAccessibleFolderIdsAsync(unitOfWork, clientId.Value);
+            foreach (var folderId in accessibleIds.Where(fid => fid != id))
+            {
+                var destino = await unitOfWork.CarpetaRepository.ReadAsync(folderId);
+                if (destino is not null)
+                {
+                    model.CarpetasDestino.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(
+                        destino.Nombre,
+                        destino.Id.ToString()));
+                }
+            }
         }
 
         return View(model);
@@ -348,10 +364,12 @@ public partial class CarpetaController : Controller
         await using var unitOfWork = _unitOfWorkFactory.Create();
         var allowedIds = await GetAccessibleFolderIdsAsync(unitOfWork, clientId);
         var result = await unitOfWork.CarpetaRepository.ConMultimediaAsync();
-        return Ok(result
+        var items = result
             .Where(carpeta => allowedIds.Contains(carpeta.Id))
             .Select(CarpetaAssembler.ToViewModel)
-            .ToList());
+            .ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 

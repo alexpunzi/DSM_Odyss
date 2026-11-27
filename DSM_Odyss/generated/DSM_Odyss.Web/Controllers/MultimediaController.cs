@@ -165,7 +165,13 @@ public partial class MultimediaController : Controller
     /*PROTECTED REGION ID(MultimediaController_DelTipo_GET_body) START*/
 
         var result = await _multimediaService.DelTipoAsync(p_tipo);
-        return Ok(result.Select(MultimediaAssembler.ToViewModel).ToList());
+        var items = result.Select(MultimediaAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<DSM_Odyss.Domain.Enums.TipoMultimedia, DSM_Odyss.Web.ViewModels.MultimediaViewModel>
+        {
+            Parametro = p_tipo,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 }

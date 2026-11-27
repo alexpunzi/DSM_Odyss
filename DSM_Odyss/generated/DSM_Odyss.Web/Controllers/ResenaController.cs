@@ -189,8 +189,15 @@ public partial class ResenaController : Controller
     {
     /*PROTECTED REGION ID(ResenaController_ConPuntuacionMinima_GET_body) START*/
 
-        var result = await _resenaService.ConPuntuacionMinimaAsync(p_puntuacion);
-        return Ok(result.Select(ResenaAssembler.ToViewModel).ToList());
+        var puntuacion = p_puntuacion > 0 ? p_puntuacion : 1;
+        var result = await _resenaService.ConPuntuacionMinimaAsync(puntuacion);
+        var items = result.Select(ResenaAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(new DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<int, DSM_Odyss.Web.ViewModels.ResenaViewModel>
+        {
+            Parametro = puntuacion,
+            Resultados = items
+        });
     /*PROTECTED REGION END*/
     }
 }

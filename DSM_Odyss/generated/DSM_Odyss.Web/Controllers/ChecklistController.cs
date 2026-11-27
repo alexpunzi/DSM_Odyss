@@ -250,7 +250,9 @@ public partial class ChecklistController : Controller
     {
     /*PROTECTED REGION ID(ChecklistController_ConTareas_GET_body) START*/
         var result = await _checklistService.ConTareasAsync();
-        return Ok(result.Select(ChecklistAssembler.ToViewModel).ToList());
+        var items = result.Select(ChecklistAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 

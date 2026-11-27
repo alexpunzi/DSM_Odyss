@@ -288,7 +288,9 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION ID(ClienteController_ConRecordatoriosActivos_GET_body) START*/
 
         var result = await _clienteService.ConRecordatoriosActivosAsync();
-        return Ok(result.Select(ClienteAssembler.ToViewModel).ToList());
+        var items = result.Select(ClienteAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 
@@ -300,7 +302,9 @@ public partial class ClienteController : Controller
     /*PROTECTED REGION ID(ClienteController_ConViajesPublicos_GET_body) START*/
 
         var result = await _clienteService.ConViajesPublicosAsync();
-        return Ok(result.Select(ClienteAssembler.ToViewModel).ToList());
+        var items = result.Select(ClienteAssembler.ToViewModel).ToList();
+        if (DSM_Odyss.Web.Utils.ControllerJsonOrViewExtensions.WantsJson(this)) return Ok(items);
+        return View(items);
     /*PROTECTED REGION END*/
     }
 

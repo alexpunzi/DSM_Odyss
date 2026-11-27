@@ -17,7 +17,7 @@ public sealed class HomeController : Controller
         _unitOfWorkFactory = unitOfWorkFactory;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? q)
     {
         await using var unitOfWork = _unitOfWorkFactory.Create();
 
@@ -25,7 +25,15 @@ public sealed class HomeController : Controller
 
         var clientes = (await unitOfWork.ClienteRepository.ReadAllAsync()).ToList();
 
-        var viajesVm = viajesPublicos.Select(v =>
+        var busqueda = q?.Trim();
+        var viajesFiltrados = string.IsNullOrWhiteSpace(busqueda)
+            ? viajesPublicos
+            : viajesPublicos
+                .Where(v => !string.IsNullOrWhiteSpace(v.Titulo) &&
+                            v.Titulo.Contains(busqueda, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+        var viajesVm = viajesFiltrados.Select(v =>
         {
             var cliente = clientes.FirstOrDefault(c => c.Viajes.Any(viaje => viaje.Id == v.Id));
             var autorNombre = cliente is null
@@ -72,8 +80,10 @@ public sealed class HomeController : Controller
             .Take(10)
             .ToList();
 
+        ViewData["BusquedaViajes"] = busqueda;
         var model = new HomeIndexViewModel
         {
+            Busqueda = busqueda,
             ViajesPopulares = viajesVm,
             TopDestinosPopulares = topDestinosVm
         };

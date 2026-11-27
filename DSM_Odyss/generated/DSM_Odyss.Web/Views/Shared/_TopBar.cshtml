@@ -6,13 +6,15 @@
     <button class="btn btn-outline-secondary rounded-circle p-2" type="button" title="Menú">
         <i class="bi bi-list fs-5"></i>
     </button>
-    <div class="input-group">
-        <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
-        <input type="text" class="form-control border-start-0 bg-white" placeholder="Buscar viajes..." aria-label="Buscar viajes">
-        <button class="btn btn-outline-secondary border-start-0 rounded-end-pill" type="button" title="Filtros">
-            <i class="bi bi-funnel"></i>
-        </button>
-    </div>
+    <form asp-controller="Home" asp-action="Index" method="get" class="flex-grow-1">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" name="q" value="@ViewData["BusquedaViajes"]" class="form-control border-start-0 bg-white" placeholder="Buscar viajes..." aria-label="Buscar viajes">
+            <button class="btn btn-outline-secondary border-start-0 rounded-end-pill" type="submit" title="Buscar">
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        </div>
+    </form>
     <a asp-controller="Cliente" asp-action="Details" asp-route-id="@User.Identity?.Name" class="btn btn-outline-secondary rounded-circle p-2" title="Perfil">
         <i class="bi bi-person fs-5"></i>
     </a>

@@ -1,0 +1,66 @@
+@model DSM_Odyss.Web.ViewModels.ConsultaResultadoViewModel<bool, DSM_Odyss.Web.ViewModels.TareaViewModel>
+
+@{
+    ViewData["Title"] = "Tareas por estado";
+}
+
+<div class="container py-2" style="max-width: 550px;">
+    <h2 class="h4 fw-semibold mb-3"><i class="bi bi-list-check me-2"></i>Tareas por estado</h2>
+
+    <form asp-action="PorEstado" method="get" class="card card-body border-0 shadow-sm rounded-3 mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col">
+                <label for="p_completada" class="form-label small fw-semibold mb-1">Estado</label>
+                <select id="p_completada" name="p_completada" class="form-select form-select-sm">
+                    <option value="false" selected="@(!Model.Parametro)">Pendientes</option>
+                    <option value="true" selected="@Model.Parametro">Completadas</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3">
+                    <i class="bi bi-search me-1"></i>Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (!Model.Resultados.Any())
+    {
+        <div class="alert alert-light border text-muted text-center">No hay tareas en ese estado.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Resultados)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@item.Descripcion</td>
+                            <td>
+                                @if (item.Completada)
+                                {
+                                    <span class="badge text-bg-success">Completada</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">Pendiente</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-pill">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
